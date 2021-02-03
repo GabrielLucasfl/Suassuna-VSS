@@ -19,11 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#ifndef SKILLS_H
-#define SKILLS_H
+#ifndef SKILL_SPIN_H
+#define SKILL_SPIN_H
 
-#include <src/entities/coach/skill/goto/skill_goto.h>
-#include <src/entities/coach/skill/rotateto/skill_rotateto.h>
-#include <src/entities/coach/skill/spin/skill_spin.h>
+#include <src/entities/coach/skill/skill.h>
 
-#endif // SKILLS_H
+class Skill_Spin : public Skill
+{
+public:
+    Skill_Spin();
+    QString name();
+
+    // Parameters
+    bool _isClockWise;
+
+private:
+    // Skill inherited methods
+    void configure();
+    void run();
+
+    void setClockWise (bool isClockWise) { _isClockWise = isClockWise; }
+};
+
+#endif // SKILL_SPIN_H

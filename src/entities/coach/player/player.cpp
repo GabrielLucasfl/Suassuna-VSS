@@ -121,6 +121,14 @@ void Player::rotateTo(Position &targetPosition) {
     emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget);
 }
 
+void Player::spin(bool isClockWise) {
+    if (isClockWise) {
+        emit setAngularSpeed(getConstants()->teamColor(), playerId(), -50);
+    } else {
+        emit setAngularSpeed(getConstants()->teamColor(), playerId(), 50);
+    }
+}
+
 void Player::idle() {
     emit setLinearSpeed(getConstants()->teamColor(), playerId(), 0.0);
     emit setAngularSpeed(getConstants()->teamColor(), playerId(), 0.0);

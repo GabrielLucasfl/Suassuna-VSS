@@ -19,11 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#ifndef SKILLS_H
-#define SKILLS_H
+#include "skill_spin.h"
 
-#include <src/entities/coach/skill/goto/skill_goto.h>
-#include <src/entities/coach/skill/rotateto/skill_rotateto.h>
-#include <src/entities/coach/skill/spin/skill_spin.h>
+Skill_Spin::Skill_Spin() {
+    _isClockWise = true;
+}
 
-#endif // SKILLS_H
+QString Skill_Spin::name() {
+    return "Skill_Spin";
+}
+
+void Skill_Spin::configure() {
+}
+
+void Skill_Spin::run() {
+    player()->spin(_isClockWise);
+}

@@ -53,6 +53,7 @@ public:
     // Skills
     void goTo(Position &targetPosition);
     void rotateTo(Position &targetPosition);
+    void spin(bool isClockWise);
     void idle();
 
 private:

@@ -60,6 +60,7 @@ SOURCES += \
     src/entities/coach/skill/goto/skill_goto.cpp \
     src/entities/coach/skill/rotateto/skill_rotateto.cpp \
     src/entities/coach/skill/skill.cpp \
+    src/entities/coach/skill/spin/skill_spin.cpp \
     src/entities/entity.cpp \
     src/entities/vision/filters/kalman/kalmanfilter.cpp \
     src/entities/vision/filters/kalman/matrix/matrix.cpp \
@@ -114,6 +115,7 @@ HEADERS += \
     src/entities/coach/skill/rotateto/skill_rotateto.h \
     src/entities/coach/skill/skill.h \
     src/entities/coach/skill/skills.h \
+    src/entities/coach/skill/spin/skill_spin.h \
     src/entities/entity.h \
     src/entities/vision/filters/kalman/kalmanfilter.h \
     src/entities/vision/filters/kalman/matrix/matrix.h \
