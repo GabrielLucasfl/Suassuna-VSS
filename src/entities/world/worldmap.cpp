@@ -180,7 +180,7 @@ void WorldMap::updateBall(Object ballObject) {
     _ballMutex.unlock();
 }
 
-void WorldMap::updateGeometry(SSL_GeometryData geometryData) {
+void WorldMap::updateGeometry(fira_message::Field geometryData) {
     _locations->updateGeometryData(geometryData);
 }
 

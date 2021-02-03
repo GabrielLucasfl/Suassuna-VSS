@@ -28,7 +28,7 @@
 #include <src/utils/types/field/field.h>
 #include <src/utils/types/position/position.h>
 #include <src/utils/types/fieldside/fieldside.h>
-#include <include/messages_robocup_ssl_geometry.pb.h>
+#include <include/packet.pb.h>
 
 class Locations
 {
@@ -85,7 +85,7 @@ public:
     bool isInsideField(const Position &pos, float dx, float dy);
 
     // Update geometry
-    void updateGeometryData(SSL_GeometryData geometryData);
+    void updateGeometryData(fira_message::Field geometryData);
 
 private:
     // Field
@@ -95,7 +95,7 @@ private:
     FieldSide _ourSide;
 
     // Geometry data
-    SSL_GeometryData _lastData;
+    fira_message::Field _lastData;
 
     // Field data
     Position _fieldCenter;

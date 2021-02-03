@@ -61,9 +61,9 @@ void Player::setRole(Role *role) {
     _mutexRole.unlock();
 }
 
-float Player::getPlayerRotateAngleTo(Position &targetPosition, Position &referencePosition) {
-    float componentX = (targetPosition.x() - referencePosition.x());
-    float componentY = (targetPosition.y() - referencePosition.y());
+float Player::getPlayerRotateAngleTo(Position &targetPosition) {
+    float componentX = (targetPosition.x() - position().x());
+    float componentY = (targetPosition.y() - position().y());
     float distToTarget = sqrt(pow(componentX, 2) + pow(componentY, 2));
 
     componentX = componentX / distToTarget;
@@ -108,25 +108,21 @@ void Player::goTo(Position &targetPosition) {
 
     float dx = (targetPosition.x() - playerPosition.x());
     float dy = (targetPosition.y() - playerPosition.y());
-    float vxSaida = (dx * cos(orientation().value()) + dy * sin(orientation().value()));
-    float vySaida = (dy * cos(orientation().value()) - dx * sin(orientation().value()));
+    float distanceMod = sqrtf(powf(dx, 2.0) + powf(dy, 2.0));
+    float angleRobotToTarget = getPlayerRotateAngleTo(targetPosition);
 
-    emit setLinearSpeed(getConstants()->teamColor(), playerId(), vxSaida, vySaida);
+    emit setLinearSpeed(getConstants()->teamColor(), playerId(), distanceMod);
+    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget);
 }
 
-void Player::rotateTo(Position &targetPosition, Position referencePosition) {
-    // If no reference position is defined, use the player position
-    if(referencePosition.isInvalid()) {
-        referencePosition = position();
-    }
-
-    float angleRobotToTarget = getPlayerRotateAngleTo(targetPosition, referencePosition);
+void Player::rotateTo(Position &targetPosition) {
+    float angleRobotToTarget = getPlayerRotateAngleTo(targetPosition);
 
     emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget);
 }
 
 void Player::idle() {
-    emit setLinearSpeed(getConstants()->teamColor(), playerId(), 0.0, 0.0);
+    emit setLinearSpeed(getConstants()->teamColor(), playerId(), 0.0);
     emit setAngularSpeed(getConstants()->teamColor(), playerId(), 0.0);
 }
 

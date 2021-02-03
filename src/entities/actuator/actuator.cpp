@@ -21,21 +21,23 @@
 
 #include "actuator.h"
 
-Actuator::Actuator() : Entity(ENT_ACTUATOR) {
+Actuator::Actuator(Constants *constants) : Entity(ENT_ACTUATOR) {
+    // Set constants
+    _constants = constants;
+
+    // Alloc robotData
     _robotData = (robotData **) malloc(QT_TEAMS * sizeof(robotData *));
     for(int i = 0; i < QT_TEAMS; i++) {
-        _robotData[i] = (robotData *) malloc(QT_PLAYERS * sizeof(robotData));
+        _robotData[i] = (robotData *) malloc(getConstants()->qtPlayers() * sizeof(robotData));
     }
 
     for(int i = 0; i < QT_TEAMS; i++) {
-        for(int j = 0; j < QT_PLAYERS; j++) {
+        for(int j = 0; j < getConstants()->qtPlayers(); j++) {
             _robotData[i][j].isYellow = (i == 0) ? true : false;
             _robotData[i][j].playerId = j;
             _robotData[i][j].vx = 0.0f;
-            _robotData[i][j].vy = 0.0f;
             _robotData[i][j].vw = 0.0f;
-            _robotData[i][j].kickPowerX = 0.0f;
-            _robotData[i][j].kickPowerZ = 0.0f;
+            _robotData[i][j].kickPower = 0.0f;
             _robotData[i][j].dribbling = false;
             _robotData[i][j].isUpdated = true;
         }
@@ -48,4 +50,15 @@ Actuator::~Actuator() {
     }
 
     free(_robotData);
+}
+
+Constants* Actuator::getConstants() {
+    if(_constants == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Actuator") + '\n';
+    }
+    else {
+        return _constants;
+    }
+
+    return nullptr;
 }

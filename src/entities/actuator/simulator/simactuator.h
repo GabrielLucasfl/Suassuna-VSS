@@ -26,23 +26,20 @@
 
 #include <src/entities/actuator/actuator.h>
 #include <src/constants/constants.h>
-#include <include/grSim_Packet.pb.h>
+#include <include/packet.pb.h>
+#include <include/command.pb.h>
 
 class SimActuator : public Actuator
 {
     Q_OBJECT
 public:
-    SimActuator(Constants *constants);
+    using Actuator::Actuator;
 
 private:
     // Entity inherited methods
     void initialization();
     void loop();
     void finalization();
-
-    // Constants
-    Constants *_constants;
-    Constants* getConstants();
 
     // Network info
     QString _actuatorAddress;
@@ -56,11 +53,10 @@ private:
 
 public slots:
     // Internal inherited methods
-    void setLinearSpeed(int teamId, int playerId, float vx, float vy);
+    void setLinearSpeed(int teamId, int playerId, float vx);
     void setAngularSpeed(int teamId, int playerId, float vw);
     void dribble(int teamId, int playerId, bool enable);
     void kick(int teamId, int playerId, float power);
-    void chipKick(int teamId, int playerId, float power);
 };
 
 #endif // SIMACTUATOR_H

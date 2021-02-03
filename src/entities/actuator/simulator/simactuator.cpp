@@ -24,23 +24,18 @@
 #include <math.h>
 #include <src/utils/text/text.h>
 
-SimActuator::SimActuator(Constants *constants) {
-    // Taking constants
-    _constants = constants;
-
-    // Setting network data from constants
+void SimActuator::initialization() {
+    // Setting network data from constants and connecting
     _actuatorAddress = getConstants()->simActuatorAddress();
     _actuatorPort = getConstants()->simActuatorPort();
-}
-
-void SimActuator::initialization() {
     connectToNetwork();
+
     std::cout << Text::cyan("[ACTUATOR] ", true) + Text::bold("Started at address '" + _actuatorAddress.toStdString() + "' and port '" + std::to_string(_actuatorPort) + "'.") + '\n';
 }
 
 void SimActuator::loop() {
     for(int i = 0; i < QT_TEAMS; i++) {
-        for(int j = 0; j < QT_PLAYERS; j++) {
+        for(int j = 0; j < getConstants()->qtPlayers(); j++) {
             _dataMutex.lockForRead();
             if(!_robotData[i][j].isUpdated) {
                 sendData(_robotData[i][j]);
@@ -76,31 +71,21 @@ void SimActuator::finishConnection() {
 
 void SimActuator::sendData(robotData data) {
     // Creating packet
-    grSim_Packet packet;
+    fira_message::sim_to_ref::Packet packet;
+    fira_message::sim_to_ref::Command *command = packet.mutable_cmd()->add_robot_commands();
 
     // Setting macro informations (team and timestamp)
-    packet.mutable_commands()->set_isteamyellow(data.isYellow);
-    packet.mutable_commands()->set_timestamp(0.0);
-
-    // Creating robot commands (vel, kick, dribble)
-    grSim_Robot_Command *command = packet.mutable_commands()->add_robot_commands();
-
-    // Setting commands
-    // Player id
     command->set_id(data.playerId);
+    command->set_yellowteam(data.isYellow);
 
-    // Player velocity
-    command->set_wheelsspeed(false);
-    command->set_veltangent(data.vx);
-    command->set_velnormal(data.vy);
-    command->set_velangular(data.vw);
+    // Setting whells speed
+    double L = 0.075;
+    double r = 0.0325;
+    double wl = ((2 * data.vx) - (L * data.vw)) / (2 * r);
+    double wr = ((2 * data.vx) + (L * data.vw)) / (2 * r);
 
-    // Player kick speed
-    command->set_kickspeedx(data.kickPowerX);
-    command->set_kickspeedz(data.kickPowerZ);
-
-    // Player dribble
-    command->set_spinner(data.dribbling);
+    command->set_wheel_left(wl);
+    command->set_wheel_right(wr);
 
     // Sending data to simulator
     std::string buffer;
@@ -110,10 +95,9 @@ void SimActuator::sendData(robotData data) {
     }
 }
 
-void SimActuator::setLinearSpeed(int teamId, int playerId, float vx, float vy) {
+void SimActuator::setLinearSpeed(int teamId, int playerId, float vx) {
     _dataMutex.lockForWrite();
     _robotData[teamId][playerId].vx = vx;
-    _robotData[teamId][playerId].vy = vy;
     _robotData[teamId][playerId].isUpdated = false;
     _dataMutex.unlock();
 }
@@ -134,26 +118,7 @@ void SimActuator::dribble(int teamId, int playerId, bool enable) {
 
 void SimActuator::kick(int teamId, int playerId, float power) {
     _dataMutex.lockForWrite();
-    _robotData[teamId][playerId].kickPowerX = power;
+    _robotData[teamId][playerId].kickPower = power;
     _robotData[teamId][playerId].isUpdated = false;
     _dataMutex.unlock();
-}
-
-void SimActuator::chipKick(int teamId, int playerId, float power) {
-    _dataMutex.lockForWrite();
-    _robotData[teamId][playerId].kickPowerX = power * cos(0.42262189947);
-    _robotData[teamId][playerId].kickPowerZ = power * sin(0.42262189947);
-    _robotData[teamId][playerId].isUpdated = false;
-    _dataMutex.unlock();
-}
-
-Constants* SimActuator::getConstants() {
-    if(_constants == nullptr) {
-        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at SimActuator") + '\n';
-    }
-    else {
-        return _constants;
-    }
-
-    return nullptr;
 }

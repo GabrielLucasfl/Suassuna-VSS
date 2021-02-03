@@ -54,11 +54,11 @@ void Behavior_GoToLookTo::run() {
         _skill_goTo->setTargetPosition(_positionToGo);
         setSkill(SKILL_GOTO);
     }
-
-    // Check if the player is at a minimum angle difference to the desired point and if this point is valid
-    if(!_positionToLook.isInvalid() && fabs(player()->getPlayerRotateAngleTo(_positionToLook, _positionToGo)) > player()->getAngularError()) {
-        _skill_rotateTo->setReferencePosition(_positionToGo);
-        _skill_rotateTo->setTargetPosition(_positionToLook);
-        setSkill(SKILL_ROTATETO);
+    else {
+        // Check if the player is at a minimum angle difference to the desired point and if this point is valid
+        if(!_positionToLook.isInvalid() && fabs(player()->getPlayerRotateAngleTo(_positionToLook)) > player()->getAngularError()) {
+            _skill_rotateTo->setTargetPosition(_positionToLook);
+            setSkill(SKILL_ROTATETO);
+        }
     }
 }

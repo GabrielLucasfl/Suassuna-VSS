@@ -45,7 +45,7 @@ private:
 
     // Modules
     Vision *_vision;
-    SimActuator *_simActuator;
+    Actuator *_simActuator;
 
     // World
     World *_world;

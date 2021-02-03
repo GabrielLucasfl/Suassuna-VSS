@@ -32,7 +32,6 @@ public:
 
     // Target management
     void setTargetPosition(Position &targetPosition);
-    void setReferencePosition(Position &referencePosition);
 
 private:
     // Skill inherited methods
@@ -41,7 +40,6 @@ private:
 
     // Internal
     Position _targetPosition;
-    Position _referencePosition;
 };
 
 #endif // SKILL_ROTATETO_H

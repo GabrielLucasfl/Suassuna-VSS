@@ -1,12 +1,12 @@
-#ifndef COORDINATOR_SSL_H
-#define COORDINATOR_SSL_H
+#ifndef COORDINATOR_VSS_H
+#define COORDINATOR_VSS_H
 
 #include <src/entities/coach/coordinator/coordinator.h>
 
-class Coordinator_SSL : public Coordinator
+class Coordinator_VSS : public Coordinator
 {
 public:
-    Coordinator_SSL();
+    Coordinator_VSS();
     QString name();
 
 private:
@@ -31,4 +31,4 @@ private:
     int actualState;
 };
 
-#endif // COORDINATOR_SSL_H
+#endif // COORDINATOR_VSS_H

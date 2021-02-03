@@ -39,10 +39,6 @@ public:
     virtual float goalWidth() const = 0;
     virtual float goalDepth() const = 0;
 
-    // Goal Area dimensions
-    virtual float goalAreaWidth() const = 0;
-    virtual float goalAreaDepth() const = 0;
-
     // Center dimensions
     virtual float centerRadius() const = 0;
 

@@ -30,7 +30,7 @@
 #include <src/entities/world/locations/locations.h>
 #include <src/utils/types/color/color.h>
 #include <src/utils/types/object/object.h>
-#include <include/messages_robocup_ssl_geometry.pb.h>
+#include <include/packet.pb.h>
 
 class WorldMap : public QObject
 {
@@ -75,7 +75,7 @@ private:
 public slots:
     void updatePlayer(Colors::Color teamColor, quint8 playerId, Object playerObject);
     void updateBall(Object ballObject);
-    void updateGeometry(SSL_GeometryData geometryData);
+    void updateGeometry(fira_message::Field geometryData);
 };
 
 #endif // WORLDMAP_H

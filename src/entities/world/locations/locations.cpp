@@ -343,53 +343,36 @@ bool Locations::_isOutsideField(const Position &pos, const float maxX, const flo
     return false;
 }
 
-void Locations::updateGeometryData(SSL_GeometryData geometryData) {
+void Locations::updateGeometryData(fira_message::Field geometryData) {
     _mutex.lockForWrite();
 
     _lastData = geometryData;
 
-    SSL_GeometryFieldSize field = _lastData.field();
+    fira_message::Field field = geometryData;
 
     // Calc centerRadius and areaRadius
-    float centerRadius = 0.0;
-    float areaRadius = 0.0;
-    for(int i=0; i<field.field_arcs_size(); i++) {
-        const SSL_FieldCicularArc arc = field.field_arcs(i);
-        if(arc.name() == "CenterCircle")
-            centerRadius = arc.radius() + arc.thickness()/2;
-        if(arc.name() == "LeftFieldLeftPenaltyArc")
-            areaRadius = arc.radius() + arc.thickness()/2;
-    }
+    float centerRadius = 0.2;
+    float areaRadius = 0.15;
 
     // Calc areaWidth and areaStretch
-    float areaWidth = 0.0;
-    float areaStretch = 0.0;
-    for(int i=0; i<field.field_lines_size(); i++) {
-       const SSL_FieldLineSegment line = field.field_lines(i);
-
-       // Defense width
-       if(line.name() == "RightPenaltyStretch") {
-           areaWidth = field.field_length()/2 - line.p1().x() - line.thickness()/2;
-           areaStretch = 2*fabs(line.p1().y());
-           break;
-       }
-    }
+    float areaWidth = 0.15;
+    float areaStretch = 0.3;
 
     // Calc goalDepth and areaLength
     float areaLength = areaStretch + 2*areaRadius;
 
     // Updating positions
     _fieldCenter = Position(true, 0.0, 0.0);
-    _fieldTopRightCorner = Position(true, (field.field_length()/2.0)*MM2METER, (field.field_width()/2.0)*MM2METER);
-    _fieldTopLeftCorner = Position(true, (-field.field_length()/2.0)*MM2METER, (field.field_width()/2.0)*MM2METER);
-    _fieldBottomLeftCorner = Position(true, (-field.field_length()/2.0)*MM2METER, (-field.field_width()/2.0)*MM2METER);
-    _fieldBottomRightCorner = Position(true, (field.field_length()/2.0)*MM2METER, (-field.field_width()/2.0)*MM2METER);
-    _rightPenaltyMark = Position(true, (field.field_length()/2.0 - areaRadius)*MM2METER, 0.0);
-    _leftPenaltyMark = Position(true, (-field.field_length()/2.0 + areaRadius)*MM2METER, 0.0);
-    _leftGoalLeftPost = Position(true, (-field.field_length()/2.0)*MM2METER, (-field.goal_width()/2.0)*MM2METER);
-    _leftGoalRightPost = Position(true, (-field.field_length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
-    _rightGoalLeftPost = Position(true, (field.field_length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
-    _rightGoalRightPost = Position(true, (field.field_length()/2.0)*MM2METER, (-field.goal_width()/2.0)*MM2METER);
+    _fieldTopRightCorner = Position(true, (field.length()/2.0)*MM2METER, (field.width()/2.0)*MM2METER);
+    _fieldTopLeftCorner = Position(true, (-field.length()/2.0)*MM2METER, (field.width()/2.0)*MM2METER);
+    _fieldBottomLeftCorner = Position(true, (-field.length()/2.0)*MM2METER, (-field.width()/2.0)*MM2METER);
+    _fieldBottomRightCorner = Position(true, (field.length()/2.0)*MM2METER, (-field.width()/2.0)*MM2METER);
+    _rightPenaltyMark = Position(true, (field.length()/2.0 - areaRadius)*MM2METER, 0.0);
+    _leftPenaltyMark = Position(true, (-field.length()/2.0 + areaRadius)*MM2METER, 0.0);
+    _leftGoalLeftPost = Position(true, (-field.length()/2.0)*MM2METER, (-field.goal_width()/2.0)*MM2METER);
+    _leftGoalRightPost = Position(true, (-field.length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
+    _rightGoalLeftPost = Position(true, (field.length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
+    _rightGoalRightPost = Position(true, (field.length()/2.0)*MM2METER, (-field.goal_width()/2.0)*MM2METER);
     _fieldCenterRadius = centerRadius*MM2METER;
     _goalLength = areaLength*MM2METER;
     _goalWidth = areaWidth*MM2METER;

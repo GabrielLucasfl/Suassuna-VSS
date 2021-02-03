@@ -4,7 +4,7 @@
 	},
 	
 	"Vision":{
-		"visionAddress": "224.5.23.2",
+		"visionAddress": "224.0.0.1",
 		"visionPort": 10002,
 		"lossFilterTime": 300,
 		"noiseFilterTime": 300,
@@ -13,8 +13,8 @@
 	
 	"Team":{
 		"teamColor": "blue",
-		"teamSide": "left",
-		"qtPlayers": 11
+		"teamSide": "right",
+		"qtPlayers": 3
 	},
 	
 	"SimActuator":{

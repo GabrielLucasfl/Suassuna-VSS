@@ -28,9 +28,7 @@
 #include <src/constants/constants.h>
 #include <src/utils/types/color/color.h>
 #include <src/utils/types/object/object.h>
-#include <include/messages_robocup_ssl_wrapper.pb.h>
-#include <include/messages_robocup_ssl_detection.pb.h>
-#include <include/messages_robocup_ssl_robot_status.pb.h>
+#include <include/packet.pb.h>
 
 class Vision : public Entity
 {
@@ -60,8 +58,8 @@ private:
     // Objects control
     QMap<Colors::Color, QMap<quint8, Object*>*> _playerObjects;
     Object _ballObject;
-    void updatePlayer(Colors::Color teamColor, quint8 playerId, SSL_DetectionRobot player);
-    void updateBall(SSL_DetectionBall ball);
+    void updatePlayer(Colors::Color teamColor, quint8 playerId, fira_message::Robot player);
+    void updateBall(fira_message::Ball ball);
 
     // Vision reached control
     bool *_blueControl;
@@ -72,7 +70,7 @@ private:
 signals:
     void sendPlayer(Colors::Color teamColor, quint8 playerId, Object playerObject);
     void sendBall(Object ballObject);
-    void sendGeometryData(SSL_GeometryData geometData);
+    void sendGeometryData(fira_message::Field geometData);
 };
 
 #endif // VISION_H

@@ -83,7 +83,7 @@ void Vision::initialization() {
 void Vision::loop() {
     while(_visionClient->hasPendingDatagrams()) {
         // Creating auxiliary vars
-        SSL_WrapperPacket wrapperData;
+        fira_message::sim_to_ref::Environment wrapperData;
         char *buffer = new char[65535];
         long long int packetLength = 0;
 
@@ -95,16 +95,16 @@ void Vision::loop() {
         }
 
         // Debug vision frame
-        if(wrapperData.has_detection()) {
-            SSL_DetectionFrame visionFrame = wrapperData.detection();
+        if(wrapperData.has_frame()) {
+            fira_message::Frame visionFrame = wrapperData.frame();
 
             // Clear vision controls
             clearControls();
 
             // For ball (always take first)
-            if(visionFrame.balls_size() > 0) {
+            if(visionFrame.has_ball()) {
                 _ballControl = true;
-                updateBall(visionFrame.balls(0));
+                updateBall(visionFrame.ball());
             }
 
             // For blue team
@@ -113,7 +113,7 @@ void Vision::loop() {
                 _blueControl[visionFrame.robots_blue(i).robot_id()] = true;
 
                 // Take player and update
-                SSL_DetectionRobot robot = visionFrame.robots_blue(i);
+                fira_message::Robot robot = visionFrame.robots_blue(i);
                 updatePlayer(Colors::Color::BLUE, robot.robot_id(), robot);
             }
 
@@ -123,7 +123,7 @@ void Vision::loop() {
                 _yellowControl[visionFrame.robots_yellow(i).robot_id()] = true;
 
                 // Take player and update
-                SSL_DetectionRobot robot = visionFrame.robots_yellow(i);
+                fira_message::Robot robot = visionFrame.robots_yellow(i);
                 updatePlayer(Colors::Color::YELLOW, robot.robot_id(), robot);
             }
 
@@ -180,8 +180,8 @@ void Vision::loop() {
             }
         }
         // Debug geometry data
-        if(wrapperData.has_geometry() && getConstants()->useGeometryFromCamera()) {
-            SSL_GeometryData geomData = wrapperData.geometry();
+        if(wrapperData.has_field() && getConstants()->useGeometryFromCamera()) {
+            fira_message::Field geomData = wrapperData.field();
             emit sendGeometryData(geomData);
         }
 
@@ -201,7 +201,7 @@ void Vision::clearControls() {
     _ballControl = false;
 }
 
-void Vision::updatePlayer(Colors::Color teamColor, quint8 playerId, SSL_DetectionRobot player) {
+void Vision::updatePlayer(Colors::Color teamColor, quint8 playerId, fira_message::Robot player) {
     // Check if team is registered in map
     if(!_playerObjects.contains(teamColor)) {
         _playerObjects.insert(teamColor, new QMap<quint8, Object*>());
@@ -219,15 +219,15 @@ void Vision::updatePlayer(Colors::Color teamColor, quint8 playerId, SSL_Detectio
     Object* playerObject = teamMap->value(playerId);
 
     // Update
-    playerObject->updateObject(player.confidence(), Position(true, player.x()/1000.0, player.y()/1000.0), Angle(true, player.orientation()));
+    playerObject->updateObject(1.0f, Position(true, player.x(), player.y()), Angle(true, player.orientation()));
 
     // Emit updated object
     emit sendPlayer(teamColor, playerId, *playerObject);
 }
 
-void Vision::updateBall(SSL_DetectionBall ball) {
+void Vision::updateBall(fira_message::Ball ball) {
     // Update
-    _ballObject.updateObject(ball.confidence(), Position(true, ball.x()/1000.0, ball.y()/1000.0));
+    _ballObject.updateObject(1.0f, Position(true, ball.x(), ball.y()));
 
     // Emit updated object
     emit sendBall(_ballObject);

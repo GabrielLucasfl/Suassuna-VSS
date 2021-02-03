@@ -19,36 +19,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#ifndef FIELD_SSLB_H
-#define FIELD_SSLB_H
+#include "field_vssb.h"
 
-#include <src/utils/types/field/field.h>
+Field_VSSB::Field_VSSB() {
 
-class Field_SSLB : public Field
-{
-public:
-    Field_SSLB();
-    QString name() const;
+}
 
-    // Field dimensions
-    float length() const;
-    float width() const;
+QString Field_VSSB::name() const {
+    return "Field_VSSB";
+}
 
-    // Goal dimensions
-    float goalWidth() const;
-    float goalDepth() const;
+float Field_VSSB::length() const {
+    return 1.50;
+}
 
-    // Goal Area dimensions
-    float goalAreaWidth() const;
-    float goalAreaDepth() const;
+float Field_VSSB::width() const {
+    return 1.30;
+}
 
-    // Center dimensions
-    float centerRadius() const;
+float Field_VSSB::goalWidth() const {
+    return 0.40;
+}
 
-    // Defense area dimensions
-    float defenseRadius() const;
-    float defenseStretch() const;
+float Field_VSSB::goalDepth() const {
+    return 0.10;
+}
 
-};
+float Field_VSSB::centerRadius() const {
+    return 0.20;
+}
 
-#endif // FIELD_SSLB_H
+float Field_VSSB::defenseRadius() const {
+    return 0.15;
+}
+
+float Field_VSSB::defenseStretch() const {
+    return 0.4;
+}

@@ -23,7 +23,6 @@
 
 Skill_RotateTo::Skill_RotateTo() {
     _targetPosition = Position(false, 0.0, 0.0);
-    _referencePosition = Position(false, 0.0, 0.0);
 }
 
 QString Skill_RotateTo::name() {
@@ -34,16 +33,12 @@ void Skill_RotateTo::setTargetPosition(Position &targetPosition) {
     _targetPosition = targetPosition;
 }
 
-void Skill_RotateTo::setReferencePosition(Position &referencePosition) {
-    _referencePosition = referencePosition;
-}
-
 void Skill_RotateTo::configure() {
 
 }
 
 void Skill_RotateTo::run() {
     if(!_targetPosition.isInvalid()) {
-        player()->rotateTo(_targetPosition, _referencePosition);
+        player()->rotateTo(_targetPosition);
     }
 }

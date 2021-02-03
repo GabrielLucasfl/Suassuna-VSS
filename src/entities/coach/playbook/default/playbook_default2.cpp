@@ -47,8 +47,7 @@ void Playbook_Default2::run(int numPlayers) {
     // For each player, set its associated role
     for(int i = 0; i < numPlayers; i++) {
         // Take locations of our penalty mark
-        Position goToPosition = getWorldMap()->getLocations()->ourPenaltyMark();
-        goToPosition = Position(true, goToPosition.x(), -1.0 + (i * (2.0 / numPlayers)));
+        Position goToPosition = getWorldMap()->getLocations()->fieldCenter();
         Position lookToPosition = getWorldMap()->getLocations()->fieldCenter();
 
         // Set to align in the front of opposite goal

@@ -24,15 +24,15 @@
 
 #include <QReadWriteLock>
 #include <src/entities/entity.h>
+#include <src/constants/constants.h>
 
 #define QT_TEAMS 2
-#define QT_PLAYERS 11
 
 class Actuator : public Entity
 {
     Q_OBJECT
 public:
-    Actuator();
+    Actuator(Constants *constants);
     ~Actuator();
 
 protected:
@@ -40,13 +40,16 @@ protected:
     typedef struct {
         int isYellow;
         int playerId;
-        float vx, vy, vw;
-        float kickPowerX, kickPowerZ;
+        float vx, vw;
+        float kickPower;
         bool dribbling;
         bool isUpdated;
     } robotData;
     robotData **_robotData;
     QReadWriteLock _dataMutex;
+
+protected:
+    Constants* getConstants();
 
 private:
     // Entity inherited methods
@@ -54,13 +57,15 @@ private:
     virtual void loop() = 0;
     virtual void finalization() = 0;
 
+    // Constants
+    Constants *_constants;
+
 public slots:
     // Internal
-    virtual void setLinearSpeed(int teamId, int playerId, float vx, float vy) = 0;
+    virtual void setLinearSpeed(int teamId, int playerId, float vx) = 0;
     virtual void setAngularSpeed(int teamId, int playerId, float vw) = 0;
     virtual void dribble(int teamId, int playerId, bool enable) = 0;
     virtual void kick(int teamId, int playerId, float power) = 0;
-    virtual void chipKick(int teamId, int playerId, float power) = 0;
 };
 
 #endif // ACTUATOR_H

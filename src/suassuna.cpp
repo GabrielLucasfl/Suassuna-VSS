@@ -23,8 +23,8 @@
 
 #include <src/entities/coach/player/player.h>
 #include <src/entities/coach/role/default/role_default.h>
-#include <src/utils/types/field/ssl/field_sslb.h>
-#include <src/entities/coach/coordinator/ssl/coordinator_ssl.h>
+#include <src/utils/types/field/vss/field_vssb.h>
+#include <src/entities/coach/coordinator/ssl/coordinator_vss.h>
 
 Suassuna::Suassuna(Constants *constants) {
     // Setting up constants
@@ -36,7 +36,7 @@ Suassuna::Suassuna(Constants *constants) {
 
 void Suassuna::start() {
     // Creating World Map (set here the map that u desire)
-    _worldMap = new WorldMap(getConstants(), getConstants()->teamSide(), new Field_SSLB());
+    _worldMap = new WorldMap(getConstants(), getConstants()->teamSide(), new Field_VSSB());
 
     // Creating and adding vision to world
     _vision = new Vision(getConstants());
@@ -47,7 +47,7 @@ void Suassuna::start() {
     qRegisterMetaType<Object>("Object");
     QObject::connect(_vision, SIGNAL(sendPlayer(Colors::Color, quint8, Object)), _worldMap, SLOT(updatePlayer(Colors::Color, quint8, Object)), Qt::DirectConnection);
     QObject::connect(_vision, SIGNAL(sendBall(Object)), _worldMap, SLOT(updateBall(Object)), Qt::DirectConnection);
-    QObject::connect(_vision, SIGNAL(sendGeometryData(SSL_GeometryData)), _worldMap, SLOT(updateGeometry(SSL_GeometryData)), Qt::DirectConnection);
+    QObject::connect(_vision, SIGNAL(sendGeometryData(fira_message::Field)), _worldMap, SLOT(updateGeometry(fira_message::Field)), Qt::DirectConnection);
 
     // Creating and adding actuator to world
     _simActuator = new SimActuator(getConstants());
@@ -56,15 +56,10 @@ void Suassuna::start() {
     // Adding players
     for(int i = 0; i < getConstants()->qtPlayers(); i++) {
         Player *player = new Player(i, getConstants(), _worldMap);
-        QObject::connect(player, SIGNAL(setLinearSpeed(int, int, float, float)), _simActuator, SLOT(setLinearSpeed(int, int, float, float)));
+        QObject::connect(player, SIGNAL(setLinearSpeed(int, int, float)), _simActuator, SLOT(setLinearSpeed(int, int, float)));
         QObject::connect(player, SIGNAL(setAngularSpeed(int, int, float)), _simActuator, SLOT(setAngularSpeed(int, int, float)));
         QObject::connect(player, SIGNAL(dribble(int, int, bool)), _simActuator, SLOT(dribble(int, int, bool)));
         QObject::connect(player, SIGNAL(kick(int, int, float)), _simActuator, SLOT(kick(int, int, float)));
-        QObject::connect(player, SIGNAL(chipKick(int, int, float)), _simActuator, SLOT(chipKick(int, int, float)));
-
-        /// TODO: remove this (testing)
-        Role_Default *rl = new Role_Default();
-        player->setRole(rl);
 
         _worldMap->addPlayer(i, player);
         _world->addEntity(player, 2);
@@ -75,7 +70,7 @@ void Suassuna::start() {
     _world->addEntity(_coach, 3);
 
     // Setting coordinator to coach
-    _coach->setCoordinator(new Coordinator_SSL());
+    _coach->setCoordinator(new Coordinator_VSS());
 
     // Starting world
     _world->start();

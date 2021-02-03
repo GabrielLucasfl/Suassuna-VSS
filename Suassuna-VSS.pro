@@ -8,7 +8,7 @@ QT += core    \
 # Project configs
 TEMPLATE = app
 DESTDIR  = ../bin
-TARGET   = Armorial-Suassuna
+TARGET   = Suassuna-VSS
 VERSION  = 1.0.0
 
 CONFIG += c++14 console
@@ -35,21 +35,13 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 # Project source files
 SOURCES += \
-    include/grSim_Commands.pb.cc \
-    include/grSim_Packet.pb.cc \
-    include/grSim_Replacement.pb.cc \
-    include/messages_robocup_ssl_detection.pb.cc \
-    include/messages_robocup_ssl_geometry.pb.cc \
-    include/messages_robocup_ssl_refbox_log.pb.cc \
-    include/messages_robocup_ssl_robot_status.pb.cc \
-    include/messages_robocup_ssl_wrapper.pb.cc \
-    include/referee.pb.cc \
-    include/ssl_game_controller_auto_ref.pb.cc \
-    include/ssl_game_controller_common.pb.cc \
-    include/ssl_game_controller_team.pb.cc \
-    include/ssl_game_event.pb.cc \
-    include/ssl_game_event_2019.pb.cc \
-    include/ssl_referee.pb.cc \
+    include/command.pb.cc \
+    include/common.pb.cc \
+    include/packet.pb.cc \
+    include/replacement.pb.cc \
+    include/vssref_command.pb.cc \
+    include/vssref_common.pb.cc \
+    include/vssref_placement.pb.cc \
     main.cpp \
     src/constants/constants.cpp \
     src/entities/actuator/actuator.cpp \
@@ -58,7 +50,7 @@ SOURCES += \
     src/entities/coach/behavior/gotolookto/behavior_gotolookto.cpp \
     src/entities/coach/coach.cpp \
     src/entities/coach/coordinator/coordinator.cpp \
-    src/entities/coach/coordinator/ssl/coordinator_ssl.cpp \
+    src/entities/coach/coordinator/ssl/coordinator_vss.cpp \
     src/entities/coach/playbook/default/playbook_default.cpp \
     src/entities/coach/playbook/default/playbook_default2.cpp \
     src/entities/coach/playbook/playbook.cpp \
@@ -85,7 +77,7 @@ SOURCES += \
     src/utils/types/angle/angle.cpp \
     src/utils/types/angularspeed/angularspeed.cpp \
     src/utils/types/field/field.cpp \
-    src/utils/types/field/ssl/field_sslb.cpp \
+    src/utils/types/field/vss/field_vssb.cpp \
     src/utils/types/fieldside/fieldside.cpp \
     src/utils/types/object/object.cpp \
     src/utils/types/position/position.cpp \
@@ -93,21 +85,13 @@ SOURCES += \
 
 # Project header files
 HEADERS += \
-    include/grSim_Commands.pb.h \
-    include/grSim_Packet.pb.h \
-    include/grSim_Replacement.pb.h \
-    include/messages_robocup_ssl_detection.pb.h \
-    include/messages_robocup_ssl_geometry.pb.h \
-    include/messages_robocup_ssl_refbox_log.pb.h \
-    include/messages_robocup_ssl_robot_status.pb.h \
-    include/messages_robocup_ssl_wrapper.pb.h \
-    include/referee.pb.h \
-    include/ssl_game_controller_auto_ref.pb.h \
-    include/ssl_game_controller_common.pb.h \
-    include/ssl_game_controller_team.pb.h \
-    include/ssl_game_event.pb.h \
-    include/ssl_game_event_2019.pb.h \
-    include/ssl_referee.pb.h \
+    include/command.pb.h \
+    include/common.pb.h \
+    include/packet.pb.h \
+    include/replacement.pb.h \
+    include/vssref_command.pb.h \
+    include/vssref_common.pb.h \
+    include/vssref_placement.pb.h \
     src/constants/constants.h \
     src/entities/actuator/actuator.h \
     src/entities/actuator/simulator/simactuator.h \
@@ -117,7 +101,7 @@ HEADERS += \
     src/entities/coach/behavior/gotolookto/behavior_gotolookto.h \
     src/entities/coach/coach.h \
     src/entities/coach/coordinator/coordinator.h \
-    src/entities/coach/coordinator/ssl/coordinator_ssl.h \
+    src/entities/coach/coordinator/ssl/coordinator_vss.h \
     src/entities/coach/playbook/default/playbook_default.h \
     src/entities/coach/playbook/default/playbook_default2.h \
     src/entities/coach/playbook/playbook.h \
@@ -149,7 +133,7 @@ HEADERS += \
     src/utils/types/angularspeed/angularspeed.h \
     src/utils/types/color/color.h \
     src/utils/types/field/field.h \
-    src/utils/types/field/ssl/field_sslb.h \
+    src/utils/types/field/vss/field_vssb.h \
     src/utils/types/fieldside/fieldside.h \
     src/utils/types/fieldside/side.h \
     src/utils/types/object/object.h \

@@ -40,7 +40,7 @@ public:
     quint8 playerId();
     Position position();
     Angle orientation();
-    float getPlayerRotateAngleTo(Position &targetPosition, Position &referencePosition);
+    float getPlayerRotateAngleTo(Position &targetPosition);
     float getPlayerDistanceTo(Position &targetPosition);
 
     // Player error
@@ -52,7 +52,7 @@ public:
 
     // Skills
     void goTo(Position &targetPosition);
-    void rotateTo(Position &targetPosition, Position referencePosition = Position(false, 0.0, 0.0));
+    void rotateTo(Position &targetPosition);
     void idle();
 
 private:
@@ -76,7 +76,7 @@ private:
     QMutex _mutexRole;
 
 signals:
-    void setLinearSpeed(int teamId, int playerId, float vx, float vy);
+    void setLinearSpeed(int teamId, int playerId, float vx);
     void setAngularSpeed(int teamId, int playerId, float vw);
     void dribble(int teamId, int playerId, bool enable);
     void kick(int teamId, int playerId, float power);
