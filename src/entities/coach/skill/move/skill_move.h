@@ -19,12 +19,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#ifndef SKILLS_H
-#define SKILLS_H
+#ifndef SKILL_MOVE_H
+#define SKILL_MOVE_H
 
-#include <src/entities/coach/skill/goto/skill_goto.h>
-#include <src/entities/coach/skill/rotateto/skill_rotateto.h>
-#include <src/entities/coach/skill/spin/skill_spin.h>
-#include <src/entities/coach/skill/move/skill_move.h>
+#include <src/entities/coach/skill/skill.h>
 
-#endif // SKILLS_H
+class Skill_Move : public Skill
+{
+public:
+    Skill_Move();
+    QString name();
+
+    void setMovementSpeed (float linearSpeed, float angularSpeed) { _linearSpeed = linearSpeed; _angulrSpeed = angularSpeed; }
+
+private:
+    // Skill inherited methods
+    void configure();
+    void run();
+
+    // Parameters
+    float _linearSpeed;
+    float _angulrSpeed;
+};
+
+#endif // SKILL_MOVE_H

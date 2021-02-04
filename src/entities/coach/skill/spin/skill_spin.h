@@ -30,15 +30,15 @@ public:
     Skill_Spin();
     QString name();
 
-    // Parameters
-    bool _isClockWise;
+    void setClockWise (bool isClockWise) { _isClockWise = isClockWise; }
 
 private:
     // Skill inherited methods
     void configure();
     void run();
 
-    void setClockWise (bool isClockWise) { _isClockWise = isClockWise; }
+    // Parameters
+    bool _isClockWise;
 };
 
 #endif // SKILL_SPIN_H

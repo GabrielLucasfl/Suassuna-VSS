@@ -19,12 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#ifndef SKILLS_H
-#define SKILLS_H
+#include "skill_move.h"
 
-#include <src/entities/coach/skill/goto/skill_goto.h>
-#include <src/entities/coach/skill/rotateto/skill_rotateto.h>
-#include <src/entities/coach/skill/spin/skill_spin.h>
-#include <src/entities/coach/skill/move/skill_move.h>
+Skill_Move::Skill_Move() {
+    _linearSpeed = 0.0f;
+    _angulrSpeed = 0.0f;
+}
 
-#endif // SKILLS_H
+QString Skill_Move::name() {
+    return "Skill_Move";
+}
+
+void Skill_Move::configure() {
+}
+
+void Skill_Move::run() {
+    player()->move(_linearSpeed, _angulrSpeed);
+}
+

@@ -129,6 +129,11 @@ void Player::spin(bool isClockWise) {
     }
 }
 
+void Player::move(float linearSpeed, float angularSpeed) {
+    emit setLinearSpeed(getConstants()->teamColor(), playerId(), linearSpeed);
+    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angularSpeed);
+}
+
 void Player::idle() {
     emit setLinearSpeed(getConstants()->teamColor(), playerId(), 0.0);
     emit setAngularSpeed(getConstants()->teamColor(), playerId(), 0.0);

@@ -54,6 +54,7 @@ public:
     void goTo(Position &targetPosition);
     void rotateTo(Position &targetPosition);
     void spin(bool isClockWise);
+    void move(float linearSpeed, float angularSpeed);
     void idle();
 
 private:
