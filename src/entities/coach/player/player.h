@@ -51,7 +51,7 @@ public:
     void setRole(Role *role);
 
     // Skills
-    void goTo(Position &targetPosition);
+    void goTo(Position &targetPosition, float minVel);
     void rotateTo(Position &targetPosition);
     void spin(bool isClockWise);
     void move(float linearSpeed, float angularSpeed);

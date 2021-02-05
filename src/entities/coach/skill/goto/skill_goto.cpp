@@ -33,12 +33,16 @@ void Skill_GoTo::setTargetPosition(Position &targetPosition) {
     _targetPosition = targetPosition;
 }
 
+void Skill_GoTo::setMinimalVelocity(float minimalVelocity) {
+    _minVel = minimalVelocity;
+}
+
 void Skill_GoTo::configure() {
 
 }
 
 void Skill_GoTo::run() {
     if(!_targetPosition.isInvalid()) {
-        player()->goTo(_targetPosition);
+        player()->goTo(_targetPosition, _minVel);
     }
 }

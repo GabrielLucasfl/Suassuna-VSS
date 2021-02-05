@@ -32,9 +32,10 @@ public:
     QString name();
 
     // Setters
-    void setTargetPosition (Position targetPosition) { _targetPosition = targetPosition; }
-    void setLinearSpeed (float linearSpeed) { _linearSpeed = linearSpeed; }
-    void setAngularSpeed (float angularSpeed) { _angularSpeed = angularSpeed; }
+    void setTargetPosition(Position targetPosition) { _targetPosition = targetPosition; }
+    void setMinimalVelocity(float minimalVelocity) { _minimalVelocity = minimalVelocity; }
+    void setLinearSpeed(float linearSpeed) { _linearSpeed = linearSpeed; }
+    void setAngularSpeed(float angularSpeed) { _angularSpeed = angularSpeed; }
 
 private:
     // Behavior inherited methods
@@ -53,6 +54,7 @@ private:
 
     // Parameters
     Position _targetPosition;
+    float _minimalVelocity;
     float _linearSpeed;
     float _angularSpeed;
 };

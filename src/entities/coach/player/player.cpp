@@ -103,13 +103,17 @@ float Player::getAngularError() {
     return 0.02f; // ~= 1.15 deg
 }
 
-void Player::goTo(Position &targetPosition) {
+void Player::goTo(Position &targetPosition, float minVel) {
     Position playerPosition = position();
 
     float dx = (targetPosition.x() - playerPosition.x());
     float dy = (targetPosition.y() - playerPosition.y());
     float distanceMod = sqrtf(powf(dx, 2.0) + powf(dy, 2.0));
     float angleRobotToTarget = getPlayerRotateAngleTo(targetPosition);
+
+    if (distanceMod < minVel) {
+        distanceMod = minVel;
+    }
 
     emit setLinearSpeed(getConstants()->teamColor(), playerId(), distanceMod);
     emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget);

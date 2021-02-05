@@ -32,6 +32,7 @@ public:
 
     // Target management
     void setTargetPosition(Position &targetPosition);
+    void setMinimalVelocity(float minimalVelocity);
 
 private:
     // Skill inherited methods
@@ -40,6 +41,7 @@ private:
 
     // Internal
     Position _targetPosition;
+    float _minVel;
 };
 
 #endif // SKILL_GOTO_H

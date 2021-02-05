@@ -23,6 +23,7 @@
 
 Behavior_MoveTo::Behavior_MoveTo() {
     _targetPosition = Position(false, 0.0, 0.0);
+    _minimalVelocity = 0.0;
     _linearSpeed = 0.0;
     _angularSpeed = 0.0;
 }
@@ -49,6 +50,7 @@ void Behavior_MoveTo::run() {
     } else {
         // Situation where we use the GoTo skill
         _skill_goTo->setTargetPosition(_targetPosition);
+        _skill_goTo->setMinimalVelocity(_minimalVelocity);
         setSkill(SKILL_GOTO);
     }
 }
