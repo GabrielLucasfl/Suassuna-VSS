@@ -49,6 +49,7 @@ SOURCES += \
     src/entities/coach/behavior/behavior.cpp \
     src/entities/coach/behavior/gotolookto/behavior_gotolookto.cpp \
     src/entities/coach/behavior/intercept/behavior_intercept.cpp \
+    src/entities/coach/behavior/moveto/behavior_moveto.cpp \
     src/entities/coach/coach.cpp \
     src/entities/coach/coordinator/coordinator.cpp \
     src/entities/coach/coordinator/ssl/coordinator_vss.cpp \
@@ -103,6 +104,7 @@ HEADERS += \
     src/entities/coach/behavior/behaviors.h \
     src/entities/coach/behavior/gotolookto/behavior_gotolookto.h \
     src/entities/coach/behavior/intercept/behavior_intercept.h \
+    src/entities/coach/behavior/moveto/behavior_moveto.h \
     src/entities/coach/coach.h \
     src/entities/coach/coordinator/coordinator.h \
     src/entities/coach/coordinator/ssl/coordinator_vss.h \

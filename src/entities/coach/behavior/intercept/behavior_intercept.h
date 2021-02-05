@@ -31,6 +31,7 @@ public:
     Behavior_Intercept();
     QString name();
 
+    // Setters
     void setInterceptSegment(Position firstPoint, Position secondPoint) { _firstLimitationPoint = firstPoint; _secondLimitationPoint = secondPoint; }
     void setDesiredVelocity(float velocityNeeded) { _velocityNeeded = velocityNeeded; }
     void setVelocityFactor(float velocityFActor) { _velocityFactor = velocityFActor; }

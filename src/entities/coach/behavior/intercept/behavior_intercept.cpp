@@ -61,6 +61,7 @@ void Behavior_Intercept::run() {
         }
     }
     _skill_goTo->setTargetPosition(_interceptPos);
+    setSkill(SKILL_GOTO);
 }
 
 Position Behavior_Intercept::getOrthogonalProjection() {
