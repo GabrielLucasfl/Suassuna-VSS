@@ -26,13 +26,17 @@ Behavior_Intercept::Behavior_Intercept() {
     _secondLimitationPoint = Position(false, 0.0, 0.0);
     _objectPos = Position(false, 0.0, 0.0);
     _objectVel = Velocity(false, 0.0, 0.0);
-    _velocityNeeded = 0.0f;
     _velocityFactor = 1.0f;
-    _activateVelocityNeeded = false;
+    _spinEnabled = false;
 }
 
 QString Behavior_Intercept::name() {
     return "Behavior_Intercept";
+}
+
+void Behavior_Intercept::setInterceptSegment(Position firstPoint, Position secondPoint) {
+    _firstLimitationPoint = firstPoint;
+    _secondLimitationPoint = secondPoint;
 }
 
 void Behavior_Intercept::configure() {
@@ -46,10 +50,6 @@ void Behavior_Intercept::configure() {
 }
 
 void Behavior_Intercept::run() {
-    if(_firstLimitationPoint.y() > _secondLimitationPoint.y()){
-        std::swap(_firstLimitationPoint, _secondLimitationPoint);
-    }
-
     // Check ball speed (maybe a error)
     if(_objectVel.abs() <= 0.01f) {
         _interceptPos = player()->position();
@@ -60,8 +60,22 @@ void Behavior_Intercept::run() {
             _interceptPos = getInterceptionPosition();
         }
     }
-    _skill_goTo->setTargetPosition(_interceptPos);
-    setSkill(SKILL_GOTO);
+    // Distances to the intercept position
+    float objectDistance = sqrt(powf(_objectPos.x() - _interceptPos.x(),2) + powf(_objectPos.y() - _interceptPos.y(),2));
+    float playerDistance = player()->getPlayerDistanceTo(_interceptPos);
+
+    Position uninatyVelocityVector(true, (_interceptPos.x() - player()->position().x()) / playerDistance,
+                                   (_interceptPos.y() - player()->position().y()) / playerDistance);
+    float playerVelocity = playerDistance * _objectVel.abs() / objectDistance;
+    _interceptVel = Velocity(true, playerVelocity * uninatyVelocityVector.x(), playerVelocity * uninatyVelocityVector.y());
+
+    if (_spinEnabled && playerDistance < player()->getLinearError()) {
+        setSkill(SKILL_SPIN);
+    } else {
+        _skill_goTo->setTargetPosition(_interceptPos);
+        _skill_goTo->setMinimalVelocity(playerVelocity);
+        setSkill(SKILL_GOTO);
+    }
 }
 
 Position Behavior_Intercept::getOrthogonalProjection() {
@@ -97,12 +111,12 @@ Position Behavior_Intercept::getInterceptionPosition() {
         float intercept_y = _interceptPos.x() * objectAngular + objectLinear;
         Position interceptPosition(true, intercept_x, intercept_y);
 
-        float segmentDistance = sqrt(pow(_firstLimitationPoint.x() - _secondLimitationPoint.x(),2)
-                                     + pow(_firstLimitationPoint.y() - _secondLimitationPoint.y(),2));
-        float firstDistance = sqrt(pow(_firstLimitationPoint.x() - interceptPosition.x(),2)
-                                   + pow(_firstLimitationPoint.y() - interceptPosition.y(),2));
-        float secondDistance = sqrt(pow(_secondLimitationPoint.x() - interceptPosition.x(),2)
-                                    + pow(_secondLimitationPoint.y() - interceptPosition.y(),2));
+        float segmentDistance = sqrt(powf(_firstLimitationPoint.x() - _secondLimitationPoint.x(),2)
+                                     + powf(_firstLimitationPoint.y() - _secondLimitationPoint.y(),2));
+        float firstDistance = sqrt(powf(_firstLimitationPoint.x() - interceptPosition.x(),2)
+                                   + powf(_firstLimitationPoint.y() - interceptPosition.y(),2));
+        float secondDistance = sqrt(powf(_secondLimitationPoint.x() - interceptPosition.x(),2)
+                                    + powf(_secondLimitationPoint.y() - interceptPosition.y(),2));
 
         // Checking the limitation
         if (firstDistance + secondDistance > segmentDistance) {

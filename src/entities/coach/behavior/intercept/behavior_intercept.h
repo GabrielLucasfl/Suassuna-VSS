@@ -32,15 +32,15 @@ public:
     QString name();
 
     // Setters
-    void setInterceptSegment(Position firstPoint, Position secondPoint) { _firstLimitationPoint = firstPoint; _secondLimitationPoint = secondPoint; }
-    void setDesiredVelocity(float velocityNeeded) { _velocityNeeded = velocityNeeded; }
+    void setInterceptSegment(Position firstPoint, Position secondPoint);
     void setVelocityFactor(float velocityFActor) { _velocityFactor = velocityFActor; }
-    void selectVelocityNeeded(bool activateVelocityNeeded) { _activateVelocityNeeded = activateVelocityNeeded; }
-    Position getIntercetPosition() { return _objectPos; }
-    void setObjectPosition (Position objectPos) { _objectPos = objectPos; }
-    void setObjectVelocity (Velocity objectVel) { _objectVel = objectVel; }
-    void setInterceptPosition (Position interceptPos) { _objectPos = interceptPos; }
-    void setInterceptVelocity (Velocity interceptVel) { _objectVel = interceptVel; }
+    void setObjectPosition(Position objectPos) { _objectPos = objectPos; }
+    void setObjectVelocity(Velocity objectVel) { _objectVel = objectVel; }
+    void enableSpin(bool spinEnabled) { _spinEnabled = spinEnabled; }
+
+    // Getters
+    Position getInterceptPosition() { return _interceptPos; }
+    Velocity getInterceptVelocity() { return _interceptVel; }
 
 private:
     // Behavior inherited methods
@@ -60,13 +60,12 @@ private:
     // Parameters
     Position _firstLimitationPoint;
     Position _secondLimitationPoint;
-    Position _objectPos; // Position where the player should be
-    Position _interceptPos;
+    Position _objectPos;
     Velocity _objectVel;
+    Position _interceptPos;
     Velocity _interceptVel;
-    float _velocityNeeded;
     float _velocityFactor;
-    bool _activateVelocityNeeded;
+    bool _spinEnabled;
 
     // Auxiliary Functions
     Position getOrthogonalProjection();
