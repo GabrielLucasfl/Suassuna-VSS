@@ -31,8 +31,8 @@ public:
     QString name();
 
     // Target management
-    void setTargetPosition(Position &targetPosition);
-    void setMinimalVelocity(float minimalVelocity);
+    void setTargetPosition(Position &targetPosition) { _targetPosition = targetPosition; }
+    void setMinimalVelocity(float minimalVelocity) { _minVel = minimalVelocity; }
 
 private:
     // Skill inherited methods

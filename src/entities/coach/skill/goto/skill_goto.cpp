@@ -29,14 +29,6 @@ QString Skill_GoTo::name() {
     return "Skill_GoTo";
 }
 
-void Skill_GoTo::setTargetPosition(Position &targetPosition) {
-    _targetPosition = targetPosition;
-}
-
-void Skill_GoTo::setMinimalVelocity(float minimalVelocity) {
-    _minVel = minimalVelocity;
-}
-
 void Skill_GoTo::configure() {
 
 }

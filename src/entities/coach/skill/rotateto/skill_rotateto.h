@@ -31,7 +31,7 @@ public:
     QString name();
 
     // Target management
-    void setTargetPosition(Position &targetPosition);
+    void setTargetPosition(Position &targetPosition) { _targetPosition = targetPosition; }
 
 private:
     // Skill inherited methods

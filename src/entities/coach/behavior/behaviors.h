@@ -22,7 +22,6 @@
 #ifndef BEHAVIORS_H
 #define BEHAVIORS_H
 
-#include <src/entities/coach/behavior/gotolookto/behavior_gotolookto.h>
 #include <src/entities/coach/behavior/intercept/behavior_intercept.h>
 #include <src/entities/coach/behavior/moveto/behavior_moveto.h>
 

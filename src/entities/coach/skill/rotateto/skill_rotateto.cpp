@@ -29,12 +29,7 @@ QString Skill_RotateTo::name() {
     return "Skill_RotateTo";
 }
 
-void Skill_RotateTo::setTargetPosition(Position &targetPosition) {
-    _targetPosition = targetPosition;
-}
-
 void Skill_RotateTo::configure() {
-
 }
 
 void Skill_RotateTo::run() {

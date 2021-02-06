@@ -31,9 +31,6 @@ public:
     Role_Default();
     QString name();
 
-    void setPositionToGo(Position &positionToGo);
-    void setPositionToLook(Position &positionToLook);
-
 private:
     // Role inherited methods
     void configure();
@@ -41,16 +38,13 @@ private:
 
     // Behaviors enum
     enum {
-        BEHAVIOR_GOTOLOOKTO
+        BHV_MOVETO,
+        BHV_INTERCEPT
     };
 
     // Behaviors pointers
-    Behavior_GoToLookTo *_behavior_goToLookTo;
-
-    // Internal
-    Position _positionToGo;
-    Position _positionToLook;
-    bool done;
+    Behavior_MoveTo *_bhv_moveTo;
+    Behavior_Intercept *_bhv_intercept;
 };
 
 #endif // ROLE_DEFAULT_H

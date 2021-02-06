@@ -115,6 +115,21 @@ void Player::goTo(Position &targetPosition, float minVel) {
         distanceMod = minVel;
     }
 
+    bool swapSpeed = false;
+    if(angleRobotToTarget > float(M_PI) / 2.0f) {
+        angleRobotToTarget -= float(M_PI);
+        swapSpeed = true;
+    } else {
+        if (angleRobotToTarget < float(-M_PI) / 2.0f) {
+        angleRobotToTarget += float(M_PI);
+        swapSpeed = true;
+        }
+    }
+
+    if(swapSpeed) {
+        distanceMod *= -1;
+    }
+
     emit setLinearSpeed(getConstants()->teamColor(), playerId(), distanceMod);
     emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget);
 }
