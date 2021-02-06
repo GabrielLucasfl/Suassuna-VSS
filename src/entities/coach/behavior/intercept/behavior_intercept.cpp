@@ -73,7 +73,7 @@ void Behavior_Intercept::run() {
         setSkill(SKILL_SPIN);
     } else {
         _skill_goTo->setTargetPosition(_interceptPos);
-        _skill_goTo->setMinimalVelocity(playerVelocity);
+        _skill_goTo->setMinimalVelocity(_velocityFactor * playerVelocity);
         setSkill(SKILL_GOTO);
     }
 }

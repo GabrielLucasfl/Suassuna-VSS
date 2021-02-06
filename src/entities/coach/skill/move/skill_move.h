@@ -30,7 +30,7 @@ public:
     Skill_Move();
     QString name();
 
-    void setMovementSpeed (float linearSpeed, float angularSpeed) { _linearSpeed = linearSpeed; _angulrSpeed = angularSpeed; }
+    void setMovementSpeed (float linearSpeed, float angularSpeed) { _linearSpeed = linearSpeed; _angularSpeed = angularSpeed; }
 
 private:
     // Skill inherited methods
@@ -39,7 +39,7 @@ private:
 
     // Parameters
     float _linearSpeed;
-    float _angulrSpeed;
+    float _angularSpeed;
 };
 
 #endif // SKILL_MOVE_H

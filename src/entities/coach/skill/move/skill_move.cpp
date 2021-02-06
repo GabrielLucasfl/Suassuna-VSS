@@ -23,7 +23,7 @@
 
 Skill_Move::Skill_Move() {
     _linearSpeed = 0.0f;
-    _angulrSpeed = 0.0f;
+    _angularSpeed = 0.0f;
 }
 
 QString Skill_Move::name() {
@@ -34,6 +34,6 @@ void Skill_Move::configure() {
 }
 
 void Skill_Move::run() {
-    player()->move(_linearSpeed, _angulrSpeed);
+    player()->move(_linearSpeed, _angularSpeed);
 }
 
