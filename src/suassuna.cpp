@@ -49,31 +49,31 @@ void Suassuna::start() {
 
     // Creating referee
     _referee = new Referee(getConstants());
-    _world->addEntity(_referee, 0);
+    _world->addEntity(getReferee(), 0);
 
     // Creating and adding vision to world
     _vision = new Vision(getConstants());
-    _world->addEntity(_vision, 0);
+    _world->addEntity(getVision(), 0);
 
     // Vision-WorldMap connection
-    QObject::connect(_vision, SIGNAL(sendPlayer(Colors::Color, quint8, Object)), _worldMap, SLOT(updatePlayer(Colors::Color, quint8, Object)), Qt::DirectConnection);
-    QObject::connect(_vision, SIGNAL(sendBall(Object)), _worldMap, SLOT(updateBall(Object)), Qt::DirectConnection);
-    QObject::connect(_vision, SIGNAL(sendGeometryData(fira_message::Field)), _worldMap, SLOT(updateGeometry(fira_message::Field)), Qt::DirectConnection);
+    QObject::connect(getVision(), SIGNAL(sendPlayer(Colors::Color, quint8, Object)), getWorldMap(), SLOT(updatePlayer(Colors::Color, quint8, Object)), Qt::DirectConnection);
+    QObject::connect(getVision(), SIGNAL(sendBall(Object)), getWorldMap(), SLOT(updateBall(Object)), Qt::DirectConnection);
+    QObject::connect(getVision(), SIGNAL(sendGeometryData(fira_message::Field)), getWorldMap(), SLOT(updateGeometry(fira_message::Field)), Qt::DirectConnection);
 
     // Creating and adding actuator to world
-    _simActuator = new SimActuator(getConstants());
-    _world->addEntity(_simActuator, 1); // needs to be an higher priority than the last player priority
+    _actuator = new SimActuator(getConstants());
+    _world->addEntity(getActuator(), 1); // needs to be an higher priority than the last player priority
 
     // Adding players
     for(int i = 0; i < getConstants()->qtPlayers(); i++) {
         Player *player = new Player(i, getConstants(), _referee, _worldMap);
-        QObject::connect(player, SIGNAL(setLinearSpeed(int, int, float)), _simActuator, SLOT(setLinearSpeed(int, int, float)));
-        QObject::connect(player, SIGNAL(setAngularSpeed(int, int, float)), _simActuator, SLOT(setAngularSpeed(int, int, float)));
-        QObject::connect(player, SIGNAL(dribble(int, int, bool)), _simActuator, SLOT(dribble(int, int, bool)));
-        QObject::connect(player, SIGNAL(kick(int, int, float)), _simActuator, SLOT(kick(int, int, float)));
+        QObject::connect(player, SIGNAL(setLinearSpeed(int, int, float)), getActuator(), SLOT(setLinearSpeed(int, int, float)));
+        QObject::connect(player, SIGNAL(setAngularSpeed(int, int, float)), getActuator(), SLOT(setAngularSpeed(int, int, float)));
+        QObject::connect(player, SIGNAL(dribble(int, int, bool)), getActuator(), SLOT(dribble(int, int, bool)));
+        QObject::connect(player, SIGNAL(kick(int, int, float)), getActuator(), SLOT(kick(int, int, float)));
 
-        QObject::connect(player, SIGNAL(sendPlacement(quint8, Position, Angle)), _referee, SLOT(receivePlacement(quint8, Position, Angle)), Qt::DirectConnection);
-        QObject::connect(_referee, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), player, SLOT(receiveFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), Qt::DirectConnection);
+        QObject::connect(player, SIGNAL(sendPlacement(quint8, Position, Angle)), getReferee(), SLOT(receivePlacement(quint8, Position, Angle)), Qt::DirectConnection);
+        QObject::connect(getReferee(), SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), player, SLOT(receiveFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), Qt::DirectConnection);
 
         _worldMap->addPlayer(i, player);
         _world->addEntity(player, 2);
@@ -81,7 +81,7 @@ void Suassuna::start() {
 
     // Creating coach
     _coach = new Coach(getConstants(), _referee, _worldMap);
-    _world->addEntity(_coach, 3);
+    _world->addEntity(getCoach(), 3);
 
     // Setting coordinator to coach
     _coach->setCoordinator(new Coordinator_VSS());
@@ -111,6 +111,72 @@ Constants* Suassuna::getConstants() {
     }
     else {
         return _constants;
+    }
+
+    return nullptr;
+}
+
+Vision* Suassuna::getVision() {
+    if(_vision == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Vision with nullptr value at Suassuna") + '\n';
+    }
+    else {
+        return _vision;
+    }
+
+    return nullptr;
+}
+
+Actuator* Suassuna::getActuator() {
+    if(_actuator == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Actuator with nullptr value at Suassuna") + '\n';
+    }
+    else {
+        return _actuator;
+    }
+
+    return nullptr;
+}
+
+World* Suassuna::getWorld() {
+    if(_world == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("World with nullptr value at Suassuna") + '\n';
+    }
+    else {
+        return _world;
+    }
+
+    return nullptr;
+}
+
+Referee* Suassuna::getReferee() {
+    if(_referee == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Referee with nullptr value at Suassuna") + '\n';
+    }
+    else {
+        return _referee;
+    }
+
+    return nullptr;
+}
+
+Coach* Suassuna::getCoach() {
+    if(_coach == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Coach with nullptr value at Suassuna") + '\n';
+    }
+    else {
+        return _coach;
+    }
+
+    return nullptr;
+}
+
+WorldMap* Suassuna::getWorldMap() {
+    if(_worldMap == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("WorldMap with nullptr value at Suassuna") + '\n';
+    }
+    else {
+        return _worldMap;
     }
 
     return nullptr;

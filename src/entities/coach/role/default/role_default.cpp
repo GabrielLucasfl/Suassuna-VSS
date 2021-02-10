@@ -39,7 +39,7 @@ void Role_Default::configure() {
 }
 
 void Role_Default::run() {
-    _bhv_moveTo->setTargetPosition(player()->position());
+    _bhv_moveTo->setTargetPosition(getWorldMap()->getLocations()->fieldCenter());
 
     //_behavior_moveTo->setMinimalVelocity();
     //_bhv_intercept->setInterceptSegment(Position(true, 0.6f, 0.35f), Position(true, 0.6f, -0.35f));

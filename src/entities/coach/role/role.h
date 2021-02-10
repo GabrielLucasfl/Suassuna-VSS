@@ -40,7 +40,7 @@ public:
 
     // Init role control
     bool isInitialized();
-    void initialize(Constants *constants, Referee *referee);
+    void initialize(Constants *constants, Referee *referee, WorldMap *worldMap);
     void setPlayer(Player *player);
 
     // Method to run in playbook
@@ -57,6 +57,7 @@ protected:
     // Player, constants and referee getters
     Player* player();
     Constants* getConstants();
+    WorldMap* getWorldMap();
     Referee* getReferee();
 
 private:
@@ -73,6 +74,9 @@ private:
 
     // Referee
     Referee *_referee;
+
+    // Worldmap
+    WorldMap *_worldMap;
 
     // Behavior list
     QMap<int, Behavior*> _behaviorList;

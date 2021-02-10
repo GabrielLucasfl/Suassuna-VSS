@@ -44,21 +44,29 @@ private:
     Constants *_constants;
     Constants* getConstants();
 
-    // Modules
+    // Vision
     Vision *_vision;
-    Actuator *_simActuator;
+    Vision* getVision();
+
+    // Actuator
+    Actuator *_actuator;
+    Actuator* getActuator();
 
     // World
     World *_world;
+    World* getWorld();
 
     // Referee
     Referee *_referee;
+    Referee* getReferee();
 
     // Coach
     Coach *_coach;
+    Coach* getCoach();
 
     // World Map
     WorldMap *_worldMap;
+    WorldMap* getWorldMap();
 };
 
 #endif // SUASSUNA_H

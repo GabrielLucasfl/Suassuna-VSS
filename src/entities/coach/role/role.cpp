@@ -48,10 +48,11 @@ bool Role::isInitialized() {
     return _initialized;
 }
 
-void Role::initialize(Constants *constants, Referee *referee) {
+void Role::initialize(Constants *constants, Referee *referee, WorldMap *worldMap) {
     // Take pointers
     _constants = constants;
     _referee = referee;
+    _worldMap = worldMap;
 
     // Call virtual configure()
     configure();
@@ -74,16 +75,23 @@ void Role::runRole() {
     }
 
     // Run behavior (implemented by child inherited method)
-    run();
+    if(getReferee()->isGameOn()) {
+        run();
 
-    // Check if initialized
-    if(!_actualBehavior->isInitialized()) {
-        _actualBehavior->initialize(getConstants());
+        // Check if initialized
+        if(!_actualBehavior->isInitialized()) {
+            _actualBehavior->initialize(getConstants());
+        }
+
+        // Run skill
+        _actualBehavior->setPlayer(player());
+        _actualBehavior->runBehavior();
     }
-
-    // Run skill
-    _actualBehavior->setPlayer(player());
-    _actualBehavior->runBehavior();
+    else {
+        if(player() != nullptr) {
+            player()->idle();
+        }
+    }
 }
 
 void Role::addBehavior(int id, Behavior *behavior) {
@@ -119,6 +127,28 @@ Constants* Role::getConstants() {
     }
     else {
         return _constants;
+    }
+
+    return nullptr;
+}
+
+WorldMap* Role::getWorldMap() {
+    if(_worldMap == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("WorldMap with nullptr value at " + this->name().toStdString()) + '\n';
+    }
+    else {
+        return _worldMap;
+    }
+
+    return nullptr;
+}
+
+Referee* Role::getReferee() {
+    if(_referee == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("Referee with nullptr value at " + this->name().toStdString()) + '\n';
+    }
+    else {
+        return _referee;
     }
 
     return nullptr;

@@ -34,9 +34,6 @@ class Player : public Entity
 public:
     Player(quint8 playerId, Constants *constants, Referee *referee, WorldMap *worldMap);
 
-    // Worldmap getter
-    WorldMap* getWorldMap();
-
     // Player internal getters
     quint8 playerId();
     Position position();
@@ -70,6 +67,7 @@ private:
 
     // Worldmap
     WorldMap *_worldMap;
+    WorldMap* getWorldMap();
 
     // Referee
     Referee *_referee;

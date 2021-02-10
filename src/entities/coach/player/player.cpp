@@ -179,7 +179,7 @@ void Player::loop() {
         _mutexRole.lock();
         if(_playerRole != nullptr) {
             if(!_playerRole->isInitialized()) {
-                _playerRole->initialize(getConstants(), _referee);
+                _playerRole->initialize(getConstants(), getReferee(), getWorldMap());
             }
             _playerRole->setPlayer(this);
             _playerRole->runRole();
