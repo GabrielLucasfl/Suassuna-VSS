@@ -53,7 +53,6 @@ SOURCES += \
     src/entities/coach/coordinator/coordinator.cpp \
     src/entities/coach/coordinator/ssl/coordinator_vss.cpp \
     src/entities/coach/playbook/default/playbook_default.cpp \
-    src/entities/coach/playbook/default/playbook_default2.cpp \
     src/entities/coach/playbook/playbook.cpp \
     src/entities/coach/player/player.cpp \
     src/entities/coach/role/default/role_default.cpp \
@@ -107,7 +106,6 @@ HEADERS += \
     src/entities/coach/coordinator/coordinator.h \
     src/entities/coach/coordinator/ssl/coordinator_vss.h \
     src/entities/coach/playbook/default/playbook_default.h \
-    src/entities/coach/playbook/default/playbook_default2.h \
     src/entities/coach/playbook/playbook.h \
     src/entities/coach/playbook/playbooks.h \
     src/entities/coach/player/player.h \

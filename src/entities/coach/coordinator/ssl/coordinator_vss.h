@@ -16,19 +16,11 @@ private:
 
     // Playbook enums
     enum {
-        PLAYBOOK_DEFAULT,
-        PLAYBOOK_DEFAULT2
+        PLAYBOOK_DEFAULT
     };
 
     // Playbook pointers
     Playbook_Default *_playbook_default;
-    Playbook_Default2 *_playbook_default2;
-
-    // Timer
-    Timer timer;
-
-    // Management
-    int actualState;
 };
 
 #endif // COORDINATOR_VSS_H
