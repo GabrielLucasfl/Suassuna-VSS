@@ -42,6 +42,7 @@ Constants::Constants(QString fileName) {
     readThreadConstants();
     readVisionConstants();
     readSimActuatorConstants();
+    readRefereeConstants();
     readTeamConstants();
 }
 
@@ -90,6 +91,25 @@ void Constants::readSimActuatorConstants() {
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded simActuatorPort: " + std::to_string(_simActuatorPort)) + '\n';
 }
 
+void Constants::readRefereeConstants() {
+    // Taking referee mapping in json
+    QVariantMap refereeMap = documentMap()["Referee"].toMap();
+
+    // Filling vars
+    _refereeAddress = refereeMap["refereeAddress"].toString();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded refereeAddress: " + _refereeAddress.toStdString()) + '\n';
+
+    _refereePort = refereeMap["refereePort"].toUInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded refereePort: " + std::to_string(_refereePort)) + '\n';
+
+    _replacerAddress = refereeMap["replacerAddress"].toString();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded replacerAddress: " + _replacerAddress.toStdString()) + '\n';
+
+    _replacerPort = refereeMap["replacerPort"].toUInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded replacerPort: " + std::to_string(_replacerPort)) + '\n';
+
+}
+
 void Constants::readTeamConstants() {
     // Taking team mapping in json
     QVariantMap teamMap = documentMap()["Team"].toMap();
@@ -136,6 +156,22 @@ QString Constants::simActuatorAddress() {
 
 quint16 Constants::simActuatorPort() {
     return _simActuatorPort;
+}
+
+QString Constants::refereeAddress() {
+    return _refereeAddress;
+}
+
+quint16 Constants::refereePort() {
+    return _refereePort;
+}
+
+QString Constants::replacerAddress() {
+    return _replacerAddress;
+}
+
+quint16 Constants::replacerPort() {
+    return _replacerPort;
 }
 
 QString Constants::teamColorName() {

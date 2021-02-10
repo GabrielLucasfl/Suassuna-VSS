@@ -49,3 +49,7 @@ void Role_Default::run() {
     setBehavior(BHV_MOVETO);
 }
 
+QPair<Position, Angle> Role_Default::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+    //// TODO: Configure this in new roles!!!!!!!!!!!!!!!!!!!!!!!!!
+    return QPair<Position, Angle>(Position(true, 0.0, 0.0), Angle(true, 0.0));
+}

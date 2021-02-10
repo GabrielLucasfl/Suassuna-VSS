@@ -35,7 +35,7 @@ public:
 
     // Init coordinator control
     bool isInitialized();
-    void initialize(Constants *constants, WorldMap *worldMap);
+    void initialize(Constants *constants, Referee *referee, WorldMap *worldMap);
 
     // Playbook management
     void addPlaybook(int id, Playbook *playbook);
@@ -49,6 +49,7 @@ protected:
     // Constants and WorldMap access
     Constants* getConstants();
     WorldMap* getWorldMap();
+    Referee* getReferee();
 
 private:
     // Virtual implementation in inherited classes
@@ -58,6 +59,7 @@ private:
     // Constants and WorldMap pointers
     Constants *_constants;
     WorldMap *_worldMap;
+    Referee *_referee;
 
     // Init control
     bool _initialized;

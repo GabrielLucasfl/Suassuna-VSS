@@ -30,5 +30,6 @@ class Coach;
 class Player;
 class Coordinator;
 class WorldMap;
+class Referee;
 
 #endif // BASECOACH_H

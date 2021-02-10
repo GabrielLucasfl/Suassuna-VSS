@@ -50,6 +50,12 @@ public:
     QString simActuatorAddress();
     quint16 simActuatorPort();
 
+    // Referee
+    QString refereeAddress();
+    quint16 refereePort();
+    QString replacerAddress();
+    quint16 replacerPort();
+
     // Team
     QString teamColorName();
     Colors::Color teamColor();
@@ -85,6 +91,13 @@ private:
     void readSimActuatorConstants();
     QString _simActuatorAddress;
     quint16 _simActuatorPort;
+
+    // Referee
+    void readRefereeConstants();
+    QString _refereeAddress;
+    quint16 _refereePort;
+    QString _replacerAddress;
+    quint16 _replacerPort;
 
     // Team
     void readTeamConstants();

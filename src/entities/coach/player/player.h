@@ -26,12 +26,13 @@
 #include <src/constants/constants.h>
 #include <src/entities/coach/basecoach.h>
 #include <src/entities/world/worldmap.h>
+#include <include/vssref_common.pb.h>
 
 class Player : public Entity
 {
     Q_OBJECT
 public:
-    Player(quint8 playerId, Constants *constants, WorldMap *worldMap);
+    Player(quint8 playerId, Constants *constants, Referee *referee, WorldMap *worldMap);
 
     // Worldmap getter
     WorldMap* getWorldMap();
@@ -70,6 +71,10 @@ private:
     // Worldmap
     WorldMap *_worldMap;
 
+    // Referee
+    Referee *_referee;
+    Referee* getReferee();
+
     // Player internal
     quint8 _playerId;
 
@@ -82,7 +87,11 @@ signals:
     void setAngularSpeed(int teamId, int playerId, float vw);
     void dribble(int teamId, int playerId, bool enable);
     void kick(int teamId, int playerId, float power);
-    void chipKick(int teamId, int playerId, float power);
+    void chipKick(int teamId, int playerId, float power);signals:
+    void sendPlacement(quint8 playerId, Position desiredPosition, Angle desiredOrientation);
+
+public slots:
+    void receiveFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
 };
 
 #endif // PLAYER_H

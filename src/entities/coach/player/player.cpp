@@ -23,10 +23,11 @@
 
 #include <src/entities/coach/role/role.h>
 
-Player::Player(quint8 playerId, Constants *constants, WorldMap *worldMap) : Entity(ENT_PLAYER) {
+Player::Player(quint8 playerId, Constants *constants, Referee *referee ,WorldMap *worldMap) : Entity(ENT_PLAYER) {
     _playerId = playerId;
     _constants = constants;
     _worldMap = worldMap;
+    _referee = referee;
     _playerRole = nullptr;
 }
 
@@ -57,7 +58,13 @@ Angle Player::orientation() {
 
 void Player::setRole(Role *role) {
     _mutexRole.lock();
+
+    // Set old role player to nullptr
+    if(_playerRole != nullptr) _playerRole->setPlayer(nullptr);
+
+    // Set new role
     _playerRole = role;
+
     _mutexRole.unlock();
 }
 
@@ -172,7 +179,7 @@ void Player::loop() {
         _mutexRole.lock();
         if(_playerRole != nullptr) {
             if(!_playerRole->isInitialized()) {
-                _playerRole->initialize(getConstants());
+                _playerRole->initialize(getConstants(), _referee);
             }
             _playerRole->setPlayer(this);
             _playerRole->runRole();
@@ -195,4 +202,26 @@ Constants* Player::getConstants() {
     }
 
     return nullptr;
+}
+
+Referee* Player::getReferee() {
+    if(_referee == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Referee with nullptr value at Player") + '\n';
+    }
+    else {
+        return _referee;
+    }
+
+    return nullptr;
+}
+
+void Player::receiveFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+    _mutexRole.lock();
+
+    if(_playerRole != nullptr) {
+        QPair<Position, Angle> placementPosition = _playerRole->getPlacementPosition(foul, forTeam, atQuadrant);
+        emit sendPlacement(this->playerId(), placementPosition.first, placementPosition.second);
+    }
+
+    _mutexRole.unlock();
 }

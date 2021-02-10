@@ -24,9 +24,10 @@
 #include <src/entities/coach/coordinator/coordinator.h>
 #include <src/entities/world/worldmap.h>
 
-Coach::Coach(Constants *constants, WorldMap *worldMap) : Entity(ENT_COACH) {
+Coach::Coach(Constants *constants, Referee *referee, WorldMap *worldMap) : Entity(ENT_COACH) {
     _constants = constants;
     _worldMap = worldMap;
+    _referee = referee;
     _coordinator = nullptr;
 }
 
@@ -51,7 +52,7 @@ void Coach::loop() {
 
     // Check if coordinator is initialized and initialize if neccessary
     if(!_coordinator->isInitialized()) {
-        _coordinator->initialize(getConstants(), getWorldMap());
+        _coordinator->initialize(getConstants(), getReferee(), getWorldMap());
     }
 
     // Run coordinator
@@ -68,6 +69,17 @@ WorldMap* Coach::getWorldMap() {
     }
     else {
         return _worldMap;
+    }
+
+    return nullptr;
+}
+
+Referee* Coach::getReferee() {
+    if(_referee == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Referee with nullptr value at Coach") + '\n';
+    }
+    else {
+        return _referee;
     }
 
     return nullptr;

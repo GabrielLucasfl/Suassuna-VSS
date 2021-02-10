@@ -63,6 +63,7 @@ SOURCES += \
     src/entities/coach/skill/skill.cpp \
     src/entities/coach/skill/spin/skill_spin.cpp \
     src/entities/entity.cpp \
+    src/entities/referee/referee.cpp \
     src/entities/vision/filters/kalman/kalmanfilter.cpp \
     src/entities/vision/filters/kalman/matrix/matrix.cpp \
     src/entities/vision/filters/kalman/state/kalmanstate.cpp \
@@ -119,6 +120,7 @@ HEADERS += \
     src/entities/coach/skill/skills.h \
     src/entities/coach/skill/spin/skill_spin.h \
     src/entities/entity.h \
+    src/entities/referee/referee.h \
     src/entities/vision/filters/kalman/kalmanfilter.h \
     src/entities/vision/filters/kalman/matrix/matrix.h \
     src/entities/vision/filters/kalman/state/kalmanstate.h \

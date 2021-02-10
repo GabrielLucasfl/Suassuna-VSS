@@ -32,19 +32,30 @@ Suassuna::Suassuna(Constants *constants) {
 
     // Creating world
     _world = new World(getConstants());
+
+    // Register meta types
+    qRegisterMetaType<Object>("Object");
+    qRegisterMetaType<Position>("Position");
+    qRegisterMetaType<Angle>("Angle");
+    qRegisterMetaType<Colors::Color>("Colors::Color");
+    qRegisterMetaType<VSSRef::Foul>("VSSRef::Foul");
+    qRegisterMetaType<VSSRef::Color>("VSSRef::Color");
+    qRegisterMetaType<VSSRef::Quadrant>("VSSRef::Quadrant");
 }
 
 void Suassuna::start() {
     // Creating World Map (set here the map that u desire)
     _worldMap = new WorldMap(getConstants(), getConstants()->teamSide(), new Field_VSSB());
 
+    // Creating referee
+    _referee = new Referee(getConstants());
+    _world->addEntity(_referee, 0);
+
     // Creating and adding vision to world
     _vision = new Vision(getConstants());
     _world->addEntity(_vision, 0);
 
     // Vision-WorldMap connection
-    qRegisterMetaType<Colors::Color>("Colors::Color");
-    qRegisterMetaType<Object>("Object");
     QObject::connect(_vision, SIGNAL(sendPlayer(Colors::Color, quint8, Object)), _worldMap, SLOT(updatePlayer(Colors::Color, quint8, Object)), Qt::DirectConnection);
     QObject::connect(_vision, SIGNAL(sendBall(Object)), _worldMap, SLOT(updateBall(Object)), Qt::DirectConnection);
     QObject::connect(_vision, SIGNAL(sendGeometryData(fira_message::Field)), _worldMap, SLOT(updateGeometry(fira_message::Field)), Qt::DirectConnection);
@@ -55,18 +66,21 @@ void Suassuna::start() {
 
     // Adding players
     for(int i = 0; i < getConstants()->qtPlayers(); i++) {
-        Player *player = new Player(i, getConstants(), _worldMap);
+        Player *player = new Player(i, getConstants(), _referee, _worldMap);
         QObject::connect(player, SIGNAL(setLinearSpeed(int, int, float)), _simActuator, SLOT(setLinearSpeed(int, int, float)));
         QObject::connect(player, SIGNAL(setAngularSpeed(int, int, float)), _simActuator, SLOT(setAngularSpeed(int, int, float)));
         QObject::connect(player, SIGNAL(dribble(int, int, bool)), _simActuator, SLOT(dribble(int, int, bool)));
         QObject::connect(player, SIGNAL(kick(int, int, float)), _simActuator, SLOT(kick(int, int, float)));
+
+        QObject::connect(player, SIGNAL(sendPlacement(quint8, Position, Angle)), _referee, SLOT(receivePlacement(quint8, Position, Angle)), Qt::DirectConnection);
+        QObject::connect(_referee, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), player, SLOT(receiveFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), Qt::DirectConnection);
 
         _worldMap->addPlayer(i, player);
         _world->addEntity(player, 2);
     }
 
     // Creating coach
-    _coach = new Coach(getConstants(), _worldMap);
+    _coach = new Coach(getConstants(), _referee, _worldMap);
     _world->addEntity(_coach, 3);
 
     // Setting coordinator to coach

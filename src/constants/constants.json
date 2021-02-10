@@ -17,6 +17,13 @@
 		"qtPlayers": 3
 	},
 	
+	"Referee":{
+		"refereeAddress": "224.5.23.2",
+		"refereePort": 10003,
+		"replacerAddress": "224.5.23.2",
+		"replacerPort": 10004
+	},
+	
 	"SimActuator":{
 		"simActuatorAddress": "127.0.0.1",
 		"simActuatorPort": 20011

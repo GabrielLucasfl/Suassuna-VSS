@@ -24,6 +24,7 @@
 
 #include <QObject>
 
+#include <src/entities/referee/referee.h>
 #include <src/entities/coach/basecoach.h>
 #include <src/constants/constants.h>
 
@@ -39,20 +40,24 @@ public:
 
     // Init role control
     bool isInitialized();
-    void initialize(Constants *constants);
+    void initialize(Constants *constants, Referee *referee);
     void setPlayer(Player *player);
 
     // Method to run in playbook
     void runRole();
+
+    // Placement
+    virtual QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) = 0;
 
 protected:
     // Role control methods
     void addBehavior(int id, Behavior *behavior);
     void setBehavior(int id);
 
-    // Player and constants getters
+    // Player, constants and referee getters
     Player* player();
     Constants* getConstants();
+    Referee* getReferee();
 
 private:
     // Virtual implementation in inherited classes
@@ -61,9 +66,13 @@ private:
 
     // Player access
     Player *_player;
+    QMutex _playerMutex;
 
     // Constants
     Constants *_constants;
+
+    // Referee
+    Referee *_referee;
 
     // Behavior list
     QMap<int, Behavior*> _behaviorList;

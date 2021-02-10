@@ -48,14 +48,22 @@ bool Role::isInitialized() {
     return _initialized;
 }
 
-void Role::initialize(Constants *constants) {
+void Role::initialize(Constants *constants, Referee *referee) {
+    // Take pointers
     _constants = constants;
+    _referee = referee;
+
+    // Call virtual configure()
     configure();
+
+    // Mark as initialized
     _initialized = true;
 }
 
 void Role::setPlayer(Player *player) {
+    _playerMutex.lock();
     _player = player;
+    _playerMutex.unlock();
 }
 
 void Role::runRole() {

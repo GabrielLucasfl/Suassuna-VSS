@@ -37,7 +37,7 @@ public:
 
     // Init playbook control
     bool isInitialized();
-    void initialize(Constants *constants, WorldMap *worldMap);
+    void initialize(Constants *constants, Referee *referee, WorldMap *worldMap);
 
     // Playbook management
     void resetPlaybook();
@@ -64,6 +64,7 @@ protected:
     // Constants and WorldMap access
     Constants* getConstants();
     WorldMap* getWorldMap();
+    Referee* getReferee();
 
 private:
     // Virtual implementation in inherited classes
@@ -77,6 +78,7 @@ private:
     // Constants and worldmap vars
     Constants *_constants;
     WorldMap *_worldMap;
+    Referee *_referee;
 
     // Players in this playbook list
     QList<quint8> _players;

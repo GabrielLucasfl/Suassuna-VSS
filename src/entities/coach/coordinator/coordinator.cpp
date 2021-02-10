@@ -42,9 +42,10 @@ bool Coordinator::isInitialized() {
     return _initialized;
 }
 
-void Coordinator::initialize(Constants *constants, WorldMap *worldMap) {
+void Coordinator::initialize(Constants *constants, Referee *referee, WorldMap *worldMap) {
     _constants = constants;
     _worldMap = worldMap;
+    _referee = referee;
     _initialized = true;
 }
 
@@ -54,6 +55,17 @@ WorldMap* Coordinator::getWorldMap() {
     }
     else {
         return _worldMap;
+    }
+
+    return nullptr;
+}
+
+Referee* Coordinator::getReferee() {
+    if(_referee == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Referee with nullptr value at " + this->name().toStdString()) + '\n';
+    }
+    else {
+        return _referee;
     }
 
     return nullptr;
@@ -109,7 +121,7 @@ void Coordinator::setPlaybook(int id) {
 
     // Check if playbook is initialized and initialize if necessary
     if(!_playbookList.value(id)->isInitialized()) {
-        _playbookList.value(id)->initialize(getConstants(), getWorldMap());
+        _playbookList.value(id)->initialize(getConstants(), getReferee(), getWorldMap());
     }
 
     // Set actual playbook and id
@@ -152,7 +164,7 @@ void Coordinator::runCoordinator() {
 
     // Check if actual playbook is initialized
     if(!_actualPlaybook->isInitialized()) {
-        _actualPlaybook->initialize(getConstants(), getWorldMap());
+        _actualPlaybook->initialize(getConstants(), getReferee(), getWorldMap());
     }
 
     // Check if qt players changed

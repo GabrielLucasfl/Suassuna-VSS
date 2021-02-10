@@ -27,6 +27,7 @@
 #include <src/entities/coach/coach.h>
 #include <src/entities/actuator/simulator/simactuator.h>
 #include <src/entities/world/worldmap.h>
+#include <src/entities/referee/referee.h>
 #include <src/constants/constants.h>
 
 class Suassuna
@@ -49,6 +50,9 @@ private:
 
     // World
     World *_world;
+
+    // Referee
+    Referee *_referee;
 
     // Coach
     Coach *_coach;

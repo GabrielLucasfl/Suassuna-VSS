@@ -46,6 +46,17 @@ WorldMap* Playbook::getWorldMap() {
     return nullptr;
 }
 
+Referee* Playbook::getReferee() {
+    if(_referee == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Referee with nullptr value at " + this->name().toStdString()) + '\n';
+    }
+    else {
+        return _referee;
+    }
+
+    return nullptr;
+}
+
 Constants* Playbook::getConstants() {
     if(_constants == nullptr) {
         std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at " + this->name().toStdString()) + '\n';
@@ -61,9 +72,10 @@ bool Playbook::isInitialized() {
     return _initialized;
 }
 
-void Playbook::initialize(Constants *constants, WorldMap *worldMap) {
+void Playbook::initialize(Constants *constants, Referee *referee, WorldMap *worldMap) {
     _constants = constants;
     _worldMap = worldMap;
+    _referee = referee;
     _initialized = true;
 }
 

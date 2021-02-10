@@ -33,6 +33,7 @@ enum EntityType {
     ENT_COACH,
     ENT_VISION,
     ENT_ACTUATOR,
+    ENT_REFEREE,
     ENT_WORLD
 };
 

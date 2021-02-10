@@ -29,7 +29,7 @@
 class Coach : public Entity
 {
 public:
-    Coach(Constants *constants, WorldMap *worldMap);
+    Coach(Constants *constants, Referee *referee, WorldMap *worldMap);
     ~Coach();
 
     // Coordinator management
@@ -51,6 +51,10 @@ private:
     // Worldmap
     WorldMap *_worldMap;
     WorldMap* getWorldMap();
+
+    // Referee
+    Referee *_referee;
+    Referee* getReferee();
 };
 
 #endif // COACH_H
