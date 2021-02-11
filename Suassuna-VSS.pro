@@ -54,6 +54,7 @@ SOURCES += \
     src/entities/coach/coordinator/ssl/coordinator_vss.cpp \
     src/entities/coach/playbook/default/playbook_default.cpp \
     src/entities/coach/playbook/playbook.cpp \
+    src/entities/coach/player/navigation/navalgorithm.cpp \
     src/entities/coach/player/player.cpp \
     src/entities/coach/role/default/role_default.cpp \
     src/entities/coach/role/role.cpp \
@@ -85,7 +86,8 @@ SOURCES += \
     src/utils/types/fieldside/fieldside.cpp \
     src/utils/types/object/object.cpp \
     src/utils/types/position/position.cpp \
-    src/utils/types/velocity/velocity.cpp
+    src/utils/types/velocity/velocity.cpp \
+    src/utils/utils.cpp
 
 # Project header files
 HEADERS += \
@@ -110,6 +112,7 @@ HEADERS += \
     src/entities/coach/playbook/default/playbook_default.h \
     src/entities/coach/playbook/playbook.h \
     src/entities/coach/playbook/playbooks.h \
+    src/entities/coach/player/navigation/navalgorithm.h \
     src/entities/coach/player/player.h \
     src/entities/coach/role/default/role_default.h \
     src/entities/coach/role/role.h \
@@ -146,7 +149,8 @@ HEADERS += \
     src/utils/types/fieldside/side.h \
     src/utils/types/object/object.h \
     src/utils/types/position/position.h \
-    src/utils/types/velocity/velocity.h
+    src/utils/types/velocity/velocity.h \
+    src/utils/utils.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
