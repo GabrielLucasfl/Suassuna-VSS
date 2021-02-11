@@ -19,28 +19,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#ifndef PLAYBOOK_DEFAULT_H
-#define PLAYBOOK_DEFAULT_H
+#ifndef ROLE_ATTACKER_H
+#define ROLE_ATTACKER_H
 
-#include <src/entities/coach/playbook/playbook.h>
-#include <src/entities/coach/role/roles.h>
+#include <src/entities/coach/role/role.h>
+#include <src/entities/coach/behavior/behaviors.h>
 
-class Playbook_Default : public Playbook
+class Role_Attacker : public Role
 {
 public:
-    Playbook_Default();
+    Role_Attacker();
     QString name();
 
 private:
-    // Playbook inherited methods
-    void configure(int numPlayers);
-    void run(int numPlayers);
+    // Role inherited methods
+    void configure();
+    void run();
 
-    // Role pointer vector
-    QList<Role_Default*> _rl_default;
-    QList<Role_Goalkeeper*> _rl_gk;
-    QList<Role_Defender*> _rl_df;
-    QList<Role_Attacker*> _rl_attacker;
+    // Behaviors enum
+    enum {
+        BHV_MOVETO,
+        BHV_INTERCEPT
+    };
+
+    // Behaviors pointers
+    Behavior_MoveTo *_bhv_moveTo;
+    Behavior_Intercept *_bhv_intercept;
 };
 
-#endif // PLAYBOOK_DEFAULT_H
+#endif // ROLE_ATTACKER_H

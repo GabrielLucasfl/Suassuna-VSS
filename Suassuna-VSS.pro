@@ -62,6 +62,7 @@ SOURCES += \
     src/entities/coach/player/navigation/rrt/rrttree.cpp \
     src/entities/coach/player/navigation/rrt/rrtvertex.cpp \
     src/entities/coach/player/player.cpp \
+    src/entities/coach/role/attacker/role_attacker.cpp \
     src/entities/coach/role/default/role_default.cpp \
     src/entities/coach/role/defender/role_defender.cpp \
     src/entities/coach/role/role.cpp \
@@ -129,6 +130,7 @@ HEADERS += \
     src/entities/coach/player/navigation/rrt/rrttree.h \
     src/entities/coach/player/navigation/rrt/rrtvertex.h \
     src/entities/coach/player/player.h \
+    src/entities/coach/role/attacker/role_attacker.h \
     src/entities/coach/role/default/role_default.h \
     src/entities/coach/role/defender/role_defender.h \
     src/entities/coach/role/role.h \
