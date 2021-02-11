@@ -9,12 +9,13 @@
 #include <include/vssref_command.pb.h>
 #include <src/constants/constants.h>
 #include <src/entities/entity.h>
+#include <src/entities/world/worldmap.h>
 
 class Referee : public Entity
 {
     Q_OBJECT
 public:
-    Referee(Constants *constants);
+    Referee(Constants *constants, WorldMap *worldMap);
     ~Referee();
 
     // Getters
@@ -25,6 +26,10 @@ private:
     void initialization();
     void loop();
     void finalization();
+
+    // WorldMap
+    WorldMap *_worldMap;
+    WorldMap* getWorldMap();
 
     // Network
     QString _refereeAddress;

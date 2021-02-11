@@ -2,9 +2,12 @@
 
 #include <QNetworkDatagram>
 
-Referee::Referee(Constants *constants) : Entity(ENT_REFEREE) {
+Referee::Referee(Constants *constants, WorldMap *worldMap) : Entity(ENT_REFEREE) {
     // Setting constants
     _constants = constants;
+
+    // Setting worldmap
+    _worldMap = worldMap;
 
     // Taking network data
     _refereeAddress = getConstants()->refereeAddress();
@@ -50,7 +53,7 @@ void Referee::loop() {
         _atQuadrant = command.foulquadrant();
 
         // Debug (test)
-        std::cout << "Received foul: " + VSSRef::Foul_Name(_lastFoul) + " for team: " + VSSRef::Color_Name(_forTeam) + " at quadrant: " + VSSRef::Quadrant_Name(_atQuadrant) + '\n';
+        std::cout << Text::cyan("[REFEREE] ", true) + Text::bold("Received foul '" + VSSRef::Foul_Name(_lastFoul) + "' for team: '" + VSSRef::Color_Name(_forTeam) + "' at quadrant: '" + VSSRef::Quadrant_Name(_atQuadrant) + "'") + '\n';
 
         // Avoid to emit signal in control fouls
         if(_lastFoul != VSSRef::Foul::HALT && _lastFoul != VSSRef::Foul::GAME_ON && _lastFoul != VSSRef::Foul::STOP) {
@@ -158,8 +161,8 @@ void Referee::receivePlacement(quint8 playerId, Position desiredPosition, Angle 
     // Save placement data into hash
     _placementData.insert(playerId, QPair<Position, Angle>(desiredPosition, desiredOrientation));
 
-    // Check if qt of keys inserted (num of players placed) is equal to qtPlayers in constant
-    if(_placementData.keys().size() == getConstants()->qtPlayers()) {
+    // Check if qt of keys inserted (num of players placed) is equal to available players in field
+    if(_placementData.keys().size() == getWorldMap()->getAvailablePlayers(getConstants()->teamColor()).size()) {
         // Place robots (everyone placed)
         placeRobots();
     }
@@ -171,6 +174,17 @@ Constants* Referee::getConstants() {
     }
     else {
         return _constants;
+    }
+
+    return nullptr;
+}
+
+WorldMap* Referee::getWorldMap() {
+    if(_worldMap == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("WorldMap with nullptr value at Referee") + '\n';
+    }
+    else {
+        return _worldMap;
     }
 
     return nullptr;
