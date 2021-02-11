@@ -55,6 +55,11 @@ SOURCES += \
     src/entities/coach/playbook/default/playbook_default.cpp \
     src/entities/coach/playbook/playbook.cpp \
     src/entities/coach/player/navigation/navalgorithm.cpp \
+    src/entities/coach/player/navigation/rrt/rrt.cpp \
+    src/entities/coach/player/navigation/rrt/rrtnode.cpp \
+    src/entities/coach/player/navigation/rrt/rrtobstacle.cpp \
+    src/entities/coach/player/navigation/rrt/rrttree.cpp \
+    src/entities/coach/player/navigation/rrt/rrtvertex.cpp \
     src/entities/coach/player/player.cpp \
     src/entities/coach/role/default/role_default.cpp \
     src/entities/coach/role/role.cpp \
@@ -77,6 +82,9 @@ SOURCES += \
     src/entities/world/worldmap.cpp \
     src/exithandler.cpp \
     src/suassuna.cpp \
+    src/utils/graph/edge.cpp \
+    src/utils/graph/graph.cpp \
+    src/utils/graph/vertex.cpp \
     src/utils/text/text.cpp \
     src/utils/timer/timer.cpp \
     src/utils/types/angle/angle.cpp \
@@ -113,6 +121,11 @@ HEADERS += \
     src/entities/coach/playbook/playbook.h \
     src/entities/coach/playbook/playbooks.h \
     src/entities/coach/player/navigation/navalgorithm.h \
+    src/entities/coach/player/navigation/rrt/rrt.h \
+    src/entities/coach/player/navigation/rrt/rrtnode.h \
+    src/entities/coach/player/navigation/rrt/rrtobstacle.h \
+    src/entities/coach/player/navigation/rrt/rrttree.h \
+    src/entities/coach/player/navigation/rrt/rrtvertex.h \
     src/entities/coach/player/player.h \
     src/entities/coach/role/default/role_default.h \
     src/entities/coach/role/role.h \
@@ -138,6 +151,10 @@ HEADERS += \
     src/entities/world/worldmap.h \
     src/exithandler.h \
     src/suassuna.h \
+    src/utils/graph/edge.h \
+    src/utils/graph/graph.h \
+    src/utils/graph/graphbase.h \
+    src/utils/graph/vertex.h \
     src/utils/text/text.h \
     src/utils/timer/timer.h \
     src/utils/types/angle/angle.h \

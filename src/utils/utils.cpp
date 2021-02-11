@@ -124,3 +124,7 @@ Constants* Utils::getConstants() {
 
     return nullptr;
 }
+
+float Utils::getAngle(const Position &a, const Position &b)	{
+    return atan2(b.y()-a.y(), b.x()-a.x());
+}

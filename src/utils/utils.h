@@ -38,7 +38,7 @@ public:
     static float distanceToSegment(const Position &s1, const Position &s2, const Position &point);
     static Position rotatePoint(Position point, float angle);
     static void setConstants(Constants *constants);
-
+    static float getAngle(const Position &a, const Position &b);
 private:
     static Constants *_constants;
     static Constants* getConstants();
