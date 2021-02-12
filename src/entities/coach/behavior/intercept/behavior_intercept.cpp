@@ -1,4 +1,4 @@
-/***
+﻿/***
  * Maracatronics Robotics
  * Federal University of Pernambuco (UFPE) at Recife
  * http://www.maracatronics.com/
@@ -60,6 +60,7 @@ void Behavior_Intercept::run() {
             _interceptPos = getInterceptionPosition();
         }
     }
+
     // Distances to the intercept position
     float objectDistance = sqrt(powf(_objectPos.x() - _interceptPos.x(),2) + powf(_objectPos.y() - _interceptPos.y(),2));
     float playerDistance = player()->getPlayerDistanceTo(_interceptPos);
@@ -93,40 +94,82 @@ Position Behavior_Intercept::getOrthogonalProjection() {
 }
 
 Position Behavior_Intercept::getInterceptionPosition() {
-    // Taking the angular coefficients
-    float objectAngular = _objectVel.vy() / _objectVel.vx();
-    float trajectoryAngular = (_firstLimitationPoint.y() - _secondLimitationPoint.y())
-            / (_firstLimitationPoint.x() - _secondLimitationPoint.x());
+    // We will create lines/vectors of movement, which means we must take the anlgular coefficiens of them.
+    // This may be a problem if the denominator is null. We have to analyse the 4 possible cases in order
+    // to predict what to do to interpt the target.
+    float trajectory_x = _firstLimitationPoint.x() - _secondLimitationPoint.x();
+    float trajectory_y = _firstLimitationPoint.y() - _secondLimitationPoint.y();
+    Position interceptPosition;
 
-    // Analysing vector parallelism
-    if (trajectoryAngular == objectAngular) {
+    if (_objectVel.vx() == 0.0f && trajectory_x == 0.0f) {
+        // Case where both anular coefficents goes to infinite which also means the lines are parallels so
+        // the interception is impossible.
         return player()->position();
-    } else {
-        // Taking the linear coefficients
-        float objectLinear = _objectPos.y() - objectAngular * _objectPos.x();
-        float interceptLinear = _firstLimitationPoint.y() - trajectoryAngular * _firstLimitationPoint.x();
+    }
+    else if (_objectVel.vx() == 0.0f && trajectory_x != 0.0f) {
+        // Case where the object of interception moves on the y direction so the line of movement of the
+        // object is 'x = _objectPos.x()'.
+
+        // Taking the angular coefficient
+        float trajectoryAngular = trajectory_y / trajectory_x;
+
+        // Taking the linear coefficient
+        float trajectoryLinear = _firstLimitationPoint.y() - trajectoryAngular * _firstLimitationPoint.x();
 
         // Taking the inteception Position
-        float intercept_x = (objectLinear - interceptLinear) / (trajectoryAngular - objectAngular);
-        float intercept_y = _interceptPos.x() * objectAngular + objectLinear;
-        Position interceptPosition(true, intercept_x, intercept_y);
+        float intercept_y = trajectoryAngular * _objectPos.x() + trajectoryLinear;
+        interceptPosition = Position(true, _objectPos.x(), intercept_y);
+    }
+    else if (_objectVel.vx() != 0.0f && trajectory_x == 0.0f) {
+        // Case where our player  moves on the y direction so the line of movement of the object is
+        // 'x = _firstLimitationPoint.x()', once our player x position will be the same of this point.
 
-        float segmentDistance = sqrt(powf(_firstLimitationPoint.x() - _secondLimitationPoint.x(),2)
-                                     + powf(_firstLimitationPoint.y() - _secondLimitationPoint.y(),2));
-        float firstDistance = sqrt(powf(_firstLimitationPoint.x() - interceptPosition.x(),2)
-                                   + powf(_firstLimitationPoint.y() - interceptPosition.y(),2));
-        float secondDistance = sqrt(powf(_secondLimitationPoint.x() - interceptPosition.x(),2)
-                                    + powf(_secondLimitationPoint.y() - interceptPosition.y(),2));
+        // Taking the angular coefficient
+        float objectAngular = _objectVel.vy() / _objectVel.vx();
 
-        // Checking the limitation
-        if (firstDistance + secondDistance > segmentDistance) {
-            if (firstDistance < secondDistance) {
-                return _firstLimitationPoint;
-            } else {
-                return _secondLimitationPoint;
-            }
+        // Taking the linear coefficient
+        float objectLinear = _objectPos.y() - objectAngular * _objectPos.x();
+
+        // Taking the inteception Position
+        float intercept_y = objectAngular * _firstLimitationPoint.x() + objectLinear;
+        interceptPosition = Position(true, _firstLimitationPoint.x(), intercept_y);
+    } else {
+        // Taking the angular coefficients
+        float objectAngular = _objectVel.vy() / _objectVel.vx();
+        float trajectoryAngular = trajectory_y / trajectory_x;
+
+        // Analysing vector parallelism
+        if (trajectoryAngular == objectAngular) {
+            return player()->position();
         } else {
-            return interceptPosition;
+            // Taking the linear coefficients
+            float objectLinear = _objectPos.y() - objectAngular * _objectPos.x();
+            float trajectoryLinear = _firstLimitationPoint.y() - trajectoryAngular * _firstLimitationPoint.x();
+
+            // Taking the inteception Position
+            float intercept_x = (objectLinear - trajectoryLinear) / (trajectoryAngular - objectAngular);
+            float intercept_y = intercept_x * objectAngular + objectLinear;
+            interceptPosition = Position(true, intercept_x, intercept_y);
         }
+    }
+    std::cout << "Intercept_x:" << _interceptPos.x() << "\n";
+    std::cout << "Intercept_y:" << _interceptPos.y() << "\n";
+
+    float segmentDistance = sqrt(powf(_firstLimitationPoint.x() - _secondLimitationPoint.x(),2)
+                                 + powf(_firstLimitationPoint.y() - _secondLimitationPoint.y(),2));
+    float firstDistance = sqrt(powf(_firstLimitationPoint.x() - interceptPosition.x(),2)
+                               + powf(_firstLimitationPoint.y() - interceptPosition.y(),2));
+    float secondDistance = sqrt(powf(_secondLimitationPoint.x() - interceptPosition.x(),2)
+                                + powf(_secondLimitationPoint.y() - interceptPosition.y(),2));
+
+    // Checking the limitation
+    if (firstDistance + secondDistance > segmentDistance) {
+        if (firstDistance < secondDistance) {
+            return _firstLimitationPoint;
+        } else {
+            return _secondLimitationPoint;
+        }
+    } else {
+        return interceptPosition;
     }
 }
