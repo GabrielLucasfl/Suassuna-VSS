@@ -65,6 +65,8 @@ public:
     Position ourGoalRightPost();
     Position ourGoalLeftPost();
     Position ourPenaltyMark();
+    Position ourGoalRightMidPost();
+    Position ourGoalLeftMidPost();
 
     // Their
     Position theirFieldTopCorner();
@@ -73,6 +75,8 @@ public:
     Position theirGoalRightPost();
     Position theirGoalLeftPost();
     Position theirPenaltyMark();
+    Position theirGoalRightMidPost();
+    Position theirGoalLeftMidPost();
 
     // Auxiliar functions
     bool isInsideOurField(const Position &pos);
@@ -109,6 +113,10 @@ private:
     Position _rightGoalRightPost;
     Position _leftGoalLeftPost;
     Position _leftGoalRightPost;
+    Position _rightGoalRightMidPost;
+    Position _rightGoalLeftMidPost;
+    Position _leftGoalRightMidPost;
+    Position _leftGoalLeftMidPost;
     float _fieldCenterRadius;
     float _goalLength;
     float _goalWidth;

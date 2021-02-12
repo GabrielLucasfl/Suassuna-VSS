@@ -55,6 +55,7 @@ SOURCES += \
     src/entities/coach/playbook/default/playbook_default.cpp \
     src/entities/coach/playbook/playbook.cpp \
     src/entities/coach/player/navigation/navalgorithm.cpp \
+    src/entities/coach/player/navigation/navigation.cpp \
     src/entities/coach/player/navigation/rrt/rrt.cpp \
     src/entities/coach/player/navigation/rrt/rrtnode.cpp \
     src/entities/coach/player/navigation/rrt/rrtobstacle.cpp \
@@ -121,6 +122,7 @@ HEADERS += \
     src/entities/coach/playbook/playbook.h \
     src/entities/coach/playbook/playbooks.h \
     src/entities/coach/player/navigation/navalgorithm.h \
+    src/entities/coach/player/navigation/navigation.h \
     src/entities/coach/player/navigation/rrt/rrt.h \
     src/entities/coach/player/navigation/rrt/rrtnode.h \
     src/entities/coach/player/navigation/rrt/rrtobstacle.h \

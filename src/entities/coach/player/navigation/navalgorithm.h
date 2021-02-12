@@ -27,7 +27,6 @@
 #include <src/constants/constants.h>
 #include <src/utils/types/angle/angle.h>
 #include <src/utils/types/position/position.h>
-#include <src/utils/types/velocity/velocity.h>
 #include <src/utils/timer/timer.h>
 #include <src/entities/world/locations/locations.h>
 #include <src/utils/utils.h>
@@ -48,14 +47,14 @@ public:
     virtual void reset() = 0;
 
     // Set origin and goal
-    void setOrigin(const Position &pos, const Angle &ori, const Velocity &vel);
+    void setOrigin(const Position &pos, const Angle &ori);
     void setGoal(const Position &pos, const Angle &ori);
 
     // Add obstacles
-    virtual void addBall(const Position &pos, const Velocity &vel) = 0;
+    virtual void addBall(const Position &pos) = 0;
     virtual void addGoalArea(const Position &pos) = 0;
-    virtual void addOwnRobot(const Position &pos, const Velocity &vel) = 0;
-    virtual void addEnemyRobot(const Position &pos, const Velocity &vel) = 0;
+    virtual void addOwnRobot(const Position &pos) = 0;
+    virtual void addEnemyRobot(const Position &pos) = 0;
 
     // Return results
     virtual Angle getDirection() const = 0;
@@ -69,7 +68,6 @@ protected:
     // Origin access
     Position originPos() const { return _originPos; }
     Angle originOri() const { return _originOri; }
-    Velocity originVel() const { return _originVel; }
 
     // Goal access
     Position goalPos() const { return _goalPos; }
@@ -90,7 +88,6 @@ private:
     // Origin
     Position _originPos;
     Angle _originOri;
-    Velocity _originVel;
     // Goal
     Position _goalPos;
     Angle _goalOri;

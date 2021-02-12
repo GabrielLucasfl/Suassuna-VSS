@@ -128,3 +128,10 @@ Constants* Utils::getConstants() {
 float Utils::getAngle(const Position &a, const Position &b)	{
     return atan2(b.y()-a.y(), b.x()-a.x());
 }
+
+Position Utils::threePoints(const Position &near, const Position &far, float distance, float beta) {
+    Angle alpha(true, atan2(far.y()-near.y(), far.x()-near.x()));
+    Angle gama(true, alpha.value()+beta);
+    Position p(true, near.x()+distance*cos(gama.value()), near.y()+distance*sin(gama.value()));
+    return p;
+}

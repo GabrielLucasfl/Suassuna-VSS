@@ -25,6 +25,7 @@
 #include <src/constants/constants.h>
 #include <src/utils/types/position/position.h>
 #include <src/utils/types/color/color.h>
+#include <src/utils/types/angle/angle.h>
 
 class Utils {
 public:
@@ -39,6 +40,7 @@ public:
     static Position rotatePoint(Position point, float angle);
     static void setConstants(Constants *constants);
     static float getAngle(const Position &a, const Position &b);
+    static Position threePoints(const Position &near, const Position &far, float distance, float beta);
 private:
     static Constants *_constants;
     static Constants* getConstants();

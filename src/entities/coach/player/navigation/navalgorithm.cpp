@@ -30,7 +30,6 @@ NavigationAlgorithm::NavigationAlgorithm() {
 NavigationAlgorithm::NavigationAlgorithm(const NavigationAlgorithm &copy) {
     _originPos = copy._originPos;
     _originOri = copy._originOri;
-    _originVel = copy._originVel;
     _goalPos = copy._goalPos;
     _goalOri = copy._goalOri;
     _loc = copy._loc;
@@ -62,10 +61,9 @@ void NavigationAlgorithm::runNavigationAlgorithm() {
         this->generatePath();
 }
 
-void NavigationAlgorithm::setOrigin(const Position &pos, const Angle &ori, const Velocity &vel) {
+void NavigationAlgorithm::setOrigin(const Position &pos, const Angle &ori) {
     _originPos = pos;
     _originOri = ori;
-    _originVel = vel;
 }
 
 void NavigationAlgorithm::setGoal(const Position &pos, const Angle &ori) {
@@ -133,7 +131,7 @@ void NavigationAlgorithm::generatePath() {
         _path.append(currPos);
 
         // Set new origins
-        clone->setOrigin(currPos, Angle(), Velocity());
+        clone->setOrigin(currPos, Angle());
 
         timer.stop();
     }

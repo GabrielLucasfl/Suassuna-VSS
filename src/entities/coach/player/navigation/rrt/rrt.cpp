@@ -51,7 +51,7 @@ void RRT::reset() {
 }
 
 // Add objects
-void RRT::addBall(const Position &pos, const Velocity &vel) {
+void RRT::addBall(const Position &pos) {
     addObstacles(pos, 2*0.025f);
 }
 
@@ -59,11 +59,11 @@ void RRT::addGoalArea(const Position &pos) {
 
 }
 
-void RRT::addOwnRobot(const Position &pos, const Velocity &vel) {
+void RRT::addOwnRobot(const Position &pos) {
     addObstacles(pos, ROBOT_RADIUS);
 }
 
-void RRT::addEnemyRobot(const Position &pos, const Velocity &vel) {
+void RRT::addEnemyRobot(const Position &pos) {
     addObstacles(pos, ROBOT_RADIUS);
 }
 

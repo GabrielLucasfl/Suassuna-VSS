@@ -21,7 +21,7 @@
 
 #include "locations.h"
 
-#define MM2METER 1.0/1000.0
+#define MM2METER 1.0f/1000.0f
 
 Locations::Locations(FieldSide ourSide, Field *field) {
     _field = field;
@@ -31,7 +31,8 @@ Locations::Locations(FieldSide ourSide, Field *field) {
     const float fieldX = _field->maxX();
     const float fieldY = _field->maxY();
     const float goalY = _field->goalWidth()/2;
-    const float penaltyDist = _field->defenseRadius();
+    const float defenseAreaWidth = _field->defenseRadius();
+    const float defenseAreaLength = _field->defenseStretch();
 
     // Set constant positions
     _fieldCenter = Position(true, 0.0, 0.0);
@@ -47,10 +48,14 @@ Locations::Locations(FieldSide ourSide, Field *field) {
     _rightGoalRightPost = Position(true, fieldX, goalY);
     _leftGoalLeftPost = Position(true, -fieldX, goalY);
     _leftGoalRightPost = Position(true, -fieldX, -goalY);
+    _rightGoalRightMidPost = Position(true, fieldX, -defenseAreaLength/2.0f);
+    _rightGoalLeftMidPost = Position(true, fieldX, defenseAreaLength/2.0f);
+    _leftGoalRightMidPost = Position(true, -fieldX, defenseAreaLength/2.0f);
+    _leftGoalLeftMidPost = Position(true, -fieldX, -defenseAreaLength/2.0f);
 
     // Penalty marks
-    _rightPenaltyMark = Position(true, (fieldX/2.0 - penaltyDist), 0.0);
-    _leftPenaltyMark = Position(true, (-fieldX/2.0 + penaltyDist), 0.0);
+    _rightPenaltyMark = Position(true, (fieldX/2.0f - defenseAreaWidth), 0.0);
+    _leftPenaltyMark = Position(true, (-fieldX/2.0f + defenseAreaWidth), 0.0);
 }
 
 Locations::~Locations() {
@@ -343,27 +348,72 @@ bool Locations::_isOutsideField(const Position &pos, const float maxX, const flo
     return false;
 }
 
+Position Locations::ourGoalRightMidPost() {
+    Position ourGoalRightMidPost;
+    _mutex.lockForRead();
+    if(ourSide().isRight()) {
+        ourGoalRightMidPost = _rightGoalRightMidPost;
+    }else {
+        ourGoalRightMidPost = _leftGoalRightMidPost;
+    }
+    _mutex.unlock();
+    return ourGoalRightMidPost;
+}
+
+Position Locations::ourGoalLeftMidPost() {
+    Position ourGoalLeftMidPost;
+    _mutex.lockForRead();
+    if(ourSide().isRight()) {
+        ourGoalLeftMidPost = _rightGoalLeftMidPost;
+    }else {
+        ourGoalLeftMidPost = _leftGoalLeftMidPost;
+    }
+    _mutex.unlock();
+    return ourGoalLeftMidPost;
+}
+
+Position Locations::theirGoalRightMidPost() {
+    Position theirGoalRightMidPost;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        theirGoalRightMidPost = _rightGoalRightMidPost;
+    }else {
+        theirGoalRightMidPost = _leftGoalRightMidPost;
+    }
+    _mutex.unlock();
+    return theirGoalRightMidPost;
+}
+
+Position Locations::theirGoalLeftMidPost() {
+    Position theirGoalLeftMidPost;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        theirGoalLeftMidPost = _rightGoalLeftMidPost;
+    }else {
+        theirGoalLeftMidPost = _leftGoalLeftMidPost;
+    }
+    _mutex.unlock();
+    return theirGoalLeftMidPost;
+}
+
 void Locations::updateGeometryData(fira_message::Field geometryData) {
     _mutex.lockForWrite();
 
     _lastData = geometryData;
 
     fira_message::Field field = geometryData;
-
+    //REVIEW DATA URGENTLY (WHEN NEEDED)
     // Calc centerRadius and areaRadius
-    float centerRadius = 0.2;
-    float areaRadius = 0.15;
+    float centerRadius = 200.0f;
+    float areaRadius = 150.0f;
 
-    // Calc areaWidth and areaStretch
-    float areaWidth = 0.15;
-    float areaStretch = 0.3;
-
-    // Calc goalDepth and areaLength
-    float areaLength = areaStretch + 2*areaRadius;
+    // Calc defense area info
+    float areaLength = 700.0f;
+    float areaWidth = 150.0f;
 
     // Updating positions
     _fieldCenter = Position(true, 0.0, 0.0);
-    _fieldTopRightCorner = Position(true, (field.length()/2.0)*MM2METER, (field.width()/2.0)*MM2METER);
+    _fieldTopRightCorner = Position(true, (field.length()/2.0f)*MM2METER, (field.width()/2.0f)*MM2METER);
     _fieldTopLeftCorner = Position(true, (-field.length()/2.0)*MM2METER, (field.width()/2.0)*MM2METER);
     _fieldBottomLeftCorner = Position(true, (-field.length()/2.0)*MM2METER, (-field.width()/2.0)*MM2METER);
     _fieldBottomRightCorner = Position(true, (field.length()/2.0)*MM2METER, (-field.width()/2.0)*MM2METER);
@@ -373,6 +423,10 @@ void Locations::updateGeometryData(fira_message::Field geometryData) {
     _leftGoalRightPost = Position(true, (-field.length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
     _rightGoalLeftPost = Position(true, (field.length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
     _rightGoalRightPost = Position(true, (field.length()/2.0)*MM2METER, (-field.goal_width()/2.0)*MM2METER);
+    _rightGoalRightMidPost = Position(true, (field.length()/2.0)*MM2METER, (-areaLength/2.0f)*MM2METER);
+    _rightGoalLeftMidPost = Position(true, (field.length()/2.0)*MM2METER, (areaLength/2.0f)*MM2METER);
+    _leftGoalRightMidPost = Position(true, (-field.length()/2.0)*MM2METER, (areaLength/2.0f)*MM2METER);
+    _leftGoalLeftMidPost = Position(true, (-field.length()/2.0)*MM2METER, (-areaLength/2.0f)*MM2METER);
     _fieldCenterRadius = centerRadius*MM2METER;
     _goalLength = areaLength*MM2METER;
     _goalWidth = areaWidth*MM2METER;

@@ -39,10 +39,10 @@ public:
     void reset();
 
     // Add obstacles
-    void addBall(const Position &pos, const Velocity &vel);
+    void addBall(const Position &pos);
     void addGoalArea(const Position &pos);
-    void addOwnRobot(const Position &pos, const Velocity &vel);
-    void addEnemyRobot(const Position &pos, const Velocity &vel);
+    void addOwnRobot(const Position &pos);
+    void addEnemyRobot(const Position &pos);
 
     // Run
     void run();

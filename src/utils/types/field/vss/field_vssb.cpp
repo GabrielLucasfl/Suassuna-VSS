@@ -30,29 +30,29 @@ QString Field_VSSB::name() const {
 }
 
 float Field_VSSB::length() const {
-    return 1.50;
+    return 1.50f;
 }
 
 float Field_VSSB::width() const {
-    return 1.30;
+    return 1.30f;
 }
 
 float Field_VSSB::goalWidth() const {
-    return 0.40;
+    return 0.40f;
 }
 
 float Field_VSSB::goalDepth() const {
-    return 0.10;
+    return 0.10f;
 }
 
 float Field_VSSB::centerRadius() const {
-    return 0.20;
+    return 0.20f;
 }
 
 float Field_VSSB::defenseRadius() const {
-    return 0.15;
+    return 0.15f;
 }
 
 float Field_VSSB::defenseStretch() const {
-    return 0.4;
+    return 0.7f;
 }
