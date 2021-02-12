@@ -19,34 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#ifndef ROLE_ATTACKER_H
-#define ROLE_ATTACKER_H
+#ifndef SKILL_PUSHBALL_H
+#define SKILL_PUSHBALL_H
 
-#include <src/entities/coach/role/role.h>
-#include <src/entities/coach/behavior/behaviors.h>
+#include <src/entities/coach/skill/skill.h>
+#include <src/entities/coach/skill/goto/skill_goto.h>
 
-class Role_Attacker : public Role
+class Skill_PushBall : public Skill
 {
 public:
-    Role_Attacker();
+    Skill_PushBall();
     QString name();
 
+    void setSpeedAndOmega(float speed, float omega);
+
 private:
-    // Role inherited methods
+    // Skill inherited methods
     void configure();
     void run();
 
-    // Behaviors enum
-    enum {
-        BHV_MOVETO,
-        BHV_INTERCEPT,
-        BHV_ATTACKER
-    };
-
-    // Behaviors pointers
-    Behavior_MoveTo *_bhv_moveTo;
-    Behavior_Intercept *_bhv_intercept;
-    Behavior_Attacker *_bhv_attacker;
+    // Internal
+    float _speed;
+    float _omega;
 };
 
-#endif // ROLE_ATTACKER_H
+#endif // SKILL_PUSHBALL_H
