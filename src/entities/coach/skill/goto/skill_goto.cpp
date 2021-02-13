@@ -23,7 +23,6 @@
 
 Skill_GoTo::Skill_GoTo() {
     _targetPosition = Position(false, 0.0, 0.0);
-    _velocityFactor = 1.0;
     _minVel = 0.0;
     _avoidTeammates = false;
     _avoidOpponents = false;
@@ -42,6 +41,6 @@ void Skill_GoTo::configure() {
 
 void Skill_GoTo::run() {
     if(!_targetPosition.isInvalid()) {
-        player()->goTo(_targetPosition, _minVel, _velocityFactor, _avoidTeammates, _avoidOpponents, _avoidBall, _avoidOurGoalArea, _avoidTheirGoalArea);
+        player()->goTo(_targetPosition, _minVel, _avoidTeammates, _avoidOpponents, _avoidBall, _avoidOurGoalArea, _avoidTheirGoalArea);
     }
 }

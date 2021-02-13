@@ -165,7 +165,7 @@ float Player::getRotateSpeed(float angleRobotToTarget){
     return speed;
 }
 
-void Player::goTo(Position &targetPosition, float minVel, float velocityFactor, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea){
+void Player::goTo(Position &targetPosition, float minVel, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea){
     // Taking orientation from path planning
     Angle anglePP;
     float help = getRotateAngle(targetPosition);
@@ -208,8 +208,7 @@ void Player::goTo(Position &targetPosition, float minVel, float velocityFactor, 
     if(swapSpeed) vel *= -1;
 
     float dist = Utils::distance(position(), targetPosition);
-    float Vel_teste = velocityFactor;
-    float Fr_factor = ((2.75f/2.0f)*Vel_teste);
+    float Fr_factor = (2.75f/2.0f);
     //std::cout << vel << std::endl;
     //Fr_factor = ((2.5f/2.0f)*Vel_teste);
     float k = 1;
@@ -226,29 +225,29 @@ void Player::goTo(Position &targetPosition, float minVel, float velocityFactor, 
                 emit setAngularSpeed(getConstants()->teamColor(), playerId(), rotateSpeed);
             }else{
                 // caso esteja de boa, gogo
-                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), vel);
                 emit setAngularSpeed(getConstants()->teamColor(), playerId(), rotateSpeed);
             }
         }
         else if(dist > 0.1f && dist <= 0.5f){ // se estiver entre 10cm a 50cm do alvo
             if(abs(help) >= Angle::toRadians(25)){ // se a diferença for maior que 25 deg
                 // linear * 0.3 e gira
-                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), vel);
                 emit setAngularSpeed(getConstants()->teamColor(), playerId(), Fr_factor*rotateSpeed);
             }else{
                 // caso esteja de boa, gogo
-                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), vel);
                 emit setAngularSpeed(getConstants()->teamColor(), playerId(), rotateSpeed);
             }
         }
         else if(dist > 0.5f){ // se estiver a mais de 50cm do alvo
             if(abs(help) >= Angle::toRadians(35)){ // se a diferença for maior que 35 deg
                 // linear * 0.5 e gira
-                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), vel);
                 emit setAngularSpeed(getConstants()->teamColor(), playerId(), Fr_factor*rotateSpeed);
             }else{
                 // caso esteja de boa, gogo
-                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), vel);
                 emit setAngularSpeed(getConstants()->teamColor(), playerId(), rotateSpeed);
             }
         }
