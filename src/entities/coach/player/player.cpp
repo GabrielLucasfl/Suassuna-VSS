@@ -213,6 +213,8 @@ void Player::goTo(Position &targetPosition, float minVel, bool avoidTeammates, b
     //Fr_factor = ((2.5f/2.0f)*Vel_teste);
     float k = 1;
     if(swapSpeed)k=-1;
+    // To avoid circular trajectories
+    rotateSpeed *= 10;
     //Vel_teste = 1.0f;
     if ( abs(help) > Angle::toRadians(80)) {
         emit setLinearSpeed(getConstants()->teamColor(), playerId(), 0.0f);
