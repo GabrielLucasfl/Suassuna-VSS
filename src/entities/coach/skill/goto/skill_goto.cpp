@@ -23,6 +23,13 @@
 
 Skill_GoTo::Skill_GoTo() {
     _targetPosition = Position(false, 0.0, 0.0);
+    _velocityFactor = 1.0;
+    _minVel = 0.0;
+    _avoidTeammates = false;
+    _avoidOpponents = false;
+    _avoidBall = false;
+    _avoidOurGoalArea = false;
+    _avoidTheirGoalArea = false;
 }
 
 QString Skill_GoTo::name() {
@@ -35,6 +42,6 @@ void Skill_GoTo::configure() {
 
 void Skill_GoTo::run() {
     if(!_targetPosition.isInvalid()) {
-        player()->goTo(_targetPosition, _minVel);
+        player()->goTo(_targetPosition, _minVel, _velocityFactor, _avoidTeammates, _avoidOpponents, _avoidBall, _avoidOurGoalArea, _avoidTheirGoalArea);
     }
 }

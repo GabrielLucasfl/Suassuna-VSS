@@ -25,6 +25,7 @@
 #include <src/entities/coach/role/default/role_default.h>
 #include <src/utils/types/field/vss/field_vssb.h>
 #include <src/entities/coach/coordinator/ssl/coordinator_vss.h>
+#include <src/entities/coach/player/navigation/rrt/rrt.h>
 
 Suassuna::Suassuna(Constants *constants) {
     // Setting up constants
@@ -66,9 +67,11 @@ void Suassuna::start() {
 
     // Adding players
     for(int i = 0; i < getConstants()->qtPlayers(); i++) {
-        Player *player = new Player(i, getConstants(), _referee, _worldMap);
-        QObject::connect(player, SIGNAL(setLinearSpeed(quint8, float)), getActuator(), SLOT(setLinearSpeed(quint8, float)));
-        QObject::connect(player, SIGNAL(setAngularSpeed(quint8, float)), getActuator(), SLOT(setAngularSpeed(quint8, float)));
+        Player *player = new Player(i, getConstants(), _referee, _worldMap, new RRT());
+        QObject::connect(player, SIGNAL(setLinearSpeed(int, int, float)), getActuator(), SLOT(setLinearSpeed(int, int, float)));
+        QObject::connect(player, SIGNAL(setAngularSpeed(int, int, float)), getActuator(), SLOT(setAngularSpeed(int, int, float)));
+        QObject::connect(player, SIGNAL(dribble(int, int, bool)), getActuator(), SLOT(dribble(int, int, bool)));
+        QObject::connect(player, SIGNAL(kick(int, int, float)), getActuator(), SLOT(kick(int, int, float)));
 
         QObject::connect(player, SIGNAL(sendPlacement(quint8, Position, Angle)), getReferee(), SLOT(receivePlacement(quint8, Position, Angle)), Qt::DirectConnection);
         QObject::connect(getReferee(), SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), player, SLOT(receiveFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), Qt::DirectConnection);

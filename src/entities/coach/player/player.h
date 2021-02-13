@@ -28,18 +28,23 @@
 #include <src/entities/world/worldmap.h>
 #include <include/vssref_common.pb.h>
 
+class NavigationAlgorithm;
+class Navigation;
+
 class Player : public Entity
 {
     Q_OBJECT
 public:
-    Player(quint8 playerId, Constants *constants, Referee *referee, WorldMap *worldMap);
+    Player(quint8 playerId, Constants *constants, Referee *referee, WorldMap *worldMap, NavigationAlgorithm* navAlg);
 
     // Player internal getters
     quint8 playerId();
     Position position();
     Angle orientation();
-    float getPlayerRotateAngleTo(Position &targetPosition);
     float getPlayerDistanceTo(Position &targetPosition);
+    float getRotateAngle(Position targetPosition);
+    float getVxToTarget(Position targetPosition);
+    float getRotateSpeed(float angleRobotToTarget);
 
     // Player checkers
     bool isLookingTo(Position &pos, float error);
@@ -52,11 +57,16 @@ public:
     void setRole(Role *role);
 
     // Skills
-    void goTo(Position &targetPosition, float minVel);
+    void goTo(Position &targetPosition, float minVel, float velocityFactor, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea);
     void rotateTo(Position &targetPosition);
     void spin(bool isClockWise);
     void move(float linearSpeed, float angularSpeed);
     void idle();
+
+    // Path planning
+    QLinkedList<Position> getPath() const;
+    void setGoal(Position pos);
+    std::pair<Angle,float> getNavDirectionDistance(const Position &destination, const Angle &positionToLook, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea, bool avoidTheirGoalArea);
 
 private:
     // Entity inherited methods
@@ -82,6 +92,9 @@ private:
     // Role management
     Role *_playerRole;
     QMutex _mutexRole;
+
+    // Path Planning
+    Navigation* _nav;
 
 signals:
     void setLinearSpeed(quint8 playerId, float vx);

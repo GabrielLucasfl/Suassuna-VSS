@@ -22,13 +22,15 @@
 #include "player.h"
 
 #include <src/entities/coach/role/role.h>
+#include <src/entities/coach/player/navigation/navigation.h>
 
-Player::Player(quint8 playerId, Constants *constants, Referee *referee ,WorldMap *worldMap) : Entity(ENT_PLAYER) {
+Player::Player(quint8 playerId, Constants *constants, Referee *referee ,WorldMap *worldMap, NavigationAlgorithm* navAlg) : Entity(ENT_PLAYER) {
     _playerId = playerId;
     _constants = constants;
     _worldMap = worldMap;
     _referee = referee;
     _playerRole = nullptr;
+    _nav = new Navigation(this, navAlg, constants);
 }
 
 WorldMap* Player::getWorldMap() {
@@ -84,36 +86,6 @@ void Player::setRole(Role *role) {
     _mutexRole.unlock();
 }
 
-float Player::getPlayerRotateAngleTo(Position &targetPosition) {
-    float componentX = (targetPosition.x() - position().x());
-    float componentY = (targetPosition.y() - position().y());
-    float distToTarget = sqrt(pow(componentX, 2) + pow(componentY, 2));
-
-    componentX = componentX / distToTarget;
-
-    // Check possible divisions for 0
-    if(isnanf(componentX)) {
-        return 0.0f;
-    }
-
-    float angleOriginToTarget; // Angle from field origin to targetPosition
-    float angleRobotToTarget;  // Angle from robot to targetPosition
-
-    if(componentY < 0.0f) {
-        angleOriginToTarget = 2*M_PI - acos(componentX); // Angle that the target make with x-axis to robot
-    } else {
-        angleOriginToTarget = acos(componentX); // Angle that the target make with x-axis to robot
-    }
-
-    angleRobotToTarget = angleOriginToTarget - orientation().value();
-
-    // Adjusting to rotate the minimum possible
-    if(angleRobotToTarget > M_PI) angleRobotToTarget -= 2.0 * M_PI;
-    if(angleRobotToTarget < -M_PI) angleRobotToTarget += 2.0 * M_PI;
-
-    return angleRobotToTarget;
-}
-
 float Player::getPlayerDistanceTo(Position &targetPosition) {
     return sqrt(pow(position().x() - targetPosition.x(), 2) + pow(position().y() - targetPosition.y(), 2));
 }
@@ -126,41 +98,168 @@ float Player::getAngularError() {
     return 0.02f; // ~= 1.15 deg
 }
 
-void Player::goTo(Position &targetPosition, float minVel) {
-    Position playerPosition = position();
+std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destination, const Angle &positionToLook, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
+    _nav->setGoal(destination, positionToLook, avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
+    Angle direction = _nav->getDirection();
+    float distance = _nav->getDistance();
 
-    float dx = (targetPosition.x() - playerPosition.x());
-    float dy = (targetPosition.y() - playerPosition.y());
+    std::pair<Angle,float> movement = std::make_pair(direction, distance);
+    movement.first.setValue(movement.first.value() - orientation().value());
+    return movement;
+}
+
+float Player::getRotateAngle(Position targetPosition) {
+    float rotateAngle = Utils::getAngle(position(), targetPosition) - orientation().value();
+
+    if(rotateAngle > float(M_PI)) rotateAngle -= 2.0f * float(M_PI);
+    if(rotateAngle < float(-M_PI)) rotateAngle += 2.0f * float(M_PI);
+
+    if(rotateAngle > float(M_PI_2)) rotateAngle -= float(M_PI);
+    if(rotateAngle < float(-M_PI_2)) rotateAngle += float(M_PI);
+
+    return rotateAngle;
+}
+
+float Player::getVxToTarget(Position targetPosition){
+    // Salvando posicao do robo pra os calculos
+    float robot_x = position().x(), robot_y = position().y();
+
+    // Define a velocidade do robô para chegar na bola
+    float dx = (targetPosition.x() - robot_x);
+    float dy = (targetPosition.y() - robot_y);
+
+    // Pegando modulo do vetor distancia
     float distanceMod = sqrtf(powf(dx, 2.0) + powf(dy, 2.0));
-    float angleRobotToTarget = getPlayerRotateAngleTo(targetPosition);
 
-    if (distanceMod < minVel) {
-        distanceMod = minVel;
-    }
+    return distanceMod;
+}
+
+float Player::getRotateSpeed(float angleRobotToTarget){
+    float ori = orientation().value();
+    if(ori > float(M_PI)) ori -= 2.0f * float(M_PI);
+    if(ori < float(-M_PI)) ori += 2.0f * float(M_PI);
 
     bool swapSpeed = false;
-    if(angleRobotToTarget > float(M_PI) / 2.0f) {
+    if(angleRobotToTarget > float(M_PI) / 2.0f){
         angleRobotToTarget -= float(M_PI);
         swapSpeed = true;
-    } else {
-        if (angleRobotToTarget < float(-M_PI) / 2.0f) {
+    }
+    else if(angleRobotToTarget < float(-M_PI) / 2.0f){
         angleRobotToTarget += float(M_PI);
         swapSpeed = true;
+    }
+
+    if(swapSpeed){
+        if(ori > float(M_PI) / 2.0f){
+            ori -= float(M_PI);
+        }
+        else if(ori < float(-M_PI) / 2.0f){
+            ori += float(M_PI);
         }
     }
+    float angleToTarget = angleRobotToTarget + ori;
+    //float speed = _vwPID->calculate(angleToTarget, ori);
+    // Without PID: rotateSpeed is the angular difference between targetAngle and actual orientarion
+    float speed = angleToTarget - ori;
 
-    if(swapSpeed) {
-        distanceMod *= -1;
+    return speed;
+}
+
+void Player::goTo(Position &targetPosition, float minVel, float velocityFactor, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea){
+    // Taking orientation from path planning
+    Angle anglePP;
+    float help = getRotateAngle(targetPosition);
+
+    if(targetPosition.isInvalid()) {
+        anglePP = Angle(false, 0.0);
+    }else {
+        anglePP = Angle(true, help);
+    }
+    std::pair<Angle, float> a = getNavDirectionDistance(targetPosition, anglePP, avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
+
+    // Verificando se o lado de trás pra movimentação é a melhor escolha
+    help = a.first.value();
+    if(help > float(M_PI)) help -= 2.0f * float(M_PI);
+    if(help < float(-M_PI)) help += 2.0f * float(M_PI);
+
+    bool swapSpeed = false;
+    if(help > float(M_PI) / 2.0f){
+        help -= float(M_PI);
+        swapSpeed = true;
+    }
+    else if(help < float(-M_PI) / 2.0f){
+        help += float(M_PI);
+        swapSpeed = true;
     }
 
-    emit setLinearSpeed(playerId(), distanceMod);
-    emit setAngularSpeed(playerId(), angleRobotToTarget);
+    float rotateSpeed = getRotateSpeed(help);
+    float vel;
+
+    //if (pathActivated) vel = a.second;
+    //else vel = getVxToTarget(targetPosition);
+    vel = getVxToTarget(targetPosition);
+
+    // Adjusting to minVel if lower
+    if(vel <= minVel){
+        // Adjusting absolute value of velocity
+        vel = minVel;
+    }
+    // Se escolheu o lado de trás, inverte o vx
+    if(swapSpeed) vel *= -1;
+
+    float dist = Utils::distance(position(), targetPosition);
+    float Vel_teste = velocityFactor;
+    float Fr_factor = ((2.75f/2.0f)*Vel_teste);
+    //std::cout << vel << std::endl;
+    //Fr_factor = ((2.5f/2.0f)*Vel_teste);
+    float k = 1;
+    if(swapSpeed)k=-1;
+    //Vel_teste = 1.0f;
+    if ( abs(help) > Angle::toRadians(80)) {
+        emit setLinearSpeed(getConstants()->teamColor(), playerId(), 0.0f);
+        emit setAngularSpeed(getConstants()->teamColor(), playerId(), rotateSpeed);
+    } else {
+        if(dist <= 0.1f){ // se estiver a 10cm ou menos do alvo
+            if(abs(help) >= Angle::toRadians(15)){ // se a diferença for maior que 15 deg
+                // zera a linear e espera girar
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), 0.0f*k);
+                emit setAngularSpeed(getConstants()->teamColor(), playerId(), rotateSpeed);
+            }else{
+                // caso esteja de boa, gogo
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setAngularSpeed(getConstants()->teamColor(), playerId(), rotateSpeed);
+            }
+        }
+        else if(dist > 0.1f && dist <= 0.5f){ // se estiver entre 10cm a 50cm do alvo
+            if(abs(help) >= Angle::toRadians(25)){ // se a diferença for maior que 25 deg
+                // linear * 0.3 e gira
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setAngularSpeed(getConstants()->teamColor(), playerId(), Fr_factor*rotateSpeed);
+            }else{
+                // caso esteja de boa, gogo
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setAngularSpeed(getConstants()->teamColor(), playerId(), rotateSpeed);
+            }
+        }
+        else if(dist > 0.5f){ // se estiver a mais de 50cm do alvo
+            if(abs(help) >= Angle::toRadians(35)){ // se a diferença for maior que 35 deg
+                // linear * 0.5 e gira
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setAngularSpeed(getConstants()->teamColor(), playerId(), Fr_factor*rotateSpeed);
+            }else{
+                // caso esteja de boa, gogo
+                emit setLinearSpeed(getConstants()->teamColor(), playerId(), Vel_teste * vel);
+                emit setAngularSpeed(getConstants()->teamColor(), playerId(), rotateSpeed);
+            }
+        }
+    }
 }
 
 void Player::rotateTo(Position &targetPosition) {
-    float angleRobotToTarget = getPlayerRotateAngleTo(targetPosition);
+    float angleRobotToTarget = getRotateAngle(targetPosition);
+    float speed = getRotateSpeed(angleRobotToTarget);
 
-    emit setAngularSpeed(playerId(), angleRobotToTarget);
+    emit setAngularSpeed(getConstants()->teamColor(), playerId(), speed);
 }
 
 void Player::spin(bool isClockWise) {
@@ -240,4 +339,12 @@ void Player::receiveFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadr
     }
 
     _mutexRole.unlock();
+}
+
+void Player::setGoal(Position pos) {
+    _nav->setGoal(pos, orientation(), true, true, true, true, true);
+}
+
+QLinkedList<Position> Player::getPath() const {
+    return _nav->getPath();
 }
