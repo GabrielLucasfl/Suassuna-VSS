@@ -42,7 +42,7 @@ public:
     Position position();
     Angle orientation();
     float getPlayerDistanceTo(Position &targetPosition);
-    float getRotateAngle(Position targetPosition);
+    float getPlayerRotateAngleTo(Position &targetPosition);
     float getVxToTarget(Position targetPosition);
     float getRotateSpeed(float angleRobotToTarget);
 
