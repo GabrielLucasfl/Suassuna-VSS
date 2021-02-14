@@ -268,3 +268,7 @@ void Player::setGoal(Position pos) {
 QLinkedList<Position> Player::getPath() const {
     return _nav->getPath();
 }
+
+QLinkedList<Position> Player::getPath() const {
+    return _nav->getPath();
+}
