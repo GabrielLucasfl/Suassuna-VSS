@@ -68,6 +68,7 @@ SOURCES += \
     src/entities/coach/role/defender/role_defender.cpp \
     src/entities/coach/role/role.cpp \
     src/entities/coach/role/role_gk/role_goalkeeper.cpp \
+    src/entities/coach/role/supporter/role_supporter.cpp \
     src/entities/coach/skill/goto/skill_goto.cpp \
     src/entities/coach/skill/rotateto/skill_rotateto.cpp \
     src/entities/coach/skill/skill.cpp \
@@ -140,6 +141,7 @@ HEADERS += \
     src/entities/coach/role/role.h \
     src/entities/coach/role/role_gk/role_goalkeeper.h \
     src/entities/coach/role/roles.h \
+    src/entities/coach/role/supporter/role_supporter.h \
     src/entities/coach/skill/goto/skill_goto.h \
     src/entities/coach/skill/rotateto/skill_rotateto.h \
     src/entities/coach/skill/skill.h \
