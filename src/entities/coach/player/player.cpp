@@ -172,8 +172,8 @@ void Player::goTo(Position &targetPosition, float minVel, bool avoidTeammates, b
     }
 
     emit setLinearSpeed(getConstants()->teamColor(), playerId(), distanceMod);
-    // angularSpeed*10 to ensure our angular speed is enough to reach the desired orientation while our player moves
-    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget*10);
+    // angularSpeed*(constant>1) to ensure our angular speed is enough to reach the desired orientation while our player is moving
+    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget*7);
 }
 
 void Player::rotateTo(Position &targetPosition) {
