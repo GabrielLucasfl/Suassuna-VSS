@@ -157,6 +157,14 @@ void Player::goTo(Position &targetPosition, float minVel, bool avoidTeammates, b
 void Player::rotateTo(Position &targetPosition) {
     float angleRobotToTarget = getPlayerRotateAngleTo(targetPosition);
 
+    // Adjustments
+    if(angleRobotToTarget > float(M_PI) / 2.0f){
+        angleRobotToTarget -= float(M_PI);
+    }
+    else if(angleRobotToTarget < float(-M_PI) / 2.0f){
+        angleRobotToTarget += float(M_PI);
+    }
+
     emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget);
 }
 
