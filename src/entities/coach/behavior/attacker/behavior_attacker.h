@@ -42,6 +42,8 @@ private:
     void configure();
     void run();
 
+    bool pushball();
+
     // Skills enum
     enum {
         SKILL_GOTO,

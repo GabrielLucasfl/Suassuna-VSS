@@ -58,3 +58,25 @@ void Behavior_Attacker::run() {
         setSkill(SKILL_GOTO);
     }
 }
+
+bool Behavior_Attacker::pushball() {
+    Position ballPos = player()->getWorldMap()->getBall().getPosition();
+    //list of enemy players
+    int enemyPlayers[] = player()->getWorldMap()->getAvailablePlayers();
+
+    float ballAngle = player()->getPlayerRotateAngleTo(ballPos);
+
+    for(int i = 0; i < enemyPlayers.size; i++) {
+        //for every enemy, gets the angle between it and the player. Then, compare it to the angle the player
+        //is from the ball. If they're similar within a treshold, then the enemy is between the player and the ball
+        float enemyAngle = player()->getPlayerRotateAngleTo(enemyPlayers[i].getPosition());
+
+        if(ballAngle - enemyAngle < 0.1 && ballAngle - enemyAngle > -0.1){
+            //if the x position from the enemy is less than the ball, it means the enemy player is behind the ball and not blocking it
+            if(enemyPlayers[i].getPosition().x() < ballPos.x()){
+                return false;
+            }
+        }
+    }
+    return true;
+}
