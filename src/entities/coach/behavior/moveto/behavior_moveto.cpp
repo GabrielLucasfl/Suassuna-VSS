@@ -54,3 +54,11 @@ void Behavior_MoveTo::run() {
         setSkill(SKILL_GOTO);
     }
 }
+
+void Behavior_MoveTo::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
+    _skill_goTo->setAvoidBall(avoidBall);
+    _skill_goTo->setAvoidTeammates(avoidTeammates);
+    _skill_goTo->setAvoidOpponents(avoidOpponents);
+    _skill_goTo->setAvoidOurGoalArea(avoidOurGoalArea);
+    _skill_goTo->setAvoidTheirGoalArea(avoidTheirGoalArea);
+}

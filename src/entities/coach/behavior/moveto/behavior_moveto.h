@@ -36,6 +36,7 @@ public:
     void setMinimalVelocity(float minimalVelocity) { _minimalVelocity = minimalVelocity; }
     void setLinearSpeed(float linearSpeed) { _linearSpeed = linearSpeed; }
     void setAngularSpeed(float angularSpeed) { _angularSpeed = angularSpeed; }
+    void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
 
 private:
     // Behavior inherited methods
