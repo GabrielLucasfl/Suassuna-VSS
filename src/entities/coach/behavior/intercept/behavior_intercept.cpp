@@ -152,8 +152,6 @@ Position Behavior_Intercept::getInterceptionPosition() {
             interceptPosition = Position(true, intercept_x, intercept_y);
         }
     }
-    std::cout << "Intercept_x:" << _interceptPos.x() << "\n";
-    std::cout << "Intercept_y:" << _interceptPos.y() << "\n";
 
     float segmentDistance = sqrt(powf(_firstLimitationPoint.x() - _secondLimitationPoint.x(),2)
                                  + powf(_firstLimitationPoint.y() - _secondLimitationPoint.y(),2));

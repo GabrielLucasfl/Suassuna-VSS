@@ -39,14 +39,26 @@ void Role_Default::configure() {
 }
 
 void Role_Default::run() {
-    _bhv_moveTo->setTargetPosition(getWorldMap()->getLocations()->fieldCenter());
-
-    //_behavior_moveTo->setMinimalVelocity();
-    //_bhv_intercept->setInterceptSegment(Position(true, 0.6f, 0.35f), Position(true, 0.6f, -0.35f));
-    //_bhv_intercept->setObjectPosition(player()->getWorldMap()->getBall().getPosition());
-    //_bhv_intercept->setObjectVelocity(player()->getWorldMap()->getBall().getVelocity());
-
-    setBehavior(BHV_MOVETO);
+    Position playerPosition = player()->position();
+    Position ballPosition(player()->getWorldMap()->getBall().getPosition());
+    bool result = player()->getWorldMap()->getLocations()->isInsideOurArea(playerPosition);
+    if (result) std::cout << "Sucesso\n";
+    else std::cout << "Fracasso\n";
+//    Position leftPost = player()->getWorldMap()->getLocations()->ourGoalLeftPost();
+//    std::cout << "Coordenada x do poste esquerdo: " << leftPost.x() << "\n";
+//    std::cout << "Coordenada y do poste esquerdo: " << leftPost.y() << "\n";
+//    std::cout << "\n";
+//    Position rightPost = player()->getWorldMap()->getLocations()->ourGoalRightPost();
+//    std::cout << "Coordenada x do poste direito: " << rightPost.x() << "\n";
+//    std::cout << "Coordenada y do poste direito: " << rightPost.y() << "\n";
+//    std::cout << "\n";
+//    Position leftPost2 = player()->getWorldMap()->getLocations()->theirGoalLeftPost();
+//    std::cout << "Coordenada x do poste esquerdo: " << leftPost2.x() << "\n";
+//    std::cout << "Coordenada y do poste esquerdo: " << leftPost2.y() << "\n";
+//    std::cout << "\n";
+//    Position rightPost2 = player()->getWorldMap()->getLocations()->theirGoalRightPost();
+//    std::cout << "Coordenada x do poste direito: " << rightPost2.x() << "\n";
+//    std::cout << "Coordenada y do poste direito: " << rightPost2.y() << "\n";
 }
 
 QPair<Position, Angle> Role_Default::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {

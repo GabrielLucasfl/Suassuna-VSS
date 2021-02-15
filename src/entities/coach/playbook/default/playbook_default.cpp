@@ -22,7 +22,6 @@
 #include "playbook_default.h"
 
 Playbook_Default::Playbook_Default() {
-
 }
 
 QString Playbook_Default::name() {
@@ -31,12 +30,12 @@ QString Playbook_Default::name() {
 
 void Playbook_Default::configure(int numPlayers) {
     // Cleaning vector (roles pointers are already stored to further delete when configure is called)
-    _roles_default.clear();
+    _rl_gk.clear();
 
     // For each player, register an role and call usesRole() to register it in the table
     for(int i = 0; i < numPlayers; i++) {
-        _roles_default.push_back(new Role_Default());
-        usesRole(_roles_default.at(i));
+        _rl_gk.push_back(new Role_Goalkeeper());
+        usesRole(_rl_gk.at(i));
     }
 }
 
@@ -46,6 +45,6 @@ void Playbook_Default::run(int numPlayers) {
 
     // For each player, set its associated role
     for(int i = 0; i < numPlayers; i++) {
-        setPlayerRole(players.at(i), _roles_default.at(i));
+        setPlayerRole(players.at(i), _rl_gk.at(i));
     }
 }

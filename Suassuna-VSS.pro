@@ -57,6 +57,7 @@ SOURCES += \
     src/entities/coach/player/player.cpp \
     src/entities/coach/role/default/role_default.cpp \
     src/entities/coach/role/role.cpp \
+    src/entities/coach/role/role_gk/role_goalkeeper.cpp \
     src/entities/coach/skill/goto/skill_goto.cpp \
     src/entities/coach/skill/move/skill_move.cpp \
     src/entities/coach/skill/rotateto/skill_rotateto.cpp \
@@ -112,6 +113,7 @@ HEADERS += \
     src/entities/coach/player/player.h \
     src/entities/coach/role/default/role_default.h \
     src/entities/coach/role/role.h \
+    src/entities/coach/role/role_gk/role_goalkeeper.h \
     src/entities/coach/role/roles.h \
     src/entities/coach/skill/goto/skill_goto.h \
     src/entities/coach/skill/move/skill_move.h \
