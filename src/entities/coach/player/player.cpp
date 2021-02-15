@@ -87,33 +87,15 @@ void Player::setRole(Role *role) {
 }
 
 float Player::getPlayerRotateAngleTo(Position &targetPosition) {
-    float componentX = (targetPosition.x() - position().x());
-    float componentY = (targetPosition.y() - position().y());
-    float distToTarget = sqrt(pow(componentX, 2) + pow(componentY, 2));
+    float rotateAngle = Utils::getAngle(position(), targetPosition) - orientation().value();
 
-    componentX = componentX / distToTarget;
+    if(rotateAngle > float(M_PI)) rotateAngle -= 2.0f * float(M_PI);
+    if(rotateAngle < float(-M_PI)) rotateAngle += 2.0f * float(M_PI);
 
-    // Check possible divisions for 0
-    if(isnanf(componentX)) {
-        return 0.0f;
-    }
+    if(rotateAngle > float(M_PI_2)) rotateAngle -= float(M_PI);
+    if(rotateAngle < float(-M_PI_2)) rotateAngle += float(M_PI);
 
-    float angleOriginToTarget; // Angle from field origin to targetPosition
-    float angleRobotToTarget;  // Angle from robot to targetPosition
-
-    if(componentY < 0.0f) {
-        angleOriginToTarget = 2*M_PI - acos(componentX); // Angle that the target make with x-axis to robot
-    } else {
-        angleOriginToTarget = acos(componentX); // Angle that the target make with x-axis to robot
-    }
-
-    angleRobotToTarget = angleOriginToTarget - orientation().value();
-
-    // Adjusting to rotate the minimum possible
-    if(angleRobotToTarget > M_PI) angleRobotToTarget -= 2.0 * M_PI;
-    if(angleRobotToTarget < -M_PI) angleRobotToTarget += 2.0 * M_PI;
-
-    return angleRobotToTarget;
+    return rotateAngle;
 }
 
 float Player::getPlayerDistanceTo(Position &targetPosition) {
@@ -139,41 +121,37 @@ std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destinati
 }
 
 void Player::goTo(Position &targetPosition, float minVel, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
-    Position playerPosition = position();
-
-    float dx = (targetPosition.x() - playerPosition.x());
-    float dy = (targetPosition.y() - playerPosition.y());
-    float distanceMod = sqrtf(powf(dx, 2.0) + powf(dy, 2.0));
-    float angleRobotToTarget = getPlayerRotateAngleTo(targetPosition);
     // Get direction and distance to next point in path from navigation algorithm
     std::pair<Angle,float> movement = getNavDirectionDistance(targetPosition, orientation(), avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
 
     // Update distance and orientation variables
-    distanceMod = movement.second;
-    angleRobotToTarget = movement.first.value();
+    float distToPoint = movement.second;
+    float angPlayerToPoint = movement.first.value();
 
-    if (distanceMod < minVel) {
-        distanceMod = minVel;
+    if (distToPoint < minVel) {
+        distToPoint = minVel;
     }
 
+    // Check if angle is in range [-pi, pi]
+    if(angPlayerToPoint > float(M_PI)) angPlayerToPoint -= 2.0f * float(M_PI);
+    if(angPlayerToPoint < float(-M_PI)) angPlayerToPoint += 2.0f * float(M_PI);
+
+    // Check best robot front to use
     bool swapSpeed = false;
-    if(angleRobotToTarget > float(M_PI) / 2.0f) {
-        angleRobotToTarget -= float(M_PI);
+    if(angPlayerToPoint > float(M_PI) / 2.0f) {
+        angPlayerToPoint -= float(M_PI);
         swapSpeed = true;
-    } else {
-        if (angleRobotToTarget < float(-M_PI) / 2.0f) {
-        angleRobotToTarget += float(M_PI);
+    } else if (angPlayerToPoint < float(-M_PI) / 2.0f) {
+        angPlayerToPoint += float(M_PI);
         swapSpeed = true;
-        }
     }
-
     if(swapSpeed) {
-        distanceMod *= -1;
+        distToPoint *= -1;
     }
 
-    emit setLinearSpeed(getConstants()->teamColor(), playerId(), distanceMod);
+    emit setLinearSpeed(getConstants()->teamColor(), playerId(), distToPoint);
     // angularSpeed*(constant>1) to ensure our angular speed is enough to reach the desired orientation while our player is moving
-    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget*7);
+    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angPlayerToPoint*7);
 }
 
 void Player::rotateTo(Position &targetPosition) {
