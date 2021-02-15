@@ -290,22 +290,22 @@ bool Locations::isInsideTheirField(const Position &pos) {
 }
 
 bool Locations::isInsideOurArea(const Position &pos, float factor) {
-    double y_offset = ourSide().isLeft() ? 0.5 : -0.5;
+    double y_offset = ourSide().isLeft() ? -0.15 : 0.15;
     Position test(true, ourGoalLeftPost().x(), ourGoalLeftPost().y() - y_offset);
 
     double x_offset;
-    x_offset = ourSide().isLeft() ? 1.0 : -1.0;
+    x_offset = ourSide().isLeft() ? 0.15 : -0.15;
     Position ourGoalRightDeslocatedPost(true, ourGoalRightPost().x() + x_offset, ourGoalRightPost().y() + y_offset);
 
     return _isInsideArea(pos, factor, test, ourGoalRightDeslocatedPost);
 }
 
 bool Locations::isInsideTheirArea(const Position &pos, float factor) {
-    double y_offset = theirSide().isLeft() ? 0.5 : -0.5;
+    double y_offset = theirSide().isLeft() ? -0.15 : 0.15;
     Position test(true, theirGoalLeftPost().x(), theirGoalLeftPost().y() - y_offset);
 
     double x_offset;
-    x_offset = theirSide().isLeft() ? 1.0 : -1.0;
+    x_offset = theirSide().isLeft() ? 0.15 : -0.15;
     Position theirGoalRightDeslocatedPost(true, theirGoalRightPost().x() + x_offset, theirGoalRightPost().y() + y_offset);
 
     return _isInsideArea(pos, factor, test, theirGoalRightDeslocatedPost);
