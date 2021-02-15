@@ -19,16 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#ifndef BEHAVIOR_ATTACKER_H
-#define BEHAVIOR_ATTACKER_H
+#ifndef BEHAVIOR_GOFORWARD_H
+#define BEHAVIOR_GOFORWARD_H
 
 #include <src/entities/coach/behavior/behavior.h>
 #include <src/entities/coach/skill/skills.h>
 
-class Behavior_Attacker : public Behavior
+class Behavior_GoForward : public Behavior
 {
 public:
-    Behavior_Attacker();
+    Behavior_GoForward();
     QString name();
 
     // Setters
@@ -64,4 +64,4 @@ private:
 };
 
 
-#endif // BEHAVIOR_ATTACKER_H
+#endif // BEHAVIOR_GOFORWARD_H

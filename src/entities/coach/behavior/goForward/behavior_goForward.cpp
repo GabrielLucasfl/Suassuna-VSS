@@ -19,17 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#include "behavior_attacker.h"
+#include "behavior_goForward.h"
 
-Behavior_Attacker::Behavior_Attacker() {
+Behavior_GoForward::Behavior_GoForward() {
 
 }
 
-QString Behavior_Attacker::name() {
-    return "Behavior_Attacker";
+QString Behavior_GoForward::name() {
+    return "Behavior_GoForward";
 }
 
-void Behavior_Attacker::configure() {
+void Behavior_GoForward::configure() {
     // Starting skills
     _skill_goTo = new Skill_GoTo();
     _skill_move = new Skill_Move();
@@ -41,7 +41,7 @@ void Behavior_Attacker::configure() {
     addSkill(Skill_PUSHBALL, _skill_pushball);
 }
 
-void Behavior_Attacker::run() {
+void Behavior_GoForward::run() {
     Position ballPos = player()->getWorldMap()->getBall().getPosition();
 
     if (_targetPosition.isInvalid()) {
@@ -59,21 +59,19 @@ void Behavior_Attacker::run() {
     }
 }
 
-bool Behavior_Attacker::pushball() {
-    Position ballPos = player()->getWorldMap()->getBall().getPosition();
+bool Behavior_GoForward::pushball() {
     //list of enemy players
-    int enemyPlayers[] = player()->getWorldMap()->getAvailablePlayers();
+    QList<quint8> enemyPlayers = player()->getWorldMap()->getAvailablePlayers(Colors::YELLOW);
 
-    float ballAngle = player()->getPlayerRotateAngleTo(ballPos);
+    for(int i = 0; i < enemyPlayers.length(); i++) {
+        //for every enemy, gets the angle between it and the player. If the angle is small, it means the enemy
+        //player is blocking the player
+        Position enemyPos = player()->getWorldMap()->getPlayer(Colors::YELLOW, i).getPosition();
+        float enemyAngle = player()->getPlayerRotateAngleTo(enemyPos);
 
-    for(int i = 0; i < enemyPlayers.size; i++) {
-        //for every enemy, gets the angle between it and the player. Then, compare it to the angle the player
-        //is from the ball. If they're similar within a treshold, then the enemy is between the player and the ball
-        float enemyAngle = player()->getPlayerRotateAngleTo(enemyPlayers[i].getPosition());
-
-        if(ballAngle - enemyAngle < 0.1 && ballAngle - enemyAngle > -0.1){
-            //if the x position from the enemy is less than the ball, it means the enemy player is behind the ball and not blocking it
-            if(enemyPlayers[i].getPosition().x() < ballPos.x()){
+        if(enemyAngle < 0.1 && enemyAngle > -0.1){
+            //if the enemy player x position is smaller tan the player's x position, it means it's behind the player
+            if(enemyPos.x() < player()->position().x()) {
                 return false;
             }
         }
