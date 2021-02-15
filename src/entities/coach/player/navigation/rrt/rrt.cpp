@@ -26,10 +26,10 @@
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-#define ROBOT_RADIUS 0.09f
+#define ROBOT_RADIUS 0.05f
 
 RRT::RRT() {
-    srand(time(nullptr));
+    srand(time(NULL));
 
     // RRT
     _rrtMaxTime = 5; // ms
@@ -52,11 +52,27 @@ void RRT::reset() {
 
 // Add objects
 void RRT::addBall(const Position &pos) {
-    addObstacles(pos, 2*0.025f);
+    addObstacles(pos, 0.03f);
 }
 
 void RRT::addGoalArea(const Position &pos) {
+    float defAreaLength = 0.7f;
+    float defAreaWidth = 0.15f;
+    Position defAreaLeftCorner, defAreaRightCorner, defAreaMidPoint;
+    if(pos.x() > 0) {
+        defAreaLeftCorner = Position(true, this->loc()->fieldMaxX(), defAreaLength/2);
+        defAreaRightCorner = Position(true, this->loc()->fieldMaxX(), -1*defAreaLength/2);
+        defAreaMidPoint = Position(true, this->loc()->fieldMaxX() - defAreaWidth, 0);
 
+        // point of circunference
+        float p1X = abs(defAreaLeftCorner.x() - defAreaMidPoint.x())/2;
+        float p1Y = abs(defAreaLeftCorner.y() - defAreaMidPoint.y())/2;
+        Position p1 = Position(true, defAreaMidPoint.x() + p1X, defAreaMidPoint.y() + p1Y);
+        float p2X = abs(defAreaRightCorner.x() - defAreaMidPoint.x())/2;
+        float p2Y = abs(defAreaRightCorner.y() - defAreaMidPoint.y())/2;
+        Position p2 = Position(true, defAreaMidPoint.x() + p2X, defAreaMidPoint.y() - p2Y);
+
+    }
 }
 
 void RRT::addOwnRobot(const Position &pos) {
@@ -135,6 +151,7 @@ void RRT::run() {
                 while(_path.size() > i+1)
                     _path.removeAt(i+1);
             }
+
         }
     }
 
@@ -145,7 +162,7 @@ void RRT::run() {
         int last = _path.size()-1;
         _resultantAngle = Utils::getAngle(_path.at(last), _path.at(last-1));
     } else {
-        //std::cout << "[ERROR] RRT::run(), generated path has only one point!\n";
+//        std::cout << "[ERROR] RRT::run(), generated path has only one point!\n";
         _resultantAngle = Utils::getAngle(originPos(), goalPos());
     }
 }
@@ -174,12 +191,12 @@ void RRT::checkGoalInsideObstacle() {
 Position RRT::generateRandPoint() {
     float xRand, yRand;
     int xIndex, yIndex;
-    std::mt19937 mt_rand(time(nullptr));
-    //auto start = std::chrono::high_resolution_clock::now();
+    std::mt19937 mt_rand(time(0));
+//    auto start = std::chrono::high_resolution_clock::now();
     do {
         // Generate two diferente numbers between 0.0 and 1.0
-        float xSeed = static_cast<float>((mt_rand()%RAND_MAX)/RAND_MAX);
-        float ySeed = static_cast<float>((mt_rand()%RAND_MAX)/RAND_MAX);
+        float xSeed = (float) (mt_rand()%RAND_MAX)/RAND_MAX;
+        float ySeed = (float) (mt_rand()%RAND_MAX)/RAND_MAX;
 
         // Generate a randomic x and y inside the field
         xRand = xSeed*loc()->fieldLength() - loc()->fieldLength()/2;
@@ -238,8 +255,8 @@ void RRT::minimizePath(int start, int end) {
     QList<RRTVertex*> vertices;
 
     // Generate vertices
-    RRTVertex *origin=nullptr;
-    RRTVertex *goal=nullptr;
+    RRTVertex *origin=NULL;
+    RRTVertex *goal=NULL;
 
     for(int i=start; i<=end; i++) {
         // Create
@@ -405,8 +422,8 @@ QList<Position> RRT::findPath(const Position &origin, const Position &goal) {
 
     if(_gridInitialized==false) {
         // Initialize lenghts of discrete grid matrix
-        _xMaxIndex = static_cast<int>((loc()->fieldLength() / _discreteResolution)) + 1;
-        _yMaxIndex = static_cast<int>((loc()->fieldWidth()  / _discreteResolution)) + 1;
+        _xMaxIndex = (int) (loc()->fieldLength() / _discreteResolution) + 1;
+        _yMaxIndex = (int) (loc()->fieldWidth()  / _discreteResolution) + 1;
         _grid.resize(_xMaxIndex);
         _gridInitialized = true;
     }
@@ -459,7 +476,7 @@ QList<Position> RRT::findPath(const Position &origin, const Position &goal) {
             break;
     }
 
-    //std::cout << "RRT find path time: " << _rrtTimer.timemsec() << "\n";
+//    std::cout << "RRT find path time: " << _rrtTimer.timemsec() << "\n";
 
     QList<Position> path;
     if(foundPath) {
@@ -470,7 +487,7 @@ QList<Position> RRT::findPath(const Position &origin, const Position &goal) {
         path.prepend(goal);
 
     } else {
-        //std::cout << "[WARNING] RRT::findPath(), path not found!\n";
+//        std::cout << "[WARNING] RRT::findPath(), path not found!\n";
         path.append(goal);
         path.append(origin);
     }
