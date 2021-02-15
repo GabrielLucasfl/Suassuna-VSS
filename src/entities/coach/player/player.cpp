@@ -56,6 +56,22 @@ Angle Player::orientation() {
     return playerAngle;
 }
 
+bool Player::isLookingTo(Position &pos, float error){
+    // Taking the reference angle
+    float referenceAngle = atan2(pos.y() - position().y(), pos.x() - position().x());
+
+    // Analysing condition
+    float angleDifference = abs(orientation().value() - referenceAngle);
+    if (angleDifference > abs(M_PI - angleDifference)) {
+        angleDifference = abs(M_PI - angleDifference);
+    }
+    if (angleDifference < error) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void Player::setRole(Role *role) {
     _mutexRole.lock();
 

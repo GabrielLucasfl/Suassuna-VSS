@@ -41,6 +41,9 @@ public:
     float getPlayerRotateAngleTo(Position &targetPosition);
     float getPlayerDistanceTo(Position &targetPosition);
 
+    // Player checkers
+    bool isLookingTo(Position &pos, float error);
+
     // Player error
     float getLinearError();
     float getAngularError();
