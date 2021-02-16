@@ -26,8 +26,6 @@
 #include <src/entities/entity.h>
 #include <src/constants/constants.h>
 
-#define QT_TEAMS 2
-
 class Actuator : public Entity
 {
     Q_OBJECT
@@ -38,15 +36,14 @@ public:
 protected:
     // Internal
     typedef struct {
-        int isYellow;
         int playerId;
         float vx, vw;
-        float kickPower;
-        bool dribbling;
         bool isUpdated;
     } robotData;
-    robotData **_robotData;
+    robotData *_robotsData;
     QReadWriteLock _dataMutex;
+    void initData();
+    void deleteData();
 
 protected:
     Constants* getConstants();
@@ -62,10 +59,8 @@ private:
 
 public slots:
     // Internal
-    virtual void setLinearSpeed(int teamId, int playerId, float vx) = 0;
-    virtual void setAngularSpeed(int teamId, int playerId, float vw) = 0;
-    virtual void dribble(int teamId, int playerId, bool enable) = 0;
-    virtual void kick(int teamId, int playerId, float power) = 0;
+    virtual void setLinearSpeed(quint8 playerId, float vx) = 0;
+    virtual void setAngularSpeed(quint8 playerId, float vw) = 0;
 };
 
 #endif // ACTUATOR_H

@@ -84,11 +84,8 @@ private:
     QMutex _mutexRole;
 
 signals:
-    void setLinearSpeed(int teamId, int playerId, float vx);
-    void setAngularSpeed(int teamId, int playerId, float vw);
-    void dribble(int teamId, int playerId, bool enable);
-    void kick(int teamId, int playerId, float power);
-    void chipKick(int teamId, int playerId, float power);signals:
+    void setLinearSpeed(quint8 playerId, float vx);
+    void setAngularSpeed(quint8 playerId, float vw);
     void sendPlacement(quint8 playerId, Position desiredPosition, Angle desiredOrientation);
 
 public slots:

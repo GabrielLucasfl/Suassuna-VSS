@@ -49,14 +49,13 @@ private:
     QUdpSocket *_actuatorClient;
     void connectToNetwork();
     void finishConnection();
+    void stopAllRobots();
     void sendData(robotData data);
 
 public slots:
     // Internal inherited methods
-    void setLinearSpeed(int teamId, int playerId, float vx);
-    void setAngularSpeed(int teamId, int playerId, float vw);
-    void dribble(int teamId, int playerId, bool enable);
-    void kick(int teamId, int playerId, float power);
+    void setLinearSpeed(quint8 playerId, float vx);
+    void setAngularSpeed(quint8 playerId, float vw);
 };
 
 #endif // SIMACTUATOR_H

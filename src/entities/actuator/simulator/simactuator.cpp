@@ -34,19 +34,19 @@ void SimActuator::initialization() {
 }
 
 void SimActuator::loop() {
-    for(int i = 0; i < QT_TEAMS; i++) {
-        for(int j = 0; j < getConstants()->qtPlayers(); j++) {
-            _dataMutex.lockForRead();
-            if(!_robotData[i][j].isUpdated) {
-                sendData(_robotData[i][j]);
-                _robotData[i][j].isUpdated = true;
-            }
-            _dataMutex.unlock();
+    for(int i = 0; i < getConstants()->qtPlayers(); i++) {
+        _dataMutex.lockForRead();
+        robotData data = _robotsData[i];
+        if(!data.isUpdated) {
+            sendData(data);
+            data.isUpdated = true;
         }
+        _dataMutex.unlock();
     }
 }
 
 void SimActuator::finalization() {
+    stopAllRobots();
     finishConnection();
     std::cout << Text::cyan("[ACTUATOR] " , true) + Text::bold("Client finished.") + '\n';
 }
@@ -69,6 +69,20 @@ void SimActuator::finishConnection() {
     delete _actuatorClient;
 }
 
+void SimActuator::stopAllRobots() {
+    // Init data again (set all speeds to 0)
+    initData();
+
+    // For each robot, send data
+    for(int i = 0; i < getConstants()->qtPlayers(); i++) {
+        robotData data = _robotsData[i];
+        sendData(data);
+    }
+
+    // Delete data
+    deleteData();
+}
+
 void SimActuator::sendData(robotData data) {
     // Creating packet
     fira_message::sim_to_ref::Packet packet;
@@ -76,7 +90,7 @@ void SimActuator::sendData(robotData data) {
 
     // Setting macro informations (team and timestamp)
     command->set_id(data.playerId);
-    command->set_yellowteam(data.isYellow);
+    command->set_yellowteam(getConstants()->teamColor());
 
     // Setting whells speed
     double L = 0.075;
@@ -95,30 +109,16 @@ void SimActuator::sendData(robotData data) {
     }
 }
 
-void SimActuator::setLinearSpeed(int teamId, int playerId, float vx) {
+void SimActuator::setLinearSpeed(quint8 playerId, float vx) {
     _dataMutex.lockForWrite();
-    _robotData[teamId][playerId].vx = vx;
-    _robotData[teamId][playerId].isUpdated = false;
+    _robotsData[playerId].vx = vx;
+    _robotsData[playerId].isUpdated = false;
     _dataMutex.unlock();
 }
 
-void SimActuator::setAngularSpeed(int teamId, int playerId, float vw) {
+void SimActuator::setAngularSpeed(quint8 playerId, float vw) {
     _dataMutex.lockForWrite();
-    _robotData[teamId][playerId].vw = vw;
-    _robotData[teamId][playerId].isUpdated = false;
-    _dataMutex.unlock();
-}
-
-void SimActuator::dribble(int teamId, int playerId, bool enable) {
-    _dataMutex.lockForWrite();
-    _robotData[teamId][playerId].dribbling = enable;
-    _robotData[teamId][playerId].isUpdated = false;
-    _dataMutex.unlock();
-}
-
-void SimActuator::kick(int teamId, int playerId, float power) {
-    _dataMutex.lockForWrite();
-    _robotData[teamId][playerId].kickPower = power;
-    _robotData[teamId][playerId].isUpdated = false;
+    _robotsData[playerId].vw = vw;
+    _robotsData[playerId].isUpdated = false;
     _dataMutex.unlock();
 }

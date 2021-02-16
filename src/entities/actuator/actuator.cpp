@@ -25,31 +25,38 @@ Actuator::Actuator(Constants *constants) : Entity(ENT_ACTUATOR) {
     // Set constants
     _constants = constants;
 
-    // Alloc robotData
-    _robotData = (robotData **) malloc(QT_TEAMS * sizeof(robotData *));
-    for(int i = 0; i < QT_TEAMS; i++) {
-        _robotData[i] = (robotData *) malloc(getConstants()->qtPlayers() * sizeof(robotData));
-    }
-
-    for(int i = 0; i < QT_TEAMS; i++) {
-        for(int j = 0; j < getConstants()->qtPlayers(); j++) {
-            _robotData[i][j].isYellow = (i == 0) ? false : true;
-            _robotData[i][j].playerId = j;
-            _robotData[i][j].vx = 0.0f;
-            _robotData[i][j].vw = 0.0f;
-            _robotData[i][j].kickPower = 0.0f;
-            _robotData[i][j].dribbling = false;
-            _robotData[i][j].isUpdated = true;
-        }
-    }
+    // Init data
+    initData();
 }
 
 Actuator::~Actuator() {
-    for(int i = 0; i < QT_TEAMS; i++) {
-        free(_robotData[i]);
+    deleteData();
+}
+
+void Actuator::initData() {
+    // Call delete data
+    deleteData();
+
+    // Assign new data
+    _robotsData = (robotData*) malloc(getConstants()->qtPlayers() * sizeof(robotData));
+
+    // Set default values
+    for(int i = 0; i < getConstants()->qtPlayers(); i++) {
+        _robotsData[i].playerId = i;
+        _robotsData[i].vx = 0.0f;
+        _robotsData[i].vw = 0.0f;
+        _robotsData[i].isUpdated = true;
+    }
+}
+
+void Actuator::deleteData() {
+    // Free pointer
+    if(_robotsData != nullptr) {
+        free(_robotsData);
     }
 
-    free(_robotData);
+    // Set as nullptr for convenience
+    _robotsData = nullptr;
 }
 
 Constants* Actuator::getConstants() {

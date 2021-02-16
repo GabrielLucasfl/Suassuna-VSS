@@ -153,32 +153,32 @@ void Player::goTo(Position &targetPosition, float minVel) {
         distanceMod *= -1;
     }
 
-    emit setLinearSpeed(getConstants()->teamColor(), playerId(), distanceMod);
-    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget);
+    emit setLinearSpeed(playerId(), distanceMod);
+    emit setAngularSpeed(playerId(), angleRobotToTarget);
 }
 
 void Player::rotateTo(Position &targetPosition) {
     float angleRobotToTarget = getPlayerRotateAngleTo(targetPosition);
 
-    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget);
+    emit setAngularSpeed(playerId(), angleRobotToTarget);
 }
 
 void Player::spin(bool isClockWise) {
     if (isClockWise) {
-        emit setAngularSpeed(getConstants()->teamColor(), playerId(), -50);
+        emit setAngularSpeed(playerId(), -50);
     } else {
-        emit setAngularSpeed(getConstants()->teamColor(), playerId(), 50);
+        emit setAngularSpeed(playerId(), 50);
     }
 }
 
 void Player::move(float linearSpeed, float angularSpeed) {
-    emit setLinearSpeed(getConstants()->teamColor(), playerId(), linearSpeed);
-    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angularSpeed);
+    emit setLinearSpeed(playerId(), linearSpeed);
+    emit setAngularSpeed(playerId(), angularSpeed);
 }
 
 void Player::idle() {
-    emit setLinearSpeed(getConstants()->teamColor(), playerId(), 0.0);
-    emit setAngularSpeed(getConstants()->teamColor(), playerId(), 0.0);
+    emit setLinearSpeed(playerId(), 0.0);
+    emit setAngularSpeed(playerId(), 0.0);
 }
 
 void Player::initialization() {
