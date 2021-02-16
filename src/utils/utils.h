@@ -43,6 +43,7 @@ public:
     static Position threePoints(const Position &near, const Position &far, float distance, float beta);
     static Position segmentsIntersect(Position sA1, Position sA2, Position sB1, Position sB2);
     static float angleDiff(const float A, const float B);
+    static void angleLimitZeroTwoPi(float *angle);
 private:
     static Constants *_constants;
     static Constants* getConstants();

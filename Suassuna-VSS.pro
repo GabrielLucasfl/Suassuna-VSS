@@ -86,6 +86,8 @@ SOURCES += \
     src/entities/world/worldmap.cpp \
     src/exithandler.cpp \
     src/suassuna.cpp \
+    src/utils/freeangles/freeangles.cpp \
+    src/utils/freeangles/obstacle.cpp \
     src/utils/graph/edge.cpp \
     src/utils/graph/graph.cpp \
     src/utils/graph/vertex.cpp \
@@ -141,7 +143,6 @@ HEADERS += \
     src/entities/coach/role/role.h \
     src/entities/coach/role/role_gk/role_goalkeeper.h \
     src/entities/coach/role/roles.h \
-    src/entities/coach/role/supporter/role_supporter.h \
     src/entities/coach/skill/goto/skill_goto.h \
     src/entities/coach/skill/rotateto/skill_rotateto.h \
     src/entities/coach/skill/skill.h \
@@ -161,6 +162,8 @@ HEADERS += \
     src/entities/world/worldmap.h \
     src/exithandler.h \
     src/suassuna.h \
+    src/utils/freeangles/freeangles.h \
+    src/utils/freeangles/obstacle.h \
     src/utils/graph/edge.h \
     src/utils/graph/graph.h \
     src/utils/graph/graphbase.h \

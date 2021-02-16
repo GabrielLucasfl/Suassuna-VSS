@@ -45,6 +45,19 @@ private:
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_Intercept *_bhv_intercept;
+
+    // Behaiors util functions
+    bool isBall_ourfield();
+    float calcBarrier_Xcomponent();
+    float limit_Ypos(float * posy);
+    float calc_x_advanced();
+
+    //vars
+    float _posXbarrier;
+    float _limitYup;
+    float _limitYdown;
+    bool _nofreeAngles;
+
 };
 
 #endif // Role_Supporter_H

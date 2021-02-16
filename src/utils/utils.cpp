@@ -86,6 +86,13 @@ Position Utils::projectPointAtSegment(const Position &s1, const Position &s2, co
     }
 }
 
+void Utils::angleLimitZeroTwoPi(float *angle) {
+    while(*angle < 0)
+        *angle += 2.0*M_PI;
+    while(*angle > 2.0*M_PI)
+        *angle -= 2.0*M_PI;
+}
+
 float Utils::distanceToLine(const Position &s1, const Position &s2, const Position &point) {
     const Position projectedPoint = Utils::projectPointAtLine(s1, s2, point);
     const float distance = Utils::distance(point, projectedPoint);
