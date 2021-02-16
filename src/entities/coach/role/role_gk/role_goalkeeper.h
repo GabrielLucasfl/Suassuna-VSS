@@ -45,6 +45,9 @@ private:
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_Intercept *_bhv_intercept;
+
+    // Replacer
+    QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
 };
 
 #endif // ROLE_GOALKEEPER_H

@@ -40,8 +40,8 @@ void Role_Default::configure() {
 
 void Role_Default::run() {
     Position playerPosition = player()->position();
-    Position ballPosition(player()->getWorldMap()->getBall().getPosition());
-    bool result = player()->getWorldMap()->getLocations()->isInsideOurArea(playerPosition);
+    Position ballPosition(getWorldMap()->getBall().getPosition());
+    bool result = getWorldMap()->getLocations()->isInsideOurArea(playerPosition);
     if (result) std::cout << "Sucesso\n";
     else std::cout << "Fracasso\n";
 //    Position leftPost = player()->getWorldMap()->getLocations()->ourGoalLeftPost();

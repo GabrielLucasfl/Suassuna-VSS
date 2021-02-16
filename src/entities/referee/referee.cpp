@@ -16,7 +16,7 @@ Referee::Referee(Constants *constants, WorldMap *worldMap) : Entity(ENT_REFEREE)
     _replacerPort = getConstants()->replacerPort();
 
     // Set initial state
-    _lastFoul = VSSRef::Foul::HALT; // VSSRef::Foul::GAME_ON => start game WITHOUT an open referee
+    _lastFoul = VSSRef::Foul::GAME_ON; // VSSRef::Foul::GAME_ON => start game WITHOUT an open referee
                                     // VSSRef::Foul::HALT => start game WITH an open referee
     _forTeam = VSSRef::Color::NONE;
     _atQuadrant = VSSRef::Quadrant::NO_QUADRANT;

@@ -40,13 +40,13 @@ void Role_Goalkeeper::configure() {
 
 void Role_Goalkeeper::run() {
     // Fixed variables
-    Position ballPosition = player()->getWorldMap()->getBall().getPosition();
-    Velocity ballVelocity = player()->getWorldMap()->getBall().getVelocity();
+    Position ballPosition = getWorldMap()->getBall().getPosition();
+    Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
     Position invalidPosition(false, 0.0f, 0.0f);
 
     // Taking the position where the GK wait for
     Position standardPosition;
-    if (player()->getWorldMap()->getLocations()->ourSide().isRight()) {
+    if (getWorldMap()->getLocations()->ourSide().isRight()) {
         standardPosition = Position(true, 0.69f, 0.0f);
     } else {
         standardPosition = Position(true, -0.69f, 0.0f);
@@ -55,13 +55,13 @@ void Role_Goalkeeper::run() {
     // Reference position to look at
     Position lookingPosition(true, standardPosition.x(), 2.0f);
 
-    if (!player()->getWorldMap()->getLocations()->isInsideOurArea(player()->position())
-            || player()->getWorldMap()->getLocations()->isInsideTheirField(ballPosition)) {
+    if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
+            || getWorldMap()->getLocations()->isInsideTheirField(ballPosition)) {
         // Get a break at the standard position if the ball is far away or if the player is outside our goal area
         _bhv_moveTo->setTargetPosition(standardPosition);
         setBehavior(BHV_MOVETO);
     }
-    else if (player()->getWorldMap()->getLocations()->isInsideOurArea(ballPosition) && ballVelocity.abs() < 0.01f) {
+    else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition) && ballVelocity.abs() < 0.01f) {
         // Clear the ball if it is stationed at our goal area (or almost stationed)
         _bhv_moveTo->setTargetPosition(ballPosition);
         _bhv_moveTo->setMinimalVelocity(1.0);
@@ -81,4 +81,9 @@ void Role_Goalkeeper::run() {
         _bhv_intercept->setObjectVelocity(ballVelocity);
         setBehavior(BHV_INTERCEPT);
     }
+}
+
+QPair<Position, Angle> Role_Goalkeeper::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+    //// TODO: Configure this in new roles!!!!!!!!!!!!!!!!!!!!!!!!!
+    return QPair<Position, Angle>(Position(true, 0.0, 0.0), Angle(true, 0.0));
 }
