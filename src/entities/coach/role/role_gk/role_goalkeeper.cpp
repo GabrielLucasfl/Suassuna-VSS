@@ -84,6 +84,53 @@ void Role_Goalkeeper::run() {
 }
 
 QPair<Position, Angle> Role_Goalkeeper::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
-    //// TODO: Configure this in new roles!!!!!!!!!!!!!!!!!!!!!!!!!
-    return QPair<Position, Angle>(Position(true, 0.0, 0.0), Angle(true, 0.0));
+    Position standardPosition;
+    if (getWorldMap()->getLocations()->ourSide().isRight()) {
+        standardPosition = Position(true, 0.69f, 0.0f);
+    } else {
+        standardPosition = Position(true, -0.69f, 0.0f);
+    }
+
+    Position foulPosition;
+    Angle foulAngle;
+
+    switch (foul) {
+    case VSSRef::Foul::PENALTY_KICK: {
+        if (VSSRef::Color(getConstants()->teamColor()) == forTeam) {
+            foulPosition = standardPosition;
+            foulAngle = Angle(true, 90);
+        } else {
+            foulPosition = standardPosition;
+            foulAngle = Angle(true, 0);
+        }
+    } break;
+    case VSSRef::Foul::KICKOFF: {
+        foulPosition = standardPosition;
+        foulAngle = Angle(true, 90);
+    } break;
+    case VSSRef::Foul::FREE_BALL: {
+        foulPosition = standardPosition;
+        foulAngle = Angle(true, 90);
+    } break;
+    case VSSRef::Foul::GOAL_KICK: {
+        if (static_cast<VSSRef::Color>(getConstants()->teamColor()) == forTeam) {
+            if (atQuadrant == VSSRef::Quadrant::QUADRANT_2 || atQuadrant == VSSRef::Quadrant::QUADRANT_3) {
+                foulPosition = Position(true, standardPosition.x(), 0.2f);
+                foulAngle = Angle(true, 135);
+            } else {
+                foulPosition = Position(true, standardPosition.x(), -0.2f);
+                foulAngle = Angle(true, 45);
+            }
+        } else {
+            foulPosition = standardPosition;
+            foulAngle = Angle(true, 90);
+        }
+    } break;
+    default: {
+        foulPosition = standardPosition;
+        foulAngle = Angle(true, 90);
+    }
+    }
+
+    return QPair<Position, Angle>(foulPosition, foulAngle);
 }
