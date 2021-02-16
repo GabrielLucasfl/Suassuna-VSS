@@ -24,8 +24,8 @@
 
 namespace Colors{
     enum Color{
-      YELLOW,
       BLUE,
+      YELLOW,
       NONE
     };
 }
