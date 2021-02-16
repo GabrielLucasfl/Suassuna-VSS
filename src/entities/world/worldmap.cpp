@@ -28,7 +28,7 @@ WorldMap::WorldMap(Constants *constants, FieldSide ourSide, Field *field) {
     _constants = constants;
 
     // Fill player objects
-    for(int i = Colors::Color::YELLOW; i <= Colors::Color::BLUE; i++) {
+    for(int i = Colors::Color::BLUE; i <= Colors::Color::YELLOW; i++) {
         _playerObjects.insert(Colors::Color(i), new QMap<quint8, Object>());
         QMap<quint8, Object> *_teamObjects = _playerObjects.value(Colors::Color(i));
         for(int j = 0; j < getConstants()->qtPlayers(); j++) {
