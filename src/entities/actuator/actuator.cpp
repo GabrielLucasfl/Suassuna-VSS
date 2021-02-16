@@ -33,7 +33,7 @@ Actuator::Actuator(Constants *constants) : Entity(ENT_ACTUATOR) {
 
     for(int i = 0; i < QT_TEAMS; i++) {
         for(int j = 0; j < getConstants()->qtPlayers(); j++) {
-            _robotData[i][j].isYellow = (i == 0) ? true : false;
+            _robotData[i][j].isYellow = (i == 0) ? false : true;
             _robotData[i][j].playerId = j;
             _robotData[i][j].vx = 0.0f;
             _robotData[i][j].vw = 0.0f;
