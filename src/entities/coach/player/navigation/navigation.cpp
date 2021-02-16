@@ -22,10 +22,10 @@
 #include "navigation.h"
 #include <src/entities/world/locations/locations.h>
 
-Navigation::Navigation(Player *player, NavigationAlgorithm *navAlg, Constants *constants) {
+Navigation::Navigation(Player *player, NavigationAlgorithm *navAlg, Constants *constants, WorldMap* worldMap) {
     _player = player;
     _navAlg = navAlg;
-    _wm = _player->getWorldMap();
+    _wm = worldMap;
     _loc = _wm->getLocations();
     _ourTeamColor = constants->teamColor();
     if(_ourTeamColor == Colors::YELLOW) {

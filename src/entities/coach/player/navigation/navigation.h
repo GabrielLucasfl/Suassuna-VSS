@@ -29,7 +29,7 @@
 
 class Navigation {
 public:
-    Navigation(Player *player, NavigationAlgorithm *navAlg, Constants *constants);
+    Navigation(Player *player, NavigationAlgorithm *navAlg, Constants *constants, WorldMap* worldMap);
 
     virtual ~Navigation();
 

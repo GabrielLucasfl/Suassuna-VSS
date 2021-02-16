@@ -30,7 +30,7 @@ Player::Player(quint8 playerId, Constants *constants, Referee *referee ,WorldMap
     _worldMap = worldMap;
     _referee = referee;
     _playerRole = nullptr;
-    _nav = new Navigation(this, navAlg, constants);
+    _nav = new Navigation(this, navAlg, constants, worldMap);
 }
 
 WorldMap* Player::getWorldMap() {
@@ -249,10 +249,6 @@ void Player::receiveFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadr
 
 void Player::setGoal(Position pos) {
     _nav->setGoal(pos, orientation(), true, true, true, true, true);
-}
-
-QLinkedList<Position> Player::getPath() const {
-    return _nav->getPath();
 }
 
 QLinkedList<Position> Player::getPath() const {
