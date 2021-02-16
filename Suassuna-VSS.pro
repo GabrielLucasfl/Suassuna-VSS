@@ -99,7 +99,8 @@ SOURCES += \
     src/utils/types/object/object.cpp \
     src/utils/types/position/position.cpp \
     src/utils/types/velocity/velocity.cpp \
-    src/utils/utils.cpp
+    src/utils/utils.cpp \
+    src/entities/coach/behavior/attacker/behavior_goToBall.cpp
 
 # Project header files
 HEADERS += \
@@ -175,7 +176,8 @@ HEADERS += \
     src/utils/types/object/object.h \
     src/utils/types/position/position.h \
     src/utils/types/velocity/velocity.h \
-    src/utils/utils.h
+    src/utils/utils.h \
+    src/entities/coach/behavior/attacker/behavior_goToBall.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
