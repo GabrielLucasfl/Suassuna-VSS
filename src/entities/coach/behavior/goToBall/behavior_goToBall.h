@@ -26,10 +26,10 @@
 #include <src/entities/coach/skill/skills.h>
 #include <src/entities/coach/player/player.h>
 
-class Behavior_goToBall
+class Behavior_GoToBall : public Behavior
 {
 public:
-    Behavior_goToBall();
+    Behavior_GoToBall();
     QString name();
 
     // Setters

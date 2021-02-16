@@ -21,15 +21,15 @@
 
 #include "behavior_goToBall.h"
 
-Behavior_goToBall::Behavior_goToBall()
+Behavior_GoToBall::Behavior_GoToBall()
 {
 
 }
-QString Behavior_goToBall::name() {
-    return "Behavior_Second_Attacker";
+QString Behavior_GoToBall::name() {
+    return "Behavior_GoToBall";
 }
 
-void Behavior_goToBall::configure() {
+void Behavior_GoToBall::configure() {
     // Starting skills
     _skill_goTo = new Skill_GoTo();
     _skill_move = new Skill_Move();
@@ -40,7 +40,7 @@ void Behavior_goToBall::configure() {
     addSkill(SKILL_MOVE, _skill_move);
     addSkill(Skill_PUSHBALL, _skill_pushball);
 }
-void Behavior_goToBall::run() {
+void Behavior_GoToBall::run() {
     Position ballPos = player()->getWorldMap()->getBall().getPosition();
 
 
@@ -53,7 +53,7 @@ void Behavior_goToBall::run() {
             _skill_pushball->setSpeedAndOmega(_linearSpeed, _angularSpeed);
         }
         // Situation where we use the GoTo skill
-        _targetPosition = threePoints(ballPos , Locations.theirGoal() , 0.13f , M_PI );
+        _targetPosition = threePoints(ballPos , player()->getWorldMap()->getLocations()->theirGoal() , 0.13f , M_PI );
         _skill_goTo->setTargetPosition(_targetPosition);
         _skill_goTo->setMinimalVelocity(_minimalVelocity);
         setSkill(SKILL_GOTO);
@@ -61,27 +61,27 @@ void Behavior_goToBall::run() {
 
 }
 
-float Behavior_goToBall::getAngle(const Position &a, const Position &b) {
+float Behavior_GoToBall::getAngle(const Position &a, const Position &b) {
     return std::atan2(b.y()-a.y(), b.x()-a.x());
 }
 
-float Behavior_goToBall::angleDiff(const float A, const float B) {
+float Behavior_GoToBall::angleDiff(const float A, const float B) {
     float diff = fabs(B - A);
     if(diff > M_PI)
         diff = 2*M_PI - diff;
     return diff;
 }
-bool Behavior_goToBall::isBehindBall(Position posObjective) {
+bool Behavior_GoToBall::isBehindBall(Position posObjective) {
     Position posBall = player()->getWorldMap()->getBall().getPosition();
-    Position posPlayer = player()->getWorldMap()->getLocations();
-    float anglePlayer = Behavior_Second_Attacker::getAngle(posBall, posPlayer);
-    float angleDest = Behavior_Second_Attacker::getAngle(posBall, posObjective);
-    float diff = Behavior_Second_Attacker::angleDiff(anglePlayer, angleDest);
+    Position posPlayer = player()->position();
+    float anglePlayer = Behavior_GoToBall::getAngle(posBall, posPlayer);
+    float angleDest = Behavior_GoToBall::getAngle(posBall, posObjective);
+    float diff = Behavior_GoToBall::angleDiff(anglePlayer, angleDest);
     return (diff>M_PI/18.0f);
 }
-Position Behavior_goToBall::threePoints(const Position &near, const Position &far, float distance, float beta) {
+Position Behavior_GoToBall::threePoints(const Position &near, const Position &far, float distance, float beta) {
     Angle alpha(true, atan2(far.y()-near.y(), far.x()-near.x()));
     Angle gama(true, alpha.value()+beta);
-    Position p(true, near.x()+distance*cos(gama.value()), near.y()+distance*sin(gama.value()), 0.0);
+    Position p(true, near.x()+distance*cos(gama.value()), near.y()+distance*sin(gama.value()));
     return p;
 }

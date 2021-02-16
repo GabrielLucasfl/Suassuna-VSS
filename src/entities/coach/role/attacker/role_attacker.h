@@ -46,7 +46,8 @@ private:
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_Intercept *_bhv_intercept;
-    Behavior_Attacker *_bhv_attacker;
+    Behavior_GoToBall *_bhv_goToBall;
+    Behavior_GoForward *_bhv_goForward;
 };
 
 #endif // ROLE_ATTACKER_H

@@ -46,9 +46,10 @@ SOURCES += \
     src/constants/constants.cpp \
     src/entities/actuator/actuator.cpp \
     src/entities/actuator/simulator/simactuator.cpp \
-    src/entities/coach/behavior/attacker/behavior_goForward.cpp \
+    src/entities/coach/behavior/goForward/behavior_goForward.cpp \
     src/entities/coach/behavior/behavior.cpp \
     src/entities/coach/behavior/goForward/behavior_goForward.cpp \
+    src/entities/coach/behavior/goToBall/behavior_goToBall.cpp \
     src/entities/coach/behavior/intercept/behavior_intercept.cpp \
     src/entities/coach/behavior/moveto/behavior_moveto.cpp \
     src/entities/coach/coach.cpp \
@@ -115,10 +116,11 @@ HEADERS += \
     src/entities/actuator/actuator.h \
     src/entities/actuator/simulator/simactuator.h \
     src/entities/coach/basecoach.h \
-    src/entities/coach/behavior/attacker/behavior_attacker.h \
+    src/entities/coach/behavior/goForward/behavior_goForward.h \
     src/entities/coach/behavior/behavior.h \
     src/entities/coach/behavior/behaviors.h \
     src/entities/coach/behavior/goForward/behavior_goForward.h \
+    src/entities/coach/behavior/goToBall/behavior_goToBall.h \
     src/entities/coach/behavior/intercept/behavior_intercept.h \
     src/entities/coach/behavior/moveto/behavior_moveto.h \
     src/entities/coach/coach.h \
