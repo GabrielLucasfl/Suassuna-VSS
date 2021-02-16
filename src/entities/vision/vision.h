@@ -37,6 +37,8 @@ public:
     Vision(Constants *constants);
     ~Vision();
 
+    QString name();
+
 private:
     // Entity inherited methods
     void initialization();

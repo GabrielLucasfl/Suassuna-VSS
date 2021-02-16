@@ -38,6 +38,7 @@ public:
     Player(quint8 playerId, Constants *constants, Referee *referee, WorldMap *worldMap, NavigationAlgorithm* navAlg);
 
     // Player internal getters
+    QString name();
     quint8 playerId();
     Position position();
     Angle orientation();

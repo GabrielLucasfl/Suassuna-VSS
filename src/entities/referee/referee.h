@@ -18,6 +18,7 @@ public:
     Referee(Constants *constants, WorldMap *worldMap);
     ~Referee();
 
+    QString name();
     // Getters
     bool isGameOn();
 

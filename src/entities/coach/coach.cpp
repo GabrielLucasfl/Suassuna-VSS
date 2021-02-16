@@ -35,6 +35,10 @@ Coach::~Coach() {
     delete _coordinator;
 }
 
+QString Coach::name() {
+    return "Coach";
+}
+
 void Coach::setCoordinator(Coordinator *coordinator) {
     _coordinator = coordinator;
 }

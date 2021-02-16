@@ -33,6 +33,10 @@ Player::Player(quint8 playerId, Constants *constants, Referee *referee ,WorldMap
     _nav = new Navigation(this, navAlg, constants, worldMap);
 }
 
+QString Player::name() {
+    return QString("PLAYER %1").arg(getConstants()->teamColorName());
+}
+
 WorldMap* Player::getWorldMap() {
     if(_worldMap == nullptr) {
         std::cout << Text::red("[ERROR] ", true) << Text::bold("WorldMap with nullptr value at Player") + '\n';

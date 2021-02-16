@@ -59,6 +59,10 @@ void Actuator::deleteData() {
     _robotsData = nullptr;
 }
 
+QString Actuator::name() {
+    return "Actuator";
+}
+
 Constants* Actuator::getConstants() {
     if(_constants == nullptr) {
         std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Actuator") + '\n';

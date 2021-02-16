@@ -50,6 +50,7 @@ public:
     void stopEntity();
 
     // Getters
+    virtual QString name() = 0;
     int loopFrequency();
     int entityPriority();
     int entityId();

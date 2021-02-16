@@ -31,6 +31,10 @@ World::~World() {
 
 }
 
+QString World::name() {
+    return "World";
+}
+
 void World::addEntity(Entity *e, int priority) {
     // Check if priority is already created
     QHash<int, Entity*> *prioEntities;

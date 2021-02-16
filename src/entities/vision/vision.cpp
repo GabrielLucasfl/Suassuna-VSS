@@ -73,6 +73,10 @@ Vision::~Vision() {
     _playerObjects.clear();
 }
 
+QString Vision::name() {
+    return "Vision";
+}
+
 void Vision::initialization() {
     // Bind and connect socket in network
     bindAndConnect();

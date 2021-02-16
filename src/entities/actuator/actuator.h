@@ -33,6 +33,8 @@ public:
     Actuator(Constants *constants);
     ~Actuator();
 
+    QString name();
+
 protected:
     // Internal
     typedef struct {

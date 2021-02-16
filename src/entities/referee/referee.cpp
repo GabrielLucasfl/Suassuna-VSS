@@ -26,6 +26,10 @@ Referee::~Referee() {
     _placementData.clear();
 }
 
+QString Referee::name() {
+    return "Referee";
+}
+
 bool Referee::isGameOn() {
     return (_lastFoul == VSSRef::GAME_ON);
 }

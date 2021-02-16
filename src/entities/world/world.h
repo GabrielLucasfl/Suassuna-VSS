@@ -33,6 +33,8 @@ public:
     World(Constants *constants);
     ~World();
 
+    QString name();
+
     // Entities management
     void addEntity(Entity *e, int priority);
 

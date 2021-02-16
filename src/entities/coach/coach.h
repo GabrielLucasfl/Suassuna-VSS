@@ -32,6 +32,8 @@ public:
     Coach(Constants *constants, Referee *referee, WorldMap *worldMap);
     ~Coach();
 
+    QString name();
+
     // Coordinator management
     void setCoordinator(Coordinator *coordinator);
 
