@@ -109,6 +109,7 @@ void NavigationAlgorithm::generatePath() {
 
     // Generate points until reach the goal
     Timer timer;
+    timer.start();
     Position currPos = _originPos;
     float navAlgPathResolution = 0.03f;
     while(Utils::distance(currPos, _goalPos)>4*navAlgPathResolution && timer.getSeconds() <=NAVALG_MAXTIME) {
