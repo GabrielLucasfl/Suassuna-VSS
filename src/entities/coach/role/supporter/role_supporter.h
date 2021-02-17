@@ -58,6 +58,8 @@ private:
     float _limitYdown;
     bool _nofreeAngles;
 
+    QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
+
 };
 
 #endif // Role_Supporter_H

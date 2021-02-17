@@ -50,34 +50,34 @@ void Role_Supporter::run() {
     _bhv_moveTo->setTargetPosition(player()->position());
 
     Position positionVar;
-    Position positionBall = player()->getWorldMap()->getBall().getPosition();
+    Position positionBall = getWorldMap()->getBall().getPosition();
     positionVar = Position(true, positionBall.x()-0.3f, positionBall.y());
 
-    QList<quint8> playersId1 = player()->getWorldMap()->getAvailablePlayers(Colors::Color::BLUE);
-    QList<quint8> playersId2 = player()->getWorldMap()->getAvailablePlayers(Colors::Color::YELLOW);
+    QList<quint8> playersId1 = getWorldMap()->getAvailablePlayers(Colors::Color::BLUE);
+    QList<quint8> playersId2 = getWorldMap()->getAvailablePlayers(Colors::Color::YELLOW);
 
     QList<quint8>::const_iterator it;
     QList<Object> players;
 
     for(int i=0; i<playersId1.size(); i++){
-       Object p = player()->getWorldMap()->getPlayer(Colors::Color::BLUE,playersId1[i]);
+       Object p = getWorldMap()->getPlayer(Colors::Color::BLUE,playersId1[i]);
        players.push_back(p);
-       std::cout << (int) playersId1[i]<< '\n';
+       std::cout << static_cast<int>(playersId1[i]) << '\n';
     }
 
     for(int i=0; i<playersId2.size(); i++){
-       Object p = player()->getWorldMap()->getPlayer(Colors::Color::YELLOW,playersId2[i]);
+       Object p = getWorldMap()->getPlayer(Colors::Color::YELLOW,playersId2[i]);
        players.push_back(p);
-       std::cout << (int) playersId2[i]<< '\n';
+       std::cout << static_cast<int>(playersId2[i]) << '\n';
     }
 
     QList<Obstacle> obstacles = FreeAngles::getObstacles(positionBall, 1.5f, players);
     QList<FreeAngles::Interval> intervalos;
 
     if(getConstants()->teamColor() == Colors::Color::YELLOW){
-        intervalos = FreeAngles::getFreeAngles(positionBall,player()->getWorldMap()->getLocations()->ourGoalLeftPost(),player()->getWorldMap()->getLocations()->ourGoalRightPost(),obstacles,false);
+        intervalos = FreeAngles::getFreeAngles(positionBall,getWorldMap()->getLocations()->ourGoalLeftPost(),getWorldMap()->getLocations()->ourGoalRightPost(),obstacles,false);
     }else{
-        intervalos = FreeAngles::getFreeAngles(positionBall,player()->getWorldMap()->getLocations()->ourGoalLeftPost(),player()->getWorldMap()->getLocations()->ourGoalRightPost(),obstacles,false);
+        intervalos = FreeAngles::getFreeAngles(positionBall,getWorldMap()->getLocations()->ourGoalLeftPost(),getWorldMap()->getLocations()->ourGoalRightPost(),obstacles,false);
         //intervalos = FreeAngles::getFreeAngles(positionBall,player()->getWorldMap()->getLocations()->ourGoalRightPost(),player()->getWorldMap()->getLocations()->ourGoalLeftPost(),obstacles,false);
     }
 
@@ -142,7 +142,7 @@ void Role_Supporter::run() {
 }
 
 bool Role_Supporter::isBall_ourfield(){
-    Position position_ball = player()->getWorldMap()->getBall().getPosition();
+    Position position_ball = getWorldMap()->getBall().getPosition();
     if(getConstants()->teamSide().isRight()){
         return (position_ball.x() > 0.0f);
     }else{
@@ -152,9 +152,9 @@ bool Role_Supporter::isBall_ourfield(){
 
 float Role_Supporter::calcBarrier_Xcomponent(){
     if(getConstants()->teamSide().isRight()){
-        return player()->getWorldMap()->getLocations()->ourGoal().x() - _posXbarrier;
+        return getWorldMap()->getLocations()->ourGoal().x() - _posXbarrier;
     }else{
-        return player()->getWorldMap()->getLocations()->ourGoal().x() + _posXbarrier;
+        return getWorldMap()->getLocations()->ourGoal().x() + _posXbarrier;
     }
 }
 
@@ -170,6 +170,17 @@ float Role_Supporter::limit_Ypos(float * posy){
 float Role_Supporter::calc_x_advanced(){
     float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
     float distance_advanced = 0.35f;
-    Position position_ball = player()->getWorldMap()->getBall().getPosition();
+    Position position_ball = getWorldMap()->getBall().getPosition();
     return position_ball.x() + (distance_advanced*posx_control);
+}
+
+QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+    Position standardPosition;
+    Angle standardAngle = Angle(true, 0);
+    if (getWorldMap()->getLocations()->ourSide().isRight()) {
+        standardPosition = Position(true, 0.375f, 0.0f);
+    } else {
+        standardPosition = Position(true, -0.375f, 0.0f);
+    }
+    return QPair<Position,Angle>(standardPosition, standardAngle);
 }
