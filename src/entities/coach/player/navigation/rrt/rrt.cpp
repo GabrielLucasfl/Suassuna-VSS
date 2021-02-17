@@ -195,8 +195,8 @@ Position RRT::generateRandPoint() {
 //    auto start = std::chrono::high_resolution_clock::now();
     do {
         // Generate two diferente numbers between 0.0 and 1.0
-        float xSeed = (float) (mt_rand()%RAND_MAX)/RAND_MAX;
-        float ySeed = (float) (mt_rand()%RAND_MAX)/RAND_MAX;
+        float xSeed = static_cast<float>((mt_rand()%RAND_MAX))/RAND_MAX;
+        float ySeed = static_cast<float>((mt_rand()%RAND_MAX))/RAND_MAX;
 
         // Generate a randomic x and y inside the field
         xRand = xSeed*loc()->fieldLength() - loc()->fieldLength()/2;
@@ -422,8 +422,8 @@ QList<Position> RRT::findPath(const Position &origin, const Position &goal) {
 
     if(_gridInitialized==false) {
         // Initialize lenghts of discrete grid matrix
-        _xMaxIndex = (int) (loc()->fieldLength() / _discreteResolution) + 1;
-        _yMaxIndex = (int) (loc()->fieldWidth()  / _discreteResolution) + 1;
+        _xMaxIndex = static_cast<int>((loc()->fieldLength() / _discreteResolution)) + 1;
+        _yMaxIndex = static_cast<int>((loc()->fieldWidth()  / _discreteResolution)) + 1;
         _grid.resize(_xMaxIndex);
         _gridInitialized = true;
     }
