@@ -62,22 +62,6 @@ Angle Player::orientation() {
     return playerAngle;
 }
 
-bool Player::isLookingTo(Position &pos, float error){
-    // Taking the reference angle
-    float referenceAngle = atan2(pos.y() - position().y(), pos.x() - position().x());
-
-    // Analysing condition
-    float angleDifference = abs(orientation().value() - referenceAngle);
-    if (angleDifference > abs(M_PI - angleDifference)) {
-        angleDifference = abs(M_PI - angleDifference);
-    }
-    if (angleDifference < error) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 void Player::setRole(Role *role) {
     _mutexRole.lock();
 
@@ -153,9 +137,9 @@ void Player::goTo(Position &targetPosition, float minVel, bool avoidTeammates, b
         distToPoint *= -1;
     }
 
-    emit setLinearSpeed(getConstants()->teamColor(), playerId(), distToPoint);
+    emit setLinearSpeed(playerId(), distToPoint);
     // angularSpeed*(constant>1) to ensure our angular speed is enough to reach the desired orientation while our player is moving
-    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angPlayerToPoint*7);
+    emit setAngularSpeed(playerId(), angPlayerToPoint*7);
 }
 
 void Player::rotateTo(Position &targetPosition) {
@@ -169,7 +153,7 @@ void Player::rotateTo(Position &targetPosition) {
         angleRobotToTarget += float(M_PI);
     }
 
-    emit setAngularSpeed(getConstants()->teamColor(), playerId(), angleRobotToTarget);
+    emit setAngularSpeed(playerId(), angleRobotToTarget);
 }
 
 void Player::spin(bool isClockWise) {
@@ -257,4 +241,20 @@ void Player::setGoal(Position pos) {
 
 QLinkedList<Position> Player::getPath() const {
     return _nav->getPath();
+}
+
+bool Player::isLookingTo(Position &pos, float error){
+    // Taking the reference angle
+    float referenceAngle = atan2(pos.y() - position().y(), pos.x() - position().x());
+
+    // Analysing condition
+    float angleDifference = abs(orientation().value() - referenceAngle);
+    if (angleDifference > abs(M_PI - angleDifference)) {
+        angleDifference = abs(M_PI - angleDifference);
+    }
+    if (angleDifference < error) {
+        return true;
+    } else {
+        return false;
+    }
 }
