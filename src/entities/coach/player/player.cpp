@@ -24,7 +24,7 @@
 #include <src/entities/coach/role/role.h>
 #include <src/entities/coach/player/navigation/navigation.h>
 
-Player::Player(quint8 playerId, Constants *constants, Referee *referee ,WorldMap *worldMap, NavigationAlgorithm* navAlg) : Entity(ENT_PLAYER) {
+Player::Player(quint8 playerId, Constants* constants, Referee* referee ,WorldMap* worldMap, NavigationAlgorithm* navAlg) : Entity(ENT_PLAYER) {
     _playerId = playerId;
     _constants = constants;
     _worldMap = worldMap;
@@ -62,7 +62,7 @@ Angle Player::orientation() {
     return playerAngle;
 }
 
-void Player::setRole(Role *role) {
+void Player::setRole(Role* role) {
     _mutexRole.lock();
 
     // Set old role player to nullptr

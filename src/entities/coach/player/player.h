@@ -35,7 +35,7 @@ class Player : public Entity
 {
     Q_OBJECT
 public:
-    Player(quint8 playerId, Constants *constants, Referee *referee, WorldMap *worldMap, NavigationAlgorithm* navAlg);
+    Player(quint8 playerId, Constants* constants, Referee* referee, WorldMap* worldMap, NavigationAlgorithm* navAlg);
 
     // Player internal getters
     QString name();
@@ -55,7 +55,7 @@ public:
     float getAngularError();
 
     // Role management
-    void setRole(Role *role);
+    void setRole(Role* role);
 
     // Skills
     void goTo(Position &targetPosition, float minVel, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea);
@@ -77,21 +77,21 @@ private:
 
     // Constants
     Constants* getConstants();
-    Constants *_constants;
+    Constants* _constants;
 
     // Worldmap
-    WorldMap *_worldMap;
+    WorldMap* _worldMap;
     WorldMap* getWorldMap();
 
     // Referee
-    Referee *_referee;
+    Referee* _referee;
     Referee* getReferee();
 
     // Player internal
     quint8 _playerId;
 
     // Role management
-    Role *_playerRole;
+    Role* _playerRole;
     QMutex _mutexRole;
 
     // Path Planning
