@@ -33,11 +33,11 @@ public:
     QString name();
 
     // Setters
-    void setTargetPosition(Position targetPosition) { _targetPosition = targetPosition; }
     void setMinimalVelocity(float minimalVelocity) { _minimalVelocity = minimalVelocity; }
     void setLinearSpeed(float linearSpeed) { _linearSpeed = linearSpeed; }
     void setAngularSpeed(float angularSpeed) { _angularSpeed = angularSpeed; }
-
+    void setOffsetBehindBall(float offsetBehindBall) { _offsetBehindBall = offsetBehindBall; }
+    void setReferencePosition(Position referencePosition) {_referencePosition = referencePosition; }
     // Auxiliar
 
     float getAngle(const Position &a, const Position &b);
@@ -67,6 +67,8 @@ private:
     float _minimalVelocity;
     float _linearSpeed;
     float _angularSpeed;
+    float _offsetBehindBall;
+    Position _referencePosition;
 };
 
 

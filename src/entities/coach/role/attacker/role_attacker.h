@@ -40,7 +40,7 @@ private:
     enum {
         BHV_MOVETO,
         BHV_INTERCEPT,
-        BHV_ATTACKER
+        BHV_GOTOBALL
     };
 
     // Behaviors pointers

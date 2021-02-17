@@ -32,16 +32,16 @@ void Role_Attacker::configure() {
     // Starting behaviors
     _bhv_moveTo = new Behavior_MoveTo();
     _bhv_intercept = new Behavior_Intercept();
-    _bhv_attacker = new Behavior_Attacker();
+    _bhv_goToBall = new Behavior_GoToBall();
 
     // Adding behaviors to behaviors list
     addBehavior(BHV_MOVETO, _bhv_moveTo);
     addBehavior(BHV_INTERCEPT, _bhv_intercept);
-    addBehavior(BHV_ATTACKER, _bhv_attacker);
+    addBehavior(BHV_GOTOBALL, _bhv_goToBall);
 }
 
 void Role_Attacker::run() {
-    _bhv_attacker->setTargetPosition(player()->getWorldMap()->getBall().getPosition());
+    //_bhv_attacker->setTargetPosition(player()->getWorldMap()->getBall().getPosition());
 
     //_bhv_moveTo->setTargetPosition(player()->getWorldMap()->getBall().getPosition());
 
@@ -50,6 +50,6 @@ void Role_Attacker::run() {
     //_bhv_intercept->setObjectPosition(player()->getWorldMap()->getBall().getPosition());
     //_bhv_intercept->setObjectVelocity(player()->getWorldMap()->getBall().getVelocity());
 
-    setBehavior(BHV_ATTACKER);
+    setBehavior(BHV_GOTOBALL);
 }
 

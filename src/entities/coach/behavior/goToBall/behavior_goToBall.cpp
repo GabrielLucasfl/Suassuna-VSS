@@ -39,25 +39,28 @@ void Behavior_GoToBall::configure() {
     addSkill(SKILL_GOTO, _skill_goTo);
     addSkill(SKILL_MOVE, _skill_move);
     addSkill(Skill_PUSHBALL, _skill_pushball);
+
+    // Setting offset
+    setOffsetBehindBall(0.0f);
+    _targetPosition.setPosition(false, 0.0f , 0.0f);
+    _referencePosition.setPosition(false, 0.0f, 0.0f);
 }
 void Behavior_GoToBall::run() {
     Position ballPos = player()->getWorldMap()->getBall().getPosition();
 
-
-    if (_targetPosition.isInvalid()) {
-        // Situation where we use the Move skill
-        _skill_move->setMovementSpeed(_linearSpeed, _angularSpeed);
-        setSkill(SKILL_MOVE);
+    // Situation where we use the GoTo skill
+    if(_referencePosition.isInvalid()) {
+        _targetPosition = ballPos;
     } else {
-        if (player()->getPlayerDistanceTo(ballPos) < 0.3){
-            _skill_pushball->setSpeedAndOmega(_linearSpeed, _angularSpeed);
+        _targetPosition = threePoints(ballPos , _referencePosition , _offsetBehindBall , M_PI );
+        if(_targetPosition.isInvalid()) { // check if is inside field
+            _targetPosition = ballPos;
         }
-        // Situation where we use the GoTo skill
-        _targetPosition = threePoints(ballPos , player()->getWorldMap()->getLocations()->theirGoal() , 0.13f , M_PI );
-        _skill_goTo->setTargetPosition(_targetPosition);
-        _skill_goTo->setMinimalVelocity(_minimalVelocity);
-        setSkill(SKILL_GOTO);
     }
+    _skill_goTo->setTargetPosition(_targetPosition);
+    _skill_goTo->setMinimalVelocity(_minimalVelocity);
+    setSkill(SKILL_GOTO);
+
 
 }
 
