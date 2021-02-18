@@ -36,7 +36,7 @@ public:
 
     // Init skill control
     bool isInitialized();
-    void initialize(Constants *constants);
+    void initialize(Constants *constants, WorldMap *worldMap);
     void setPlayer(Player *player);
 
     // Method to run in role
@@ -50,6 +50,7 @@ protected:
     // Player and constants getters
     Player* player();
     Constants* getConstants();
+    WorldMap* getWorldMap();
 
 private:
     // Virtual implementation in inherited classes
@@ -61,6 +62,9 @@ private:
 
     // Constants
     Constants *_constants;
+
+    // WorldMap
+    WorldMap *_worldMap;
 
     // Skills list
     QMap<int, Skill*> _skillList;

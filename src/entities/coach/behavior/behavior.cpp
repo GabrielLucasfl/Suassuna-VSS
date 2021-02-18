@@ -48,8 +48,9 @@ bool Behavior::isInitialized() {
     return _initialized;
 }
 
-void Behavior::initialize(Constants *constants) {
+void Behavior::initialize(Constants *constants, WorldMap *worldMap) {
     _constants = constants;
+    _worldMap = worldMap;
     configure();
     _initialized = true;
 }
@@ -111,6 +112,17 @@ Constants* Behavior::getConstants() {
     }
     else {
         return _constants;
+    }
+
+    return nullptr;
+}
+
+WorldMap* Behavior::getWorldMap() {
+    if(_worldMap == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("WorldMap with nullptr value at " + this->name().toStdString()) + '\n';
+    }
+    else {
+        return _worldMap;
     }
 
     return nullptr;

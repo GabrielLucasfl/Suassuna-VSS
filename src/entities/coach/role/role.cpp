@@ -80,7 +80,7 @@ void Role::runRole() {
 
         // Check if initialized
         if(!_actualBehavior->isInitialized()) {
-            _actualBehavior->initialize(getConstants());
+            _actualBehavior->initialize(getConstants(), getWorldMap());
         }
 
         // Run skill
