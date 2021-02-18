@@ -124,6 +124,20 @@ void Constants::readTeamConstants() {
 
     _qtPlayers = teamMap["qtPlayers"].toUInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded qtPlayers: " + std::to_string(qtPlayers())) + '\n';
+
+    // Taking player mapping in json
+    QVariantMap playerMap = teamMap["Player"].toMap();
+
+    // Filling vars
+    QList<QVariant> playerPIDList = playerMap["playerPID"].toList();
+    _playerPID = std::tuple<float, float, float>(playerPIDList.at(0).toFloat(), playerPIDList.at(1).toFloat(), playerPIDList.at(2).toFloat());
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded playerPID: {"
+                                                                  + std::to_string(playerPIDList.at(0).toFloat()) + ", "
+                                                                  + std::to_string(playerPIDList.at(1).toFloat()) + ", "
+                                                                  + std::to_string(playerPIDList.at(2).toFloat()) + "}\n");
+
+    _playerBaseSpeed = playerMap["playerBaseSpeed"].toFloat();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded playerBaseSpeed: " + std::to_string(_playerBaseSpeed)) + '\n';
 }
 
 int Constants::threadFrequency() {
@@ -188,4 +202,12 @@ FieldSide Constants::teamSide() {
 
 int Constants::qtPlayers() {
     return _qtPlayers;
+}
+
+std::tuple<float, float, float> Constants::playerPID() {
+    return _playerPID;
+}
+
+float Constants::playerBaseSpeed() {
+    return _playerBaseSpeed;
 }

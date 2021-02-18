@@ -39,7 +39,7 @@ protected:
     // Internal
     typedef struct {
         int playerId;
-        float vx, vw;
+        float wheelLeft, wheelRight;
         bool isUpdated;
     } robotData;
     robotData *_robotsData;
@@ -61,8 +61,7 @@ private:
 
 public slots:
     // Internal
-    virtual void setLinearSpeed(quint8 playerId, float vx) = 0;
-    virtual void setAngularSpeed(quint8 playerId, float vw) = 0;
+    virtual void setWheelsSpeed(quint8 playerId, float wheelLeft, float wheelRight) = 0;
 };
 
 #endif // ACTUATOR_H

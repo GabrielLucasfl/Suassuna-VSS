@@ -1,6 +1,6 @@
 {
 	"Thread":{
-		"threadFrequency": 60
+		"threadFrequency": 120
 	},
 	
 	"Vision":{
@@ -14,7 +14,11 @@
 	"Team":{
 		"teamColor": "blue",
 		"teamSide": "right",
-		"qtPlayers": 3
+		"qtPlayers": 3,
+		"Player":{
+			"playerPID": [20.0, 0.0, 2.5],
+			"playerBaseSpeed": 30.0
+		}
 	},
 	
 	"Referee":{

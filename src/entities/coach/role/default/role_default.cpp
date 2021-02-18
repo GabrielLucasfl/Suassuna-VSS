@@ -39,6 +39,7 @@ void Role_Default::configure() {
 }
 
 void Role_Default::run() {
+    /*
     Position playerPosition = player()->position();
     Position ballPosition(getWorldMap()->getBall().getPosition());
     bool result = getWorldMap()->getLocations()->isInsideOurArea(playerPosition);
@@ -59,6 +60,10 @@ void Role_Default::run() {
 //    Position rightPost2 = player()->getWorldMap()->getLocations()->theirGoalRightPost();
 //    std::cout << "Coordenada x do poste direito: " << rightPost2.x() << "\n";
 //    std::cout << "Coordenada y do poste direito: " << rightPost2.y() << "\n";
+    */
+
+    _bhv_moveTo->setTargetPosition(getWorldMap()->getLocations()->fieldCenter());
+    setBehavior(BHV_MOVETO);
 }
 
 QPair<Position, Angle> Role_Default::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {

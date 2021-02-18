@@ -47,6 +47,11 @@ public:
     float getVxToTarget(Position targetPosition);
     float getRotateSpeed(float angleRobotToTarget);
 
+    // Utils
+    std::pair<float, float> getWheelsSpeed(float angleToObject);
+    float to180Range(float angle);
+    float smallestAngleDiff(float target, float source);
+
     // Player checkers
     bool isLookingTo(Position &pos, float error);
 
@@ -70,6 +75,7 @@ public:
     std::pair<Angle,float> getNavDirectionDistance(const Position &destination, const Angle &positionToLook, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea, bool avoidTheirGoalArea);
 
 private:
+    float _lastError;
     // Entity inherited methods
     void initialization();
     void loop();
@@ -98,8 +104,7 @@ private:
     Navigation *_nav;
 
 signals:
-    void setLinearSpeed(quint8 playerId, float vx);
-    void setAngularSpeed(quint8 playerId, float vw);
+    void setWheelsSpeed(quint8 playerId, float wheelLeft, float wheelRight);
     void sendPlacement(quint8 playerId, Position desiredPosition, Angle desiredOrientation);
 
 public slots:

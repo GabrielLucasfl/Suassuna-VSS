@@ -54,8 +54,7 @@ private:
 
 public slots:
     // Internal inherited methods
-    void setLinearSpeed(quint8 playerId, float vx);
-    void setAngularSpeed(quint8 playerId, float vw);
+    void setWheelsSpeed(quint8 playerId, float wheelLeft, float wheelRight);
 };
 
 #endif // SIMACTUATOR_H

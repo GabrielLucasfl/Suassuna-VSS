@@ -61,6 +61,8 @@ public:
     Colors::Color teamColor();
     FieldSide teamSide();
     int qtPlayers();
+    std::tuple<float, float, float> playerPID();
+    float playerBaseSpeed();
 
 protected:
     QVariantMap documentMap() { return _documentMap; }
@@ -104,6 +106,8 @@ private:
     QString _teamColorName;
     int _qtPlayers;
     FieldSide _teamSide;
+    std::tuple<float, float, float> _playerPID;
+    float _playerBaseSpeed;
 };
 
 #endif // CONSTANTS_H

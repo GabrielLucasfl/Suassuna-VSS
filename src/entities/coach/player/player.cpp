@@ -30,6 +30,7 @@ Player::Player(quint8 playerId, Constants *constants, Referee *referee ,WorldMap
     _worldMap = worldMap;
     _referee = referee;
     _playerRole = nullptr;
+    _lastError = 0;
     _nav = new Navigation(this, navAlg, constants, worldMap);
 }
 
@@ -86,6 +87,87 @@ float Player::getPlayerRotateAngleTo(Position &targetPosition) {
     return rotateAngle;
 }
 
+std::pair<float, float> Player::getWheelsSpeed(float angleToObject) {
+    // Constants
+    float Kp = std::get<0>(getConstants()->playerPID());
+    float Kd = std::get<2>(getConstants()->playerPID());
+
+    // Take base data
+    float angleRobot = orientation().value();
+    float error = smallestAngleDiff(angleRobot, angleToObject);
+
+    // Check if robot front can be reversed to reach target
+    bool reversed = false;
+    if(fabs(error) > M_PI/2.0 + M_PI/20.0) {
+        // Mark as reversed and update robot ori
+        reversed = true;
+        angleRobot = to180Range(angleRobot + M_PI);
+
+        // Calculates the error and reverses the front of the robot
+        error = smallestAngleDiff(angleRobot, angleToObject);
+    }
+
+    // PID
+    float motorSpeed = (Kp*error) + (Kd * (error - _lastError));// + 0.2 * sumErr;
+    _lastError = error;
+
+    // Take player base speed
+    float baseSpeed = getConstants()->playerBaseSpeed();
+
+    // Normalize
+    motorSpeed = motorSpeed > baseSpeed ? baseSpeed : motorSpeed;
+    motorSpeed = motorSpeed < -baseSpeed ? -baseSpeed : motorSpeed;
+
+    // Update individual wheels speed
+    float rightMotorSpeed;
+    float leftMotorSpeed;
+
+    if (motorSpeed > 0) {
+        leftMotorSpeed = baseSpeed ;
+        rightMotorSpeed = baseSpeed - motorSpeed;
+    } else {
+        leftMotorSpeed = baseSpeed + motorSpeed;
+        rightMotorSpeed = baseSpeed;
+    }
+
+
+    // Check if reversed and update wheels speed
+    if (reversed) {
+        if (motorSpeed > 0) {
+            leftMotorSpeed = -baseSpeed + motorSpeed;
+            rightMotorSpeed = -baseSpeed ;
+        } else {
+            leftMotorSpeed = -baseSpeed ;
+            rightMotorSpeed = -baseSpeed - motorSpeed;
+        }
+    }
+
+    return std::make_pair(leftMotorSpeed, rightMotorSpeed);
+}
+
+float Player::to180Range(float angle) {
+    angle = fmod(angle, 2 * M_PI);
+    if (angle < -M_PI) {
+        angle = angle + 2 * M_PI;
+    } else if (angle > M_PI) {
+        angle = angle - 2 * M_PI;
+    }
+    return angle;
+}
+
+float Player::smallestAngleDiff(float target, float source) {
+    double diff;
+    diff = fmod(target + 2*M_PI, 2 * M_PI) - fmod(source + 2*M_PI, 2 * M_PI);
+
+    if (diff > M_PI) {
+        diff = diff - 2 * M_PI;
+    } else if (diff < -M_PI) {
+        diff = diff + 2 * M_PI;
+    }
+
+    return diff;
+}
+
 float Player::getPlayerDistanceTo(Position &targetPosition) {
     return sqrt(pow(position().x() - targetPosition.x(), 2) + pow(position().y() - targetPosition.y(), 2));
 }
@@ -109,37 +191,19 @@ std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destinati
 }
 
 void Player::goTo(Position &targetPosition, float minVel, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
-    // Get direction and distance to next point in path from navigation algorithm
-    std::pair<Angle,float> movement = getNavDirectionDistance(targetPosition, orientation(), avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
+    // Take angle to target
+    float angleToTarget = Utils::getAngle(position(), targetPosition);
 
-    // Update distance and orientation variables
-    float distToPoint = movement.second;
-    float angPlayerToPoint = movement.first.value();
-
-    if (distToPoint < minVel) {
-        distToPoint = minVel;
+    if(getPlayerDistanceTo(targetPosition) <= getLinearError()) {
+        idle();
+        return ;
     }
 
-    // Check if angle is in range [-pi, pi]
-    if(angPlayerToPoint > float(M_PI)) angPlayerToPoint -= 2.0f * float(M_PI);
-    if(angPlayerToPoint < float(-M_PI)) angPlayerToPoint += 2.0f * float(M_PI);
+    // Take wheels speed
+    std::pair<float, float> wheelsSpeed = getWheelsSpeed(angleToTarget);
 
-    // Check best robot front to use
-    bool swapSpeed = false;
-    if(angPlayerToPoint > float(M_PI) / 2.0f) {
-        angPlayerToPoint -= float(M_PI);
-        swapSpeed = true;
-    } else if (angPlayerToPoint < float(-M_PI) / 2.0f) {
-        angPlayerToPoint += float(M_PI);
-        swapSpeed = true;
-    }
-    if(swapSpeed) {
-        distToPoint *= -1;
-    }
-
-    emit setLinearSpeed(playerId(), distToPoint);
-    // angularSpeed*(constant>1) to ensure our angular speed is enough to reach the desired orientation while our player is moving
-    emit setAngularSpeed(playerId(), angPlayerToPoint*7);
+    // Send wheels speed to actuator
+    emit setWheelsSpeed(playerId(), wheelsSpeed.first, wheelsSpeed.second);
 }
 
 void Player::rotateTo(Position &targetPosition) {
@@ -152,26 +216,25 @@ void Player::rotateTo(Position &targetPosition) {
     else if(angleRobotToTarget < float(-M_PI) / 2.0f){
         angleRobotToTarget += float(M_PI);
     }
-
-    emit setAngularSpeed(playerId(), angleRobotToTarget);
+/*
+    emit setAngularSpeed(playerId(), angleRobotToTarget);*/
 }
 
 void Player::spin(bool isClockWise) {
     if (isClockWise) {
-        emit setAngularSpeed(playerId(), -50);
+        emit setWheelsSpeed(playerId(), 50, 0);
     } else {
-        emit setAngularSpeed(playerId(), 50);
+        emit setWheelsSpeed(playerId(), 0, 50);
     }
 }
 
-void Player::move(float linearSpeed, float angularSpeed) {
+void Player::move(float linearSpeed, float angularSpeed) {/*
     emit setLinearSpeed(playerId(), linearSpeed);
-    emit setAngularSpeed(playerId(), angularSpeed);
+    emit setAngularSpeed(playerId(), angularSpeed);*/
 }
 
 void Player::idle() {
-    emit setLinearSpeed(playerId(), 0.0);
-    emit setAngularSpeed(playerId(), 0.0);
+    emit setWheelsSpeed(playerId(), 0.0, 0.0);
 }
 
 void Player::initialization() {

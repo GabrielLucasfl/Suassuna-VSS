@@ -68,8 +68,7 @@ void Suassuna::start() {
     // Adding players
     for(int i = 0; i < getConstants()->qtPlayers(); i++) {
         Player *player = new Player(i, getConstants(), _referee, _worldMap, new RRT());
-        QObject::connect(player, SIGNAL(setLinearSpeed(quint8, float)), getActuator(), SLOT(setLinearSpeed(quint8, float)));
-        QObject::connect(player, SIGNAL(setAngularSpeed(quint8, float)), getActuator(), SLOT(setAngularSpeed(quint8, float)));
+        QObject::connect(player, SIGNAL(setWheelsSpeed(quint8, float, float)), getActuator(), SLOT(setWheelsSpeed(quint8, float, float)));
 
         QObject::connect(player, SIGNAL(sendPlacement(quint8, Position, Angle)), getReferee(), SLOT(receivePlacement(quint8, Position, Angle)), Qt::DirectConnection);
         QObject::connect(getReferee(), SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), player, SLOT(receiveFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), Qt::DirectConnection);

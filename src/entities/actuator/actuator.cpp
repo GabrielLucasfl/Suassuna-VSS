@@ -43,8 +43,8 @@ void Actuator::initData() {
     // Set default values
     for(int i = 0; i < getConstants()->qtPlayers(); i++) {
         _robotsData[i].playerId = i;
-        _robotsData[i].vx = 0.0f;
-        _robotsData[i].vw = 0.0f;
+        _robotsData[i].wheelLeft = 0.0f;
+        _robotsData[i].wheelRight = 0.0f;
         _robotsData[i].isUpdated = true;
     }
 }

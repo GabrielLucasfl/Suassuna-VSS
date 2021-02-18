@@ -92,14 +92,9 @@ void SimActuator::sendData(robotData data) {
     command->set_id(data.playerId);
     command->set_yellowteam(getConstants()->teamColor());
 
-    // Setting whells speed
-    double L = 0.075;
-    double r = 0.0325;
-    double wl = ((2 * data.vx) - (L * data.vw)) / (2 * r);
-    double wr = ((2 * data.vx) + (L * data.vw)) / (2 * r);
-
-    command->set_wheel_left(wl);
-    command->set_wheel_right(wr);
+    // Set wheels speed
+    command->set_wheel_left(data.wheelLeft);
+    command->set_wheel_right(data.wheelRight);
 
     // Sending data to simulator
     std::string buffer;
@@ -109,16 +104,10 @@ void SimActuator::sendData(robotData data) {
     }
 }
 
-void SimActuator::setLinearSpeed(quint8 playerId, float vx) {
+void SimActuator::setWheelsSpeed(quint8 playerId, float wheelLeft, float wheelRight) {
     _dataMutex.lockForWrite();
-    _robotsData[playerId].vx = vx;
-    _robotsData[playerId].isUpdated = false;
-    _dataMutex.unlock();
-}
-
-void SimActuator::setAngularSpeed(quint8 playerId, float vw) {
-    _dataMutex.lockForWrite();
-    _robotsData[playerId].vw = vw;
+    _robotsData[playerId].wheelLeft = wheelLeft;
+    _robotsData[playerId].wheelRight = wheelRight;
     _robotsData[playerId].isUpdated = false;
     _dataMutex.unlock();
 }
