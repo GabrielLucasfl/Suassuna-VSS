@@ -39,15 +39,19 @@ private:
     // Behaviors enum
     enum {
         BHV_MOVETO,
-        BHV_INTERCEPT,
         BHV_GOTOBALL
+    };
+
+    // State machine
+    int _state;
+    enum {
+        MOVETO,
+        GOTOBALL
     };
 
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;
-    Behavior_Intercept *_bhv_intercept;
     Behavior_GoToBall *_bhv_goToBall;
-    Behavior_GoForward *_bhv_goForward;
 };
 
 #endif // ROLE_ATTACKER_H

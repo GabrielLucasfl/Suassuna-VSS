@@ -31,16 +31,52 @@ QString Role_Attacker::name() {
 void Role_Attacker::configure() {
     // Starting behaviors
     _bhv_moveTo = new Behavior_MoveTo();
-    _bhv_intercept = new Behavior_Intercept();
     _bhv_goToBall = new Behavior_GoToBall();
 
     // Adding behaviors to behaviors list
     addBehavior(BHV_MOVETO, _bhv_moveTo);
-    addBehavior(BHV_INTERCEPT, _bhv_intercept);
     addBehavior(BHV_GOTOBALL, _bhv_goToBall);
+
+    _state = GOTOBALL;
 }
 
 void Role_Attacker::run() {
+    Position playerPos = player()->position();
+    Position ballPos = player()->getWorldMap()->getBall().getPosition();
+
+    //ball possession
+    bool ballPossession;
+    if(player()->getPlayerDistanceTo(ballPos) < 0.04f) {
+        ballPossession = true;
+    } else {
+        ballPossession = false;
+    }
+
+    if(_bhv_goToBall->isBehindBall(playerPos) && ballPossession){
+
+    }
+
+    switch (_state) {
+        case GOTOBALL : {
+            _bhv_goToBall->setReferencePosition(player()->getWorldMap()->getLocations()->theirGoal());
+            _bhv_goToBall->setOffsetBehindBall(0.13f);
+
+
+            setBehavior(BHV_GOTOBALL);
+
+
+        } break;
+        case MOVETO : {
+            setBehavior(BHV_MOVETO);
+
+
+
+        } break;
+        default : {
+
+        } break;
+    }
+
     //_bhv_attacker->setTargetPosition(player()->getWorldMap()->getBall().getPosition());
 
     //_bhv_moveTo->setTargetPosition(player()->getWorldMap()->getBall().getPosition());
