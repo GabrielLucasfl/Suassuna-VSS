@@ -33,7 +33,6 @@ public:
 
     // Setters
     void setTargetPosition(Position targetPosition) { _targetPosition = targetPosition; }
-    void setMinimalVelocity(float minimalVelocity) { _minimalVelocity = minimalVelocity; }
     void setBaseSpeed(float baseSpeed) { _desiredBaseSpeed = baseSpeed; }
     void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
 
@@ -44,17 +43,14 @@ private:
 
     // Skills enum
     enum {
-        SKILL_GOTO,
-        SKILL_MOVE
+        SKILL_GOTO
     };
 
     // Skills pointers
     Skill_GoTo *_skill_goTo;
-    Skill_Move *_skill_move;
 
     // Parameters
     Position _targetPosition;
-    float _minimalVelocity;
     float _desiredBaseSpeed;
 };
 

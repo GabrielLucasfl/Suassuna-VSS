@@ -64,7 +64,7 @@ void Role_Goalkeeper::run() {
     else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition) && ballVelocity.abs() < 0.01f) {
         // Clear the ball if it is stationed at our goal area (or almost stationed)
         _bhv_moveTo->setTargetPosition(ballPosition);
-        _bhv_moveTo->setMinimalVelocity(1.0);
+        //_bhv_moveTo->setMinimalVelocity(1.0);
         setBehavior(BHV_MOVETO);
     }
     else if (!player()->isLookingTo(lookingPosition, 0.3f)) {

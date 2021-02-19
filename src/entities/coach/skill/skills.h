@@ -25,6 +25,5 @@
 #include <src/entities/coach/skill/goto/skill_goto.h>
 #include <src/entities/coach/skill/rotateto/skill_rotateto.h>
 #include <src/entities/coach/skill/spin/skill_spin.h>
-#include <src/entities/coach/skill/move/skill_move.h>
 
 #endif // SKILLS_H

@@ -189,18 +189,26 @@ std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destinati
     return movement;
 }
 
-void Player::goTo(Position &targetPosition, float minVel, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
+void Player::goTo(Position &targetPosition, float desiredBaseSpeed, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
     // Take angle to target
-    std::pair<Angle,float> movement = getNavDirectionDistance(targetPosition, orientation(), avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
-    float angleToTarget = movement.first.value();
-
-    if(getPlayerDistanceTo(targetPosition) <= getLinearError()) {
-        idle();
-        return;
+    float angleToTarget;
+    float baseSpeed = desiredBaseSpeed;
+    // If there isn't a valid target position: move forward
+    if(targetPosition.isInvalid()) {
+        angleToTarget = orientation().value();
+    }
+    // If there is a valid target position: move towards it
+    else {
+        std::pair<Angle,float> movement = getNavDirectionDistance(targetPosition, orientation(), avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
+        angleToTarget = movement.first.value();
+        if(getPlayerDistanceTo(targetPosition) <= getLinearError()) {
+            idle();
+            return;
+        }
     }
 
     // Take wheels speed
-    std::pair<float, float> wheelsSpeed = getWheelsSpeed(angleToTarget, getConstants()->playerBaseSpeed());
+    std::pair<float, float> wheelsSpeed = getWheelsSpeed(angleToTarget, baseSpeed);
 
     // Send wheels speed to actuator
     emit setWheelsSpeed(playerId(), wheelsSpeed.first, wheelsSpeed.second);
@@ -219,11 +227,6 @@ void Player::spin(bool isClockWise) {
     } else {
         emit setWheelsSpeed(playerId(), 0, 50);
     }
-}
-
-void Player::move(float desiredBaseSpeed) {
-    std::pair<float,float> speed = getWheelsSpeed(orientation().value(), desiredBaseSpeed);
-    setWheelsSpeed(playerId(), speed.first, speed.second);
 }
 
 void Player::idle() {
@@ -289,10 +292,6 @@ void Player::receiveFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadr
     }
 
     _mutexRole.unlock();
-}
-
-void Player::setGoal(Position pos) {
-    _nav->setGoal(pos, orientation(), true, true, true, true, true);
 }
 
 QLinkedList<Position> Player::getPath() const {

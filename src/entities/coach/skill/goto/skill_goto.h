@@ -32,7 +32,7 @@ public:
 
     // Target management
     void setTargetPosition(Position &targetPosition) { _targetPosition = targetPosition; }
-    void setMinimalVelocity(float minimalVelocity) { _minVel = minimalVelocity; }
+    void setMovementBaseSpeed(float desiredBaseSpeed) { _desiredBaseSpeed = desiredBaseSpeed; }
 
     // Avoid methods
     void setAvoidTeammates(bool cond) { _avoidTeammates = cond; }
@@ -48,7 +48,7 @@ private:
 
     // Internal
     Position _targetPosition;
-    float _minVel;
+    float _desiredBaseSpeed;
 
     // Avoid Parameters
     bool _avoidTeammates;
