@@ -44,6 +44,7 @@ public:
     float angleDiff(const float A, const float B);
     bool isBehindBall(Position posObjective);
     Position threePoints(const Position &near, const Position &far, float distance, float beta);
+    Position ballPrevision();
 
 private:
     // Behavior inherited methods

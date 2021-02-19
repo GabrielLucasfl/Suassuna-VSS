@@ -21,8 +21,14 @@
 
 #include "behavior_goToBall.h"
 
-Behavior_GoToBall::Behavior_GoToBall()
-{
+Behavior_GoToBall::Behavior_GoToBall() {
+    // Default value
+    _minimalVelocity = 1.0;
+    _linearSpeed = 0.0;
+    _angularSpeed = 0.0;
+    _offsetBehindBall = 0.0;
+    _targetPosition.setPosition(false, 0.0f , 0.0f);
+    _referencePosition.setPosition(false, 0.0f, 0.0f);
 
 }
 QString Behavior_GoToBall::name() {
@@ -40,10 +46,6 @@ void Behavior_GoToBall::configure() {
     addSkill(SKILL_MOVE, _skill_move);
     addSkill(Skill_PUSHBALL, _skill_pushball);
 
-    // Setting offset
-    setOffsetBehindBall(0.0f);
-    _targetPosition.setPosition(false, 0.0f , 0.0f);
-    _referencePosition.setPosition(false, 0.0f, 0.0f);
 }
 void Behavior_GoToBall::run() {
     Position ballPos = player()->getWorldMap()->getBall().getPosition();
@@ -60,7 +62,6 @@ void Behavior_GoToBall::run() {
     _skill_goTo->setTargetPosition(_targetPosition);
     _skill_goTo->setMinimalVelocity(_minimalVelocity);
     setSkill(SKILL_GOTO);
-
 
 }
 
@@ -88,3 +89,20 @@ Position Behavior_GoToBall::threePoints(const Position &near, const Position &fa
     Position p(true, near.x()+distance*cos(gama.value()), near.y()+distance*sin(gama.value()));
     return p;
 }
+
+Position Behavior_GoToBall::ballPrevision() {
+    Position ballPosition = player()->getWorldMap()->getBall().getPosition();
+    Position enemyGoal = player()->getWorldMap()->getLocations()->theirGoal();
+    float angle = atan2((enemyGoal.y() - ballPosition.y()), (enemyGoal.x() - ballPosition.x()));
+
+    Velocity ballVelocity = player()->getWorldMap()->getBall().getVelocity();
+    Velocity playerVelocity = player()->getWorldMap()->getPlayer(getConstants()->teamColor(),player()->playerId()).getVelocity();
+    float fracVelX = (playerVelocity.vx()/ballVelocity.vx());
+    float fracVelY = (playerVelocity.vy()/ballVelocity.vy());
+
+    float futurePositionX = (player()->position().x() + _offsetBehindBall * cos(angle) - ballPosition.x() * fracVelX)/(1-fracVelX);
+    float futurePositionY = (player()->position().y() + _offsetBehindBall * sin(angle) - ballPosition.y() * fracVelY)/(1-fracVelY);
+
+    return Position(true, futurePositionX, futurePositionY);
+}
+

@@ -41,7 +41,7 @@ void Role_Attacker::configure() {
 }
 
 void Role_Attacker::run() {
-    Position playerPos = player()->position();
+
     Position ballPos = player()->getWorldMap()->getBall().getPosition();
 
     //ball possession
@@ -52,24 +52,29 @@ void Role_Attacker::run() {
         ballPossession = false;
     }
 
-    if(_bhv_goToBall->isBehindBall(playerPos) && ballPossession){
-
-    }
-
     switch (_state) {
         case GOTOBALL : {
+
             _bhv_goToBall->setReferencePosition(player()->getWorldMap()->getLocations()->theirGoal());
-            _bhv_goToBall->setOffsetBehindBall(0.13f);
-
-
+            _bhv_goToBall->setOffsetBehindBall(0.06f);
+            _bhv_goToBall->setMinimalVelocity(3.0f);
             setBehavior(BHV_GOTOBALL);
 
+            //transitions
+            if(ballPossession) {
+                _state = MOVETO;
+            }
 
         } break;
         case MOVETO : {
+            _bhv_moveTo->setLinearSpeed(2.0f);
+            _bhv_moveTo->setAngularSpeed(0.0f);
             setBehavior(BHV_MOVETO);
 
-
+            //transitions
+            if(!ballPossession) {
+                _state = GOTOBALL;
+            }
 
         } break;
         default : {
