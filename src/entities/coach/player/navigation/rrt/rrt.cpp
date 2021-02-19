@@ -33,7 +33,7 @@ RRT::RRT() {
 
     // RRT
     _rrtMaxTime = 5; // ms
-    _rrtGrowVectorLength = 0.05f;
+    _rrtGrowVectorLength = 0.1f;
 
     // Discrete point generation
     _discreteResolution = 0.05f;
@@ -56,23 +56,23 @@ void RRT::addBall(const Position &pos) {
 }
 
 void RRT::addGoalArea(const Position &pos) {
-    float defAreaLength = 0.7f;
-    float defAreaWidth = 0.15f;
-    Position defAreaLeftCorner, defAreaRightCorner, defAreaMidPoint;
+    //add area as 3 circular obstacles
+    float areaLength = loc()->defenseAreaLength();
+    float radius = areaLength/6;
+    float centersX = abs(loc()->ourAreaLeftCorner().x()) + radius;
+    Position c1, c2, c3;
     if(pos.x() > 0) {
-        defAreaLeftCorner = Position(true, this->loc()->fieldMaxX(), defAreaLength/2);
-        defAreaRightCorner = Position(true, this->loc()->fieldMaxX(), -1*defAreaLength/2);
-        defAreaMidPoint = Position(true, this->loc()->fieldMaxX() - defAreaWidth, 0);
-
-        // point of circunference
-        float p1X = abs(defAreaLeftCorner.x() - defAreaMidPoint.x())/2;
-        float p1Y = abs(defAreaLeftCorner.y() - defAreaMidPoint.y())/2;
-        Position p1 = Position(true, defAreaMidPoint.x() + p1X, defAreaMidPoint.y() + p1Y);
-        float p2X = abs(defAreaRightCorner.x() - defAreaMidPoint.x())/2;
-        float p2Y = abs(defAreaRightCorner.y() - defAreaMidPoint.y())/2;
-        Position p2 = Position(true, defAreaMidPoint.x() + p2X, defAreaMidPoint.y() - p2Y);
-
+        c1 = Position(true, centersX, 2*radius);
+        c2 = Position(true, centersX, 0);
+        c3 = Position(true, centersX, -2*radius);
+    }else {
+        c1 = Position(true, -centersX, 2*radius);
+        c2 = Position(true, -centersX, 0);
+        c3 = Position(true, -centersX, -2*radius);
     }
+    addObstacles(c1, radius);
+    addObstacles(c2, radius);
+    addObstacles(c3, radius);
 }
 
 void RRT::addOwnRobot(const Position &pos) {
@@ -205,8 +205,9 @@ Position RRT::generateRandPoint() {
         // Discretize point
         xIndex = (xRand/_discreteResolution) + (_xMaxIndex)/2;
         yIndex = (yRand/_discreteResolution) + (_yMaxIndex)/2;
+
         _rrtTimer.stop();
-    } while(_grid[xIndex][yIndex] && _rrtTimer.getSeconds() <= _rrtMaxTime);
+    } while(_grid[xIndex][yIndex] && _rrtTimer.getMiliSeconds() <= _rrtMaxTime);
 /*
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
@@ -221,7 +222,6 @@ Position RRT::generateRandPoint() {
 
 // Checks if two point can connect
 bool RRT::canConnect(const Position &posA, const Position &posB, float extraRadius, float extraRadiusIfClose) {
-
     for(int i=0; i<_obstacleList.size(); i++) {
         RRTObstacle obst = _obstacleList.at(i);
 
@@ -233,7 +233,6 @@ bool RRT::canConnect(const Position &posA, const Position &posB, float extraRadi
         if(dist < obstRadius)
             return false;
     }
-
     return true;
 }
 
@@ -406,9 +405,11 @@ void RRT::smoothPath() {
 }
 
 QList<Position> RRT::findPath(const Position &origin, const Position &goal) {
+    // Check goal inside obstacle area
+    checkGoalInsideObstacle();
+
     // Check trivial case
     if(canConnect(origin, goal, ROBOT_RADIUS, ROBOT_RADIUS)) {
-
         // Generate path
         QList<Position> path;
         path.append(goal);
@@ -416,9 +417,6 @@ QList<Position> RRT::findPath(const Position &origin, const Position &goal) {
 
         return path;
     }
-
-    // Check goal inside obstacle area
-    checkGoalInsideObstacle();
 
     if(_gridInitialized==false) {
         // Initialize lenghts of discrete grid matrix
@@ -472,7 +470,7 @@ QList<Position> RRT::findPath(const Position &origin, const Position &goal) {
 
         // Check max time
         _rrtTimer.stop();
-        if(_rrtTimer.getSeconds() >= _rrtMaxTime)
+        if(_rrtTimer.getMiliSeconds() >= _rrtMaxTime)
             break;
     }
 
@@ -501,10 +499,10 @@ QList<Position> RRT::findPath(const Position &origin, const Position &goal) {
 // Check if path has been blocked
 bool RRT::isPathBlocked(Position *breakPoint) {
     bool blocked = false;
-
     for(int i=1; i<_path.size(); i++) {
         // If you found a obstacle in the path, copy the last point before the obstacle and
         // remove all point starting from obstacle
+
         if(canConnect(_path.at(i-1), _path.at(i), ROBOT_RADIUS/3, 0.0)==false) {
 
             // Store break point

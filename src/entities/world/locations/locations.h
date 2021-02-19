@@ -57,6 +57,8 @@ public:
     float fieldDefenseLength();
     float fieldDefenseWidth();
     float fieldGoalDepth();
+    float defenseAreaLength();
+    float defenseAreaWidth();
 
     // Our
     Position ourFieldTopCorner();
@@ -67,6 +69,10 @@ public:
     Position ourPenaltyMark();
     Position ourGoalRightMidPost();
     Position ourGoalLeftMidPost();
+    Position ourAreaLeftPost();
+    Position ourAreaRightPost();
+    Position ourAreaLeftCorner();
+    Position ourAreaRightCorner();
 
     // Their
     Position theirFieldTopCorner();
@@ -77,12 +83,16 @@ public:
     Position theirPenaltyMark();
     Position theirGoalRightMidPost();
     Position theirGoalLeftMidPost();
+    Position theirAreaLeftPost();
+    Position theirAreaRightPost();
+    Position theirAreaLeftCorner();
+    Position theirAreaRightCorner();
 
     // Auxiliar functions
     bool isInsideOurField(const Position &pos);
     bool isInsideTheirField(const Position &pos);
-    bool isInsideOurArea(const Position &pos, float factor = 1.0);
-    bool isInsideTheirArea(const Position &pos, float factor = 1.0);
+    bool isInsideOurArea(const Position &pos);
+    bool isInsideTheirArea(const Position &pos);
     bool isOutsideField(const Position &pos, float factor = 1.0);
     bool isOutsideField(const Position &pos, float dx, float dy);
     bool isInsideField(const Position &pos, float factor = 1.0);
@@ -117,13 +127,22 @@ private:
     Position _rightGoalLeftMidPost;
     Position _leftGoalRightMidPost;
     Position _leftGoalLeftMidPost;
+    Position _leftAreaLeftPost;
+    Position _leftAreaRightPost;
+    Position _rightAreaLeftPost;
+    Position _rightAreaRightPost;
+    Position _leftAreaLeftCorner;
+    Position _leftAreaRightCorner;
+    Position _rightAreaLeftCorner;
+    Position _rightAreaRightCorner;
     float _fieldCenterRadius;
     float _goalLength;
     float _goalWidth;
     float _goalDepth;
+    float _defenseAreaLength;
+    float _defenseAreaWidth;
 
     // Internal
-    bool _isInsideArea(const Position &pos, float factor, const Position &goalLeftPost, const Position &goalRightDeslocatedPost);
     bool _isOutsideField(const Position &pos, const float maxX, const float maxY);
 
     // Mutex for data management

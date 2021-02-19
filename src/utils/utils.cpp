@@ -21,6 +21,7 @@
 
 #include "utils.h"
 #include <math.h>
+#define FLOAT_MARGIN 10e-4f
 
 Constants* Utils::_constants = nullptr;
 
@@ -134,4 +135,38 @@ Position Utils::threePoints(const Position &near, const Position &far, float dis
     Angle gama(true, alpha.value()+beta);
     Position p(true, near.x()+distance*cos(gama.value()), near.y()+distance*sin(gama.value()));
     return p;
+}
+
+Position Utils::segmentsIntersect(Position sA1, Position sA2, Position sB1, Position sB2) {
+    float denominador = (sB2.y()-sB1.y())*(sA2.x() - sA1.x()) - (sB2.x() - sB1.x())*(sA2.y()-sA1.y());
+
+    if (denominador != 0.0f){ // retas se interceptam
+        float u = ((sB2.x() - sB1.x())*(sA1.y() - sB1.y()) - (sB2.y() - sB1.y())*(sA1.x() - sB1.x()));
+        float v = ((sA2.x() - sA1.x())*(sA1.y() - sB1.y()) - (sA2.y() - sA1.y())*(sA1.x() - sB1.x()));
+
+        if(u != 0.0f){   //
+            float xIntersec = sA1.x() + (u/denominador)*(sA2.x()-sA1.x());
+            float yIntersec = sA1.y() + (u/denominador)*(sA2.y()-sA1.y());
+            if(xIntersec <= std::min(std::max(sA1.x(), sA2.x()), std::max(sB1.x(), sB2.x()))
+               && xIntersec >= std::max(std::min(sA1.x(), sA2.x()), std::min(sB1.x(), sB2.x()))) {
+                return Position(true, xIntersec, yIntersec);
+            }else {
+                return Position(false, xIntersec, yIntersec);
+            }
+        }else if(v != 0.0f){
+            float xIntersec = sB1.x() + (v/denominador)*(sB2.x()-sB1.x());
+            float yIntersec = sB1.y() + (v/denominador)*(sB2.y()-sB1.y());
+            if(xIntersec <= std::min(std::max(sA1.x(), sA2.x()), std::max(sB1.x(), sB2.x()))
+               && xIntersec >= std::max(std::min(sA1.x(), sA2.x()), std::min(sB1.x(), sB2.x()))) {
+                return Position(true, xIntersec, yIntersec);
+            }else {
+                return Position(false, xIntersec, yIntersec);
+            }
+        }else{ // caso especial -> as linhas sao coincidentes
+            return Position(true, sA1.x(), sA1.y());
+        }
+
+    }else{ //Os segmentos sao paralelos
+        return Position(false, 0.0f,0.0f);
+    }
 }

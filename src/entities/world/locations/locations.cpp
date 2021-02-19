@@ -53,6 +53,18 @@ Locations::Locations(FieldSide ourSide, Field *field) {
     _leftGoalRightMidPost = Position(true, -fieldX, defenseAreaLength/2.0f);
     _leftGoalLeftMidPost = Position(true, -fieldX, -defenseAreaLength/2.0f);
 
+    // Defense areas
+    _leftAreaLeftPost = Position(true, -fieldX, -0.35f);
+    _leftAreaRightPost = Position(true, -fieldX, 0.35f);
+    _rightAreaLeftPost = Position(true, fieldX, 0.35f);
+    _rightAreaRightPost = Position(true, fieldX, -0.35f);
+    _leftAreaLeftCorner = Position(true, _leftAreaLeftPost.x() + 0.15f, _leftAreaLeftPost.y());
+    _leftAreaRightCorner = Position(true, _leftAreaRightPost.x() + 0.15f, _leftAreaRightPost.y());
+    _rightAreaLeftCorner = Position(true, _rightAreaLeftPost.x() - 0.15f, _rightAreaLeftPost.y());
+    _rightAreaRightCorner = Position(true, _rightAreaRightPost.x() - 0.15f, _rightAreaRightPost.y());
+    _defenseAreaWidth = 0.15f;
+    _defenseAreaLength = 0.7f;
+
     // Penalty marks
     _rightPenaltyMark = Position(true, (fieldX/2.0f - defenseAreaWidth), 0.0);
     _leftPenaltyMark = Position(true, (-fieldX/2.0f + defenseAreaWidth), 0.0);
@@ -294,26 +306,24 @@ bool Locations::isInsideTheirField(const Position &pos) {
     return (isInsideOurField(pos)==false);
 }
 
-bool Locations::isInsideOurArea(const Position &pos, float factor) {
-    double y_offset = ourSide().isLeft() ? -0.15 : 0.15;
-    Position test(true, ourGoalLeftPost().x(), ourGoalLeftPost().y() - y_offset);
-
-    double x_offset;
-    x_offset = ourSide().isLeft() ? 0.15 : -0.15;
-    Position ourGoalRightDeslocatedPost(true, ourGoalRightPost().x() + x_offset, ourGoalRightPost().y() + y_offset);
-
-    return _isInsideArea(pos, factor, test, ourGoalRightDeslocatedPost);
+bool Locations::isInsideOurArea(const Position &pos) {
+    if(ourSide().isLeft()) {
+        return (pos.x() <= _leftAreaLeftCorner.x()
+                && pos.y() <= _leftAreaRightPost.y() && pos.y() >= _leftAreaLeftPost.y());
+    }else {
+        return (pos.x() >= _rightAreaRightCorner.x()
+                && pos.y() <= _rightAreaLeftPost.y() && pos.y() >= _rightAreaRightPost.y());
+    }
 }
 
-bool Locations::isInsideTheirArea(const Position &pos, float factor) {
-    double y_offset = theirSide().isLeft() ? -0.15 : 0.15;
-    Position test(true, theirGoalLeftPost().x(), theirGoalLeftPost().y() - y_offset);
-
-    double x_offset;
-    x_offset = theirSide().isLeft() ? 0.15 : -0.15;
-    Position theirGoalRightDeslocatedPost(true, theirGoalRightPost().x() + x_offset, theirGoalRightPost().y() + y_offset);
-
-    return _isInsideArea(pos, factor, test, theirGoalRightDeslocatedPost);
+bool Locations::isInsideTheirArea(const Position &pos) {
+    if(theirSide().isLeft()) {
+        return (pos.x() <= _leftAreaLeftCorner.x()
+                && pos.y() <= _leftAreaRightPost.y() && pos.y() >= _leftAreaLeftPost.y());
+    }else {
+        return (pos.x() >= _rightAreaRightCorner.x()
+                && pos.y() <= _rightAreaLeftPost.y() && pos.y() >= _rightAreaRightPost.y());
+    }
 }
 
 bool Locations::isOutsideField(const Position &pos, float factor) {
@@ -330,14 +340,6 @@ bool Locations::isInsideField(const Position &pos, float factor) {
 
 bool Locations::isInsideField(const Position &pos, float dx, float dy) {
     return (!isOutsideField(pos, dx, dy));
-}
-
-bool Locations::_isInsideArea(const Position &pos, float factor, const Position &goalLeftPost, const Position &goalRightDeslocatedPost) {
-    // rectangle
-    return( (pos.x() <= std::max(goalLeftPost.x() * factor, goalRightDeslocatedPost.x() * factor)) && (pos.x() >= std::min(goalLeftPost.x() * factor, goalRightDeslocatedPost.x() * factor)) &&
-                (pos.y() <= std::max(goalLeftPost.y() * factor, goalRightDeslocatedPost.y() * factor)) && (pos.y() >= std::min(goalLeftPost.y() * factor, goalRightDeslocatedPost.y() * factor)) );
-
-    return false;
 }
 
 bool Locations::_isOutsideField(const Position &pos, const float maxX, const float maxY) {
@@ -394,6 +396,118 @@ Position Locations::theirGoalLeftMidPost() {
     }
     _mutex.unlock();
     return theirGoalLeftMidPost;
+}
+
+Position Locations::ourAreaLeftPost() {
+    Position ourAreaLeftPost;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        ourAreaLeftPost = _leftAreaLeftPost;
+    }else {
+        ourAreaLeftPost = _rightAreaLeftPost;
+    }
+    _mutex.unlock();
+    return ourAreaLeftPost;
+}
+
+Position Locations::ourAreaRightPost() {
+    Position ourAreaRightPost;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        ourAreaRightPost = _leftAreaRightPost;
+    }else {
+        ourAreaRightPost = _rightAreaRightPost;
+    }
+    _mutex.unlock();
+    return ourAreaRightPost;
+}
+
+Position Locations::theirAreaRightPost() {
+    Position theirAreaRightPost;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        theirAreaRightPost = _rightAreaRightPost;
+    }else {
+        theirAreaRightPost = _leftAreaRightPost;
+    }
+    _mutex.unlock();
+    return theirAreaRightPost;
+}
+
+Position Locations::theirAreaLeftPost() {
+    Position theirAreaLeftPost;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        theirAreaLeftPost = _rightAreaLeftPost;
+    }else {
+        theirAreaLeftPost = _leftAreaLeftPost;
+    }
+    _mutex.unlock();
+    return theirAreaLeftPost;
+}
+
+Position Locations::ourAreaLeftCorner() {
+    Position ourAreaLeftCorner;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        ourAreaLeftCorner = _leftAreaLeftCorner;
+    }else {
+        ourAreaLeftCorner = _rightAreaLeftCorner;
+    }
+    _mutex.unlock();
+    return ourAreaLeftCorner;
+}
+
+Position Locations::ourAreaRightCorner() {
+    Position ourAreaRightCorner;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        ourAreaRightCorner = _leftAreaRightCorner;
+    }else {
+        ourAreaRightCorner = _rightAreaRightCorner;
+    }
+    _mutex.unlock();
+    return ourAreaRightCorner;
+}
+
+Position Locations::theirAreaRightCorner() {
+    Position theirAreaRightCorner;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        theirAreaRightCorner = _rightAreaRightCorner;
+    }else {
+        theirAreaRightCorner = _leftAreaRightCorner;
+    }
+    _mutex.unlock();
+    return theirAreaRightCorner;
+}
+
+Position Locations::theirAreaLeftCorner() {
+    Position theirAreaLeftCorner;
+    _mutex.lockForRead();
+    if(theirSide().isRight()) {
+        theirAreaLeftCorner = _rightAreaLeftCorner;
+    }else {
+        theirAreaLeftCorner = _leftAreaLeftCorner;
+    }
+    _mutex.unlock();
+    return theirAreaLeftCorner;
+}
+
+float Locations::defenseAreaWidth() {
+    float width;
+    _mutex.lockForRead();
+    width = _defenseAreaWidth;
+    _mutex.unlock();
+    return width;
+}
+
+float Locations::defenseAreaLength() {
+    float length;
+    _mutex.lockForRead();
+    length = _defenseAreaLength;
+    _mutex.unlock();
+    return length;
 }
 
 void Locations::updateGeometryData(fira_message::Field geometryData) {

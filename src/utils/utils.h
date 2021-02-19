@@ -41,6 +41,7 @@ public:
     static void setConstants(Constants *constants);
     static float getAngle(const Position &a, const Position &b);
     static Position threePoints(const Position &near, const Position &far, float distance, float beta);
+    static Position segmentsIntersect(Position sA1, Position sA2, Position sB1, Position sB2);
 private:
     static Constants *_constants;
     static Constants* getConstants();

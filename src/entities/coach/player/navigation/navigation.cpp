@@ -83,31 +83,14 @@ void Navigation::setGoal(const Position &destination, const Angle &orientation, 
         }
     }
 
-    //Adds goal area as repulsive
-    if(avoidOurGoalArea || avoidTheirGoalArea) {
-        // Check restritions
-        if(_loc->isOutsideField(_player->position()))
-            return;
-        if(_loc->isInsideOurArea(_player->position()))
-            return;
-        if(_loc->isInsideTheirArea(_player->position()))
-            return;
+    // Our goal area
+    if(avoidOurGoalArea) {
+        _navAlg->addGoalArea(_loc->ourGoal());
+    }
 
-        // Our goal area
-        if(avoidOurGoalArea) {
-            // Add our goal area
-            Position far = Utils::projectPointAtSegment(_loc->ourGoalLeftPost(), _loc->ourGoalRightPost(), _player->position());
-            Position repulsion = Utils::threePoints(far, _player->position(), _loc->fieldDefenseWidth(), 0.0f);
-            _navAlg->addGoalArea(repulsion);
-        }
-
-        // Their goal area
-        if(avoidTheirGoalArea) {
-            // Add their goal area
-            Position far = Utils::projectPointAtSegment(_loc->theirGoalLeftPost(), _loc->theirGoalRightPost(), _player->position());
-            Position repulsion = Utils::threePoints(far, _player->position(), _loc->fieldDefenseWidth(), 0.0f);
-            _navAlg->addGoalArea(repulsion);
-        }
+    // Their goal area
+    if(avoidTheirGoalArea) {
+        _navAlg->addGoalArea(_loc->theirGoal());
     }
 
 }
