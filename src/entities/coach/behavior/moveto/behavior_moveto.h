@@ -35,6 +35,7 @@ public:
     void setTargetPosition(Position targetPosition) { _targetPosition = targetPosition; }
     void setBaseSpeed(float baseSpeed) { _desiredBaseSpeed = baseSpeed; }
     void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
+    void enableRotation(bool isRotationEnabled) { _isRotationEnabled = isRotationEnabled; }
 
 private:
     // Behavior inherited methods
@@ -43,15 +44,18 @@ private:
 
     // Skills enum
     enum {
-        SKILL_GOTO
+        SKILL_GOTO,
+        SKILL_ROTATE
     };
 
     // Skills pointers
     Skill_GoTo *_skill_goTo;
+    Skill_RotateTo *_skill_rotateTo;
 
     // Parameters
     Position _targetPosition;
     float _desiredBaseSpeed;
+    bool _isRotationEnabled;
 };
 
 #endif // BEHAVIOR_MOVETO_H

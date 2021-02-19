@@ -216,7 +216,7 @@ void Player::goTo(Position &targetPosition, float desiredBaseSpeed, bool avoidTe
 
 void Player::rotateTo(Position &targetPosition) {
     std::pair<float,float> speed = getWheelsSpeed(Utils::getAngle(position(), targetPosition), 0);
-    std::cout << "LEFT: " << speed.first << "\nRIGHT: " << speed.second << std::endl;
+    //std::cout << "LEFT: " << speed.first << "\nRIGHT: " << speed.second << std::endl;
 
     emit setWheelsSpeed(playerId(), speed.first, speed.second);
 }

@@ -23,6 +23,7 @@
 
 Behavior_MoveTo::Behavior_MoveTo() {
     _targetPosition = Position(false, 0.0, 0.0);
+    _isRotationEnabled = false;
 }
 
 QString Behavior_MoveTo::name() {
@@ -30,20 +31,25 @@ QString Behavior_MoveTo::name() {
 }
 
 void Behavior_MoveTo::configure() {
-    _desiredBaseSpeed = getConstants()->playerBaseSpeed();
-
     // Starting skills
     _skill_goTo = new Skill_GoTo();
+    _skill_rotateTo = new Skill_RotateTo();
 
     // Adding to behavior skill list
     addSkill(SKILL_GOTO, _skill_goTo);
+    addSkill(SKILL_ROTATE, _skill_rotateTo);
 }
 
 void Behavior_MoveTo::run() {
-    // When targetPosition is invalid: robot moves forward with the desiredBaseSpeed
-    _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);
-    _skill_goTo->setTargetPosition(_targetPosition);
-    setSkill(SKILL_GOTO);
+    if (_isRotationEnabled) {
+        _skill_rotateTo->setTargetPosition(_targetPosition);
+        setSkill(SKILL_ROTATE);
+    } else {
+        // Situation where we use the GoTo skill
+        _skill_goTo->setTargetPosition(_targetPosition);
+        _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);
+        setSkill(SKILL_GOTO);
+    }
 }
 
 void Behavior_MoveTo::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
