@@ -24,8 +24,6 @@
 Behavior_MoveTo::Behavior_MoveTo() {
     _targetPosition = Position(false, 0.0, 0.0);
     _minimalVelocity = 0.0;
-    _linearSpeed = 0.0;
-    _angularSpeed = 0.0;
 }
 
 QString Behavior_MoveTo::name() {
@@ -33,6 +31,8 @@ QString Behavior_MoveTo::name() {
 }
 
 void Behavior_MoveTo::configure() {
+    _desiredBaseSpeed = getConstants()->playerBaseSpeed();
+
     // Starting skills
     _skill_goTo = new Skill_GoTo();
     _skill_move = new Skill_Move();
@@ -45,7 +45,7 @@ void Behavior_MoveTo::configure() {
 void Behavior_MoveTo::run() {
     if (_targetPosition.isInvalid()) {
         // Situation where we use the Move skill
-        _skill_move->setMovementSpeed(_linearSpeed, _angularSpeed);
+        _skill_move->setMovementSpeed(_desiredBaseSpeed);
         setSkill(SKILL_MOVE);
     } else {
         // Situation where we use the GoTo skill

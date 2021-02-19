@@ -48,7 +48,7 @@ public:
     float getRotateSpeed(float angleRobotToTarget);
 
     // Utils
-    std::pair<float, float> getWheelsSpeed(float angleToObject);
+    std::pair<float, float> getWheelsSpeed(float angleToObject, float baseSpeed);
     float to180Range(float angle);
     float smallestAngleDiff(float target, float source);
 
@@ -66,7 +66,7 @@ public:
     void goTo(Position &targetPosition, float minVel, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea);
     void rotateTo(Position &targetPosition);
     void spin(bool isClockWise);
-    void move(float linearSpeed, float angularSpeed);
+    void move(float desiredBaseSpeed);
     void idle();
 
     // Path planning

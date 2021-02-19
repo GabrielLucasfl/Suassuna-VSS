@@ -70,7 +70,7 @@ void Role_Goalkeeper::run() {
     else if (!player()->isLookingTo(lookingPosition, 0.3f)) {
         // Rotates to a better angle of movement
         _bhv_moveTo->setTargetPosition(invalidPosition);
-        _bhv_moveTo->setAngularSpeed(4.0);
+//        _bhv_moveTo->setAngularSpeed(4.0);
         setBehavior(BHV_MOVETO);
     } else {
         // Intercept the ball movement in order to prevent a goal

@@ -22,8 +22,6 @@
 #include "skill_move.h"
 
 Skill_Move::Skill_Move() {
-    _linearSpeed = 0.0f;
-    _angularSpeed = 0.0f;
 }
 
 QString Skill_Move::name() {
@@ -31,9 +29,11 @@ QString Skill_Move::name() {
 }
 
 void Skill_Move::configure() {
+    _desiredBaseSpeed = getConstants()->playerBaseSpeed();
 }
 
 void Skill_Move::run() {
-    player()->move(_linearSpeed, _angularSpeed);
+    player()->move(_desiredBaseSpeed);
 }
+
 

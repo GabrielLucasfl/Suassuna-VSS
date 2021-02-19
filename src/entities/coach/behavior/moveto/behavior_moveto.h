@@ -34,8 +34,7 @@ public:
     // Setters
     void setTargetPosition(Position targetPosition) { _targetPosition = targetPosition; }
     void setMinimalVelocity(float minimalVelocity) { _minimalVelocity = minimalVelocity; }
-    void setLinearSpeed(float linearSpeed) { _linearSpeed = linearSpeed; }
-    void setAngularSpeed(float angularSpeed) { _angularSpeed = angularSpeed; }
+    void setBaseSpeed(float baseSpeed) { _desiredBaseSpeed = baseSpeed; }
     void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
 
 private:
@@ -56,8 +55,7 @@ private:
     // Parameters
     Position _targetPosition;
     float _minimalVelocity;
-    float _linearSpeed;
-    float _angularSpeed;
+    float _desiredBaseSpeed;
 };
 
 #endif // BEHAVIOR_MOVETO_H
