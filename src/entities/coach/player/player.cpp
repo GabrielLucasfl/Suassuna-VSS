@@ -191,7 +191,7 @@ std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destinati
 
 void Player::goTo(Position &targetPosition, float minVel, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
     // Take angle to target
-    std::pair<Angle,float> movement = getNavDirectionDistance(targetPosition, orientation(), avoidTeammates, true, avoidBall, true, true);
+    std::pair<Angle,float> movement = getNavDirectionDistance(targetPosition, orientation(), avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
     float angleToTarget = movement.first.value();
 
     if(getPlayerDistanceTo(targetPosition) <= getLinearError()) {
