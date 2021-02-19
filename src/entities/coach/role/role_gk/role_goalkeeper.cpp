@@ -42,7 +42,6 @@ void Role_Goalkeeper::run() {
     // Fixed variables
     Position ballPosition = getWorldMap()->getBall().getPosition();
     Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
-    Position invalidPosition(false, 0.0f, 0.0f);
 
     // Taking the position where the GK wait for
     Position standardPosition;
@@ -54,6 +53,8 @@ void Role_Goalkeeper::run() {
 
     // Reference position to look at
     Position lookingPosition(true, standardPosition.x(), 2.0f);
+    _bhv_moveTo->enableRotation(false);
+    _bhv_moveTo->setMinimalVelocity(0.0);
 
     if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
             || getWorldMap()->getLocations()->isInsideTheirField(ballPosition)) {
@@ -69,8 +70,8 @@ void Role_Goalkeeper::run() {
     }
     else if (!player()->isLookingTo(lookingPosition, 0.3f)) {
         // Rotates to a better angle of movement
-        _bhv_moveTo->setTargetPosition(invalidPosition);
-//        _bhv_moveTo->setAngularSpeed(4.0);
+        _bhv_moveTo->setTargetPosition(lookingPosition);
+        _bhv_moveTo->enableRotation(true);
         setBehavior(BHV_MOVETO);
     } else {
         // Intercept the ball movement in order to prevent a goal
