@@ -33,9 +33,7 @@ public:
     QString name();
 
     // Setters
-    void setMinimalVelocity(float minimalVelocity) { _minimalVelocity = minimalVelocity; }
-    void setLinearSpeed(float linearSpeed) { _linearSpeed = linearSpeed; }
-    void setAngularSpeed(float angularSpeed) { _angularSpeed = angularSpeed; }
+    void setBaseSpeed(float desiredBaseSpeed) { _desiredBaseSpeed = desiredBaseSpeed; }
     void setOffsetBehindBall(float offsetBehindBall) { _offsetBehindBall = offsetBehindBall; }
     void setReferencePosition(Position referencePosition) {_referencePosition = referencePosition; }
     // Auxiliar
@@ -53,21 +51,15 @@ private:
 
     // Skills enum
     enum {
-        SKILL_GOTO,
-        SKILL_MOVE,
-        Skill_PUSHBALL
+        SKILL_GOTO
     };
 
     // Skills pointers
     Skill_GoTo *_skill_goTo;
-    Skill_Move *_skill_move;
-    Skill_PushBall *_skill_pushball;
 
     // Parameters
     Position _targetPosition;
-    float _minimalVelocity;
-    float _linearSpeed;
-    float _angularSpeed;
+    float _desiredBaseSpeed;
     float _offsetBehindBall;
     Position _referencePosition;
 };

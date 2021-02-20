@@ -42,7 +42,7 @@ void Role_Attacker::configure() {
 
 void Role_Attacker::run() {
 
-    Position ballPos = player()->getWorldMap()->getBall().getPosition();
+    Position ballPos = getWorldMap()->getBall().getPosition();
     //check if player is behind ball
     bool isBehindBall = Role_Attacker::isBehindBall(player()->position());
     //ball possession
@@ -56,9 +56,8 @@ void Role_Attacker::run() {
     switch (_state) {
         case GOTOBALL : {
             std::cout << "GOTOBALL" << std::endl;
-            _bhv_goToBall->setReferencePosition(player()->getWorldMap()->getLocations()->theirGoal());
+            _bhv_goToBall->setReferencePosition(getWorldMap()->getLocations()->theirGoal());
             _bhv_goToBall->setOffsetBehindBall(0.06f);
-            _bhv_goToBall->setMinimalVelocity(0.85f);
             setBehavior(BHV_GOTOBALL);
 
             //transitions
@@ -69,8 +68,7 @@ void Role_Attacker::run() {
         } break;
         case MOVETO : {
             std::cout << "MOVETO" << std::endl;
-            _bhv_moveTo->setLinearSpeed(2.0f);
-            _bhv_moveTo->setAngularSpeed(0.0f);
+            _bhv_moveTo->setTargetPosition(Position(false,0,0));
             setBehavior(BHV_MOVETO);
 
             //transitions
@@ -106,10 +104,15 @@ float Role_Attacker::angleDiff(const float A, const float B) {
     return diff;
 }
 bool Role_Attacker::isBehindBall(Position posObjective) {
-    Position posBall = player()->getWorldMap()->getBall().getPosition();
+    Position posBall = getWorldMap()->getBall().getPosition();
     Position posPlayer = player()->position();
     float anglePlayer = Role_Attacker::getAngle(posBall, posPlayer);
     float angleDest = Role_Attacker::getAngle(posBall, posObjective);
     float diff = Role_Attacker::angleDiff(anglePlayer, angleDest);
     return (diff>M_PI/18.0f);
+}
+
+QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+    //// TODO: Configure this in new roles!!!!!!!!!!!!!!!!!!!!!!!!!
+    return QPair<Position, Angle>(Position(true, 0.0, 0.0), Angle(true, 0.0));
 }

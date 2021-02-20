@@ -98,8 +98,7 @@ SOURCES += \
     src/utils/types/object/object.cpp \
     src/utils/types/position/position.cpp \
     src/utils/types/velocity/velocity.cpp \
-    src/utils/utils.cpp \
-    src/entities/coach/behavior/attacker/behavior_goToBall.cpp
+    src/utils/utils.cpp
 
 
 # Project header files
@@ -175,8 +174,7 @@ HEADERS += \
     src/utils/types/object/object.h \
     src/utils/types/position/position.h \
     src/utils/types/velocity/velocity.h \
-    src/utils/utils.h \
-    src/entities/coach/behavior/attacker/behavior_goToBall.h
+    src/utils/utils.h
 
 
 # Default rules for deployment.

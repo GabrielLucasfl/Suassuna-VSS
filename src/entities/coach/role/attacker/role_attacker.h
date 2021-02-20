@@ -56,6 +56,9 @@ private:
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_GoToBall *_bhv_goToBall;
+
+    // Replacer
+    QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
 };
 
 #endif // ROLE_ATTACKER_H

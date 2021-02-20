@@ -23,9 +23,6 @@
 
 Behavior_GoToBall::Behavior_GoToBall() {
     // Default value
-    _minimalVelocity = 1.0;
-    _linearSpeed = 0.0;
-    _angularSpeed = 0.0;
     _offsetBehindBall = 0.0;
     _targetPosition.setPosition(false, 0.0f , 0.0f);
     _referencePosition.setPosition(false, 0.0f, 0.0f);
@@ -36,19 +33,18 @@ QString Behavior_GoToBall::name() {
 }
 
 void Behavior_GoToBall::configure() {
+    // Default base speed
+    _desiredBaseSpeed = getConstants()->playerBaseSpeed();
+
     // Starting skills
     _skill_goTo = new Skill_GoTo();
-    _skill_move = new Skill_Move();
-    _skill_pushball = new Skill_PushBall();
 
     // Adding to behavior skill list
     addSkill(SKILL_GOTO, _skill_goTo);
-    addSkill(SKILL_MOVE, _skill_move);
-    addSkill(Skill_PUSHBALL, _skill_pushball);
 
 }
 void Behavior_GoToBall::run() {
-    Position ballPos = player()->getWorldMap()->getBall().getPosition();
+    Position ballPos = getWorldMap()->getBall().getPosition();
 
     // Situation where we use the GoTo skill
     if(_referencePosition.isInvalid()) {
@@ -60,7 +56,7 @@ void Behavior_GoToBall::run() {
         }
     }
     _skill_goTo->setTargetPosition(_targetPosition);
-    _skill_goTo->setMinimalVelocity(_minimalVelocity);
+    _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);
     setSkill(SKILL_GOTO);
 
 }
@@ -76,7 +72,7 @@ float Behavior_GoToBall::angleDiff(const float A, const float B) {
     return diff;
 }
 bool Behavior_GoToBall::isBehindBall(Position posObjective) {
-    Position posBall = player()->getWorldMap()->getBall().getPosition();
+    Position posBall = getWorldMap()->getBall().getPosition();
     Position posPlayer = player()->position();
     float anglePlayer = Behavior_GoToBall::getAngle(posBall, posPlayer);
     float angleDest = Behavior_GoToBall::getAngle(posBall, posObjective);
@@ -91,12 +87,12 @@ Position Behavior_GoToBall::threePoints(const Position &near, const Position &fa
 }
 
 Position Behavior_GoToBall::ballPrevision() {
-    Position ballPosition = player()->getWorldMap()->getBall().getPosition();
-    Position enemyGoal = player()->getWorldMap()->getLocations()->theirGoal();
+    Position ballPosition = getWorldMap()->getBall().getPosition();
+    Position enemyGoal = getWorldMap()->getLocations()->theirGoal();
     float angle = atan2((enemyGoal.y() - ballPosition.y()), (enemyGoal.x() - ballPosition.x()));
 
-    Velocity ballVelocity = player()->getWorldMap()->getBall().getVelocity();
-    Velocity playerVelocity = player()->getWorldMap()->getPlayer(getConstants()->teamColor(),player()->playerId()).getVelocity();
+    Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
+    Velocity playerVelocity = getWorldMap()->getPlayer(getConstants()->teamColor(),player()->playerId()).getVelocity();
     float fracVelX = (playerVelocity.vx()/ballVelocity.vx());
     float fracVelY = (playerVelocity.vy()/ballVelocity.vy());
 

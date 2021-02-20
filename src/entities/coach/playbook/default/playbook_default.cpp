@@ -33,9 +33,6 @@ void Playbook_Default::configure(int numPlayers) {
     _rl_gk.clear();
 
     // For each player, register an role and call usesRole() to register it in the table
-    _roles_attacker.push_back(new Role_Attacker());
-    usesRole(_roles_attacker.at(0));
-
     for(int i = 0; i < numPlayers; i++) {
         _rl_gk.push_back(new Role_Goalkeeper());
         usesRole(_rl_gk.at(i));
@@ -45,7 +42,6 @@ void Playbook_Default::configure(int numPlayers) {
 void Playbook_Default::run(int numPlayers) {
     // Get players ids list
     QList<quint8> players = getPlayers();
-    quint8 id;
 
     // For each player, set its associated role
     for(int i = 0; i < numPlayers; i++) {
