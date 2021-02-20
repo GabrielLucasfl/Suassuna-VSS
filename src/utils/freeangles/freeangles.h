@@ -30,7 +30,7 @@ public:
 
 private:
 
-    static QList<Interval> _getFreeAngles(const Position &watcher, float initialPosAngle, float finalPosAngle, const QList<Obstacle> &obstacles, bool returnObstructed = false);
+    static QList<Interval> _getFreeAngles(const Position watcher, float initialPosAngle, float finalPosAngle, const QList<Obstacle> obstacles, bool returnObstructed = false);
 
     static QList<Obstacle> calcObstaclesObstruction(const Position &watcher, const QList<Obstacle> &obstacles);
 
@@ -38,12 +38,12 @@ public:
 
     //static QList<Interval> _getFreeAngles(const Position &watcher, float initialPosAngle, float finalPosAngle, const QList<Obstacle> &obstacles, bool returnObstructed = false);
 
-    static QList<Obstacle> getObstacles(const Position &watcher, float distanceRadius, QList<Object> &playrs);
+    static QList<Obstacle> getObstacles(const Position watcher, float distanceRadius, QList<Object> playrs);
 
-    static QList<Interval> getFreeAngles(const Position &watcher, const Position &initialPos, const Position &finalPos, bool returnObstructed = false);
-    static QList<Interval> getFreeAngles(const Position &watcher, const Position &initialPos, const Position &finalPos, const QList<Obstacle> &obstacles, bool returnObstructed = false);
+    static QList<Interval> getFreeAngles(const Position watcher, const Position initialPos, const Position finalPos, bool returnObstructed = false);
+    static QList<Interval> getFreeAngles(const Position watcher, const Position initialPos, const Position finalPos, const QList<Obstacle> obstacles, bool returnObstructed = false);
 
-    static QList<Interval> getFreeAngles(const Position &watcher, float initialPosAngle, float finalPosAngle, bool returnObstructed = false);
-    static QList<Interval> getFreeAngles(const Position &watcher, float initialPosAngle, float finalPosAngle, const QList<Obstacle> &obstacles, bool returnObstructed = false);
+    static QList<Interval> getFreeAngles(const Position watcher, float initialPosAngle, float finalPosAngle, bool returnObstructed = false);
+    static QList<Interval> getFreeAngles(const Position watcher, float initialPosAngle, float finalPosAngle, const QList<Obstacle> obstacles, bool returnObstructed = false);
 };
 #endif // FREEANGLES_H

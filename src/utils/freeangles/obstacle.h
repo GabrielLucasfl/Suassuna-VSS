@@ -7,22 +7,22 @@
 
 class Obstacle{
 private:
+
+
+public:
+    Obstacle();
     Position _position;
     quint8 _team;
     float _initialAngle;
     float _finalAngle;
     float _radius;
-
-public:
-    Obstacle();
-
     Position& position() { return _position; }
     quint8& team() { return _team; }
     float& initialAngle() { return _initialAngle; }
     float& finalAngle() { return _finalAngle; }
     float& radius() { return _radius; }
 
-    void calcAnglesFrom(const Position &watcher, float factor = 1.0f);
+    void calcAnglesFrom(const Position watcher, float factor = 1.0f);
 
     Obstacle &operator=(const Obstacle &obstacle) {
         _position = obstacle._position;

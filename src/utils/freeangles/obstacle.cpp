@@ -8,7 +8,7 @@ Obstacle::Obstacle(){
     _radius = 0;
 }
 
-void Obstacle::calcAnglesFrom(const Position &watcher, float radiusFactor){
+void Obstacle::calcAnglesFrom(const Position watcher, float radiusFactor){
     if(_radius == 0){
         std::cout << "Raio = 0";
         return;

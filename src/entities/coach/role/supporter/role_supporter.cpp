@@ -20,7 +20,7 @@
  ***/
 
 #include "role_supporter.h"
-#include <src/utils/freeangles/freeangles.h>
+
 
 Role_Supporter::Role_Supporter(){
 
@@ -43,11 +43,12 @@ void Role_Supporter::configure() {
     _posXbarrier = 0.2f;
     _limitYup = 0.6f;
     _limitYdown = -0.6f;
+    _timer.start();
+    _minVelocity = 1.0f;
 }
 
 void Role_Supporter::run() {
-
-    _bhv_moveTo->setTargetPosition(player()->position());
+    //_bhv_moveTo->setTargetPosition(player()->position());
 
     Position positionVar;
     Position positionBall = getWorldMap()->getBall().getPosition();
@@ -60,29 +61,39 @@ void Role_Supporter::run() {
     QList<Object> players;
 
     for(int i=0; i<playersId1.size(); i++){
-       Object p = getWorldMap()->getPlayer(Colors::Color::BLUE,playersId1[i]);
-       players.push_back(p);
-       std::cout << static_cast<int>(playersId1[i]) << '\n';
+        Object p = getWorldMap()->getPlayer(Colors::Color::BLUE,playersId1[i]);
+        if( !(player()->position().x() == p.getPosition().x() && player()->position().y() == p.getPosition().y()) ){
+            players.push_back(p);
+        }
+
+        //std::cout << static_cast<int>(playersId1[i]) << '\n';
     }
 
     for(int i=0; i<playersId2.size(); i++){
-       Object p = getWorldMap()->getPlayer(Colors::Color::YELLOW,playersId2[i]);
-       players.push_back(p);
-       std::cout << static_cast<int>(playersId2[i]) << '\n';
+        Object p = getWorldMap()->getPlayer(Colors::Color::YELLOW,playersId2[i]);
+        if( !(player()->position().x() == p.getPosition().x() && player()->position().y() == p.getPosition().y()) ){
+            players.push_back(p);
+        }
+        //std::cout << static_cast<int>(playersId2[i]) << '\n';
     }
 
-    QList<Obstacle> obstacles = FreeAngles::getObstacles(positionBall, 1.5f, players);
+    QList<Obstacle> obstacles = FreeAngles::getObstacles(positionBall, 30.0f, players);
     QList<FreeAngles::Interval> intervalos;
 
     if(getConstants()->teamColor() == Colors::Color::YELLOW){
-        intervalos = FreeAngles::getFreeAngles(positionBall,getWorldMap()->getLocations()->ourGoalLeftPost(),getWorldMap()->getLocations()->ourGoalRightPost(),obstacles,false);
+        Position leftPost = getWorldMap()->getLocations()->ourGoalLeftPost();
+        Position rightPost = getWorldMap()->getLocations()->ourGoalRightPost();
+        intervalos = FreeAngles::getFreeAngles(positionBall,leftPost,rightPost,obstacles,false);
     }else{
-        intervalos = FreeAngles::getFreeAngles(positionBall,getWorldMap()->getLocations()->ourGoalLeftPost(),getWorldMap()->getLocations()->ourGoalRightPost(),obstacles,false);
+        Position leftPost = getWorldMap()->getLocations()->ourGoalLeftPost();
+        Position rightPost = getWorldMap()->getLocations()->ourGoalRightPost();
+        intervalos = FreeAngles::getFreeAngles(positionBall,leftPost,rightPost,obstacles,false);
         //intervalos = FreeAngles::getFreeAngles(positionBall,player()->getWorldMap()->getLocations()->ourGoalRightPost(),player()->getWorldMap()->getLocations()->ourGoalLeftPost(),obstacles,false);
     }
 
     float largestAngle=0;
     float largestMid=0;
+    float dbAngF, dbAngI;
 
     // Ordering the free angles
     if(intervalos.size()==0) {
@@ -101,32 +112,41 @@ void Role_Supporter::run() {
             if(dif>largestAngle) {
                 largestAngle = dif;
                 largestMid = angF - dif/2;
+                Utils::angleLimitZeroTwoPi(&largestMid);
+                dbAngF = angF; dbAngI = angI;
             }
         }
     }
 
+    _timer.stop();
+    double tempo = _timer.getSeconds();
+    if(tempo >= 1.0){
+        printf("O intervalo escolhido foi: %f \t %f\n e a maior abertura eh %f\n",dbAngI, dbAngF, largestMid);
+        printf("Tam lista %d \n", obstacles.size());
+        _timer.start();
+    }
+    Position desiredPosition = player()->position();
     if(isBall_ourfield()){
         // Barrier
-        Position desiredPosition;
         float y_Barrier;
         float x_Barrier = calcBarrier_Xcomponent();
         float modulo_vet = abs((x_Barrier - positionBall.x())/cos(largestMid));
         y_Barrier = positionBall.y() + (modulo_vet * sin(largestMid));
         if(_nofreeAngles){
-            std::cout << "estou aqui\n";
+            std::cout << "Nao tenho angulos livres\n";
             desiredPosition.setPosition(1,x_Barrier,positionBall.y());
         }else{
-            std::cout << "nao estou aqui\n";
+            //std::cout << "Tenho angulos livres\n";
             desiredPosition.setPosition(1,x_Barrier,y_Barrier);
         }
+
+        //_bhv_moveTo->setMinimalVelocity(_minVelocity);
         _bhv_moveTo->setTargetPosition(desiredPosition);
         setBehavior(BHV_MOVETO);
     }else{
-        // Advanced Suport
-        Position desiredPosition;
+        // Advanced Support
         float posx_advanced = calc_x_advanced();
         float moduloVet = abs((posx_advanced - positionBall.x())/cos(largestMid));
-        //float
         float posy_advanced;
         if(_nofreeAngles){
             posy_advanced = positionBall.y();
@@ -136,9 +156,11 @@ void Role_Supporter::run() {
             desiredPosition.setPosition(1,posx_advanced,posy_advanced);
         }
         _bhv_moveTo->setTargetPosition(desiredPosition);
+        //_bhv_moveTo->setMinimalVelocity(_minVelocity);
         setBehavior(BHV_MOVETO);
     }
     setBehavior(BHV_MOVETO);
+    player()->rotateTo(positionBall);
 }
 
 bool Role_Supporter::isBall_ourfield(){
@@ -158,7 +180,7 @@ float Role_Supporter::calcBarrier_Xcomponent(){
     }
 }
 
-float Role_Supporter::limit_Ypos(float * posy){
+void Role_Supporter::limit_Ypos(float * posy){
     if(*posy > _limitYup){
         *posy = _limitYup;
     }
@@ -169,7 +191,8 @@ float Role_Supporter::limit_Ypos(float * posy){
 
 float Role_Supporter::calc_x_advanced(){
     float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
-    float distance_advanced = 0.35f;
+    //float distance_advanced = 0.35f;
+    float distance_advanced = 0.50f;
     Position position_ball = getWorldMap()->getBall().getPosition();
     return position_ball.x() + (distance_advanced*posx_control);
 }
