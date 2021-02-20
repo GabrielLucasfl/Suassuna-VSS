@@ -31,6 +31,8 @@ QString Behavior_MoveTo::name() {
 }
 
 void Behavior_MoveTo::configure() {
+    _desiredBaseSpeed = getConstants()->playerBaseSpeed();
+
     // Starting skills
     _skill_goTo = new Skill_GoTo();
     _skill_rotateTo = new Skill_RotateTo();

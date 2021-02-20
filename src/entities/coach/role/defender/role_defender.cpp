@@ -64,7 +64,7 @@ void Role_Defender::run() {
     else if (player()->getPlayerDistanceTo(ballPosition) < 0.20f && ballVelocity.abs() < player()->isLookingTo(ballPosition, 1.0f)) {
         // Clear the ball if it is close enough and if it is in a good angle to deslocate
         _bhv_moveTo->setTargetPosition(ballPosition);
-        _bhv_moveTo->setMinimalVelocity(1.0);
+        //_bhv_moveTo->setMinimalVelocity(1.0);
         setBehavior(BHV_MOVETO);
     }
     else if (!player()->isLookingTo(lookingPosition, 0.3f)) {
