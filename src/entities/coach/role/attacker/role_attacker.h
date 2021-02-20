@@ -31,6 +31,10 @@ public:
     Role_Attacker();
     QString name();
 
+    //auxiliar
+    float getAngle(const Position &a, const Position &b);
+    float angleDiff(const float A, const float B);
+    bool isBehindBall(Position posObjective);
 private:
     // Role inherited methods
     void configure();
