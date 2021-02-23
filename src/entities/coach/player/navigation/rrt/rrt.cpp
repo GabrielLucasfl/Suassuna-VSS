@@ -33,7 +33,7 @@ RRT::RRT() {
 
     // RRT
     _rrtMaxTime = 5; // ms
-    _rrtGrowVectorLength = 0.1f;
+    _rrtGrowVectorLength = 0.03f;
 
     // Discrete point generation
     _discreteResolution = 0.05f;
