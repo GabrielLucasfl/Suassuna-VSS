@@ -20,6 +20,7 @@
  ***/
 
 #include "behavior_goToBall.h"
+#include <src/utils/utils.h>
 
 Behavior_GoToBall::Behavior_GoToBall() {
     // Default value
@@ -50,7 +51,7 @@ void Behavior_GoToBall::run() {
     if(_referencePosition.isInvalid()) {
         _targetPosition = ballPos;
     } else {
-        _targetPosition = threePoints(ballPos , _referencePosition , _offsetBehindBall , M_PI );
+        _targetPosition = Utils::threePoints(ballPos , _referencePosition , _offsetBehindBall , M_PI );
         if(_targetPosition.isInvalid()) { // check if is inside field
             _targetPosition = ballPos;
         }
@@ -65,25 +66,13 @@ float Behavior_GoToBall::getAngle(const Position &a, const Position &b) {
     return std::atan2(b.y()-a.y(), b.x()-a.x());
 }
 
-float Behavior_GoToBall::angleDiff(const float A, const float B) {
-    float diff = fabs(B - A);
-    if(diff > M_PI)
-        diff = 2*M_PI - diff;
-    return diff;
-}
 bool Behavior_GoToBall::isBehindBall(Position posObjective) {
     Position posBall = getWorldMap()->getBall().getPosition();
     Position posPlayer = player()->position();
-    float anglePlayer = Behavior_GoToBall::getAngle(posBall, posPlayer);
-    float angleDest = Behavior_GoToBall::getAngle(posBall, posObjective);
-    float diff = Behavior_GoToBall::angleDiff(anglePlayer, angleDest);
-    return (diff>M_PI/18.0f);
-}
-Position Behavior_GoToBall::threePoints(const Position &near, const Position &far, float distance, float beta) {
-    Angle alpha(true, atan2(far.y()-near.y(), far.x()-near.x()));
-    Angle gama(true, alpha.value()+beta);
-    Position p(true, near.x()+distance*cos(gama.value()), near.y()+distance*sin(gama.value()));
-    return p;
+    float anglePlayer = Utils::getAngle(posBall, posPlayer);
+    float angleDest = Utils::getAngle(posBall, posObjective);
+    float diff = Utils::angleDiff(anglePlayer, angleDest);
+    return (diff > static_cast<float>(M_PI)/18.0f);
 }
 
 Position Behavior_GoToBall::ballPrevision() {
@@ -100,5 +89,13 @@ Position Behavior_GoToBall::ballPrevision() {
     float futurePositionY = (player()->position().y() + _offsetBehindBall * sin(angle) - ballPosition.y() * fracVelY)/(1-fracVelY);
 
     return Position(true, futurePositionX, futurePositionY);
+}
+
+void Behavior_GoToBall::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
+    _skill_goTo->setAvoidBall(avoidBall);
+    _skill_goTo->setAvoidTeammates(avoidTeammates);
+    _skill_goTo->setAvoidOpponents(avoidOpponents);
+    _skill_goTo->setAvoidOurGoalArea(avoidOurGoalArea);
+    _skill_goTo->setAvoidTheirGoalArea(avoidTheirGoalArea);
 }
 

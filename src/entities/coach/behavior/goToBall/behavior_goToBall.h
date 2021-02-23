@@ -35,9 +35,10 @@ public:
     // Setters
     void setBaseSpeed(float desiredBaseSpeed) { _desiredBaseSpeed = desiredBaseSpeed; }
     void setOffsetBehindBall(float offsetBehindBall) { _offsetBehindBall = offsetBehindBall; }
-    void setReferencePosition(Position referencePosition) {_referencePosition = referencePosition; }
-    // Auxiliar
+    void setReferencePosition(Position referencePosition) {_referencePosition = referencePosition; }    
+    void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
 
+    // Auxiliar
     float getAngle(const Position &a, const Position &b);
     float angleDiff(const float A, const float B);
     bool isBehindBall(Position posObjective);
