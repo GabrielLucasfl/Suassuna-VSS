@@ -170,3 +170,10 @@ Position Utils::segmentsIntersect(Position sA1, Position sA2, Position sB1, Posi
         return Position(false, 0.0f,0.0f);
     }
 }
+
+float Utils::angleDiff(const float A, const float B) {
+    float diff = fabs(B - A);
+    if(diff > static_cast<float>(M_PI))
+        diff = 2*static_cast<float>(M_PI) - diff;
+    return diff;
+}

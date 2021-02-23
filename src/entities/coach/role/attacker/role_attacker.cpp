@@ -20,6 +20,7 @@
  ***/
 
 #include "role_attacker.h"
+#include <src/utils/utils.h>
 
 Role_Attacker::Role_Attacker() {
 }
@@ -93,23 +94,14 @@ void Role_Attacker::run() {
 
     setBehavior(BHV_GOTOBALL);
 }
-float Role_Attacker::getAngle(const Position &a, const Position &b) {
-    return std::atan2(b.y()-a.y(), b.x()-a.x());
-}
 
-float Role_Attacker::angleDiff(const float A, const float B) {
-    float diff = fabs(B - A);
-    if(diff > M_PI)
-        diff = 2*M_PI - diff;
-    return diff;
-}
 bool Role_Attacker::isBehindBall(Position posObjective) {
     Position posBall = getWorldMap()->getBall().getPosition();
     Position posPlayer = player()->position();
-    float anglePlayer = Role_Attacker::getAngle(posBall, posPlayer);
-    float angleDest = Role_Attacker::getAngle(posBall, posObjective);
-    float diff = Role_Attacker::angleDiff(anglePlayer, angleDest);
-    return (diff>M_PI/18.0f);
+    float anglePlayer = Utils::getAngle(posBall, posPlayer);
+    float angleDest = Utils::getAngle(posBall, posObjective);
+    float diff = Utils::angleDiff(anglePlayer, angleDest);
+    return (diff > static_cast<float>(M_PI)/18.0f);
 }
 
 QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
