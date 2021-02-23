@@ -33,6 +33,7 @@ public:
 
     // Auxiliar
     bool isBehindBall(Position posObjective);
+    bool isBehindBallXcoord(Position pos);
 private:
     // Role inherited methods
     void configure();
