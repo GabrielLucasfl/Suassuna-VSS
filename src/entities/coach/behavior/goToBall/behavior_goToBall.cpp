@@ -45,13 +45,13 @@ void Behavior_GoToBall::configure() {
 
 }
 void Behavior_GoToBall::run() {
-    Position ballPos = getWorldMap()->getBall().getPosition();
+    Position ballPos = getBallProjection();
 
     // Situation where we use the GoTo skill
     if(_referencePosition.isInvalid()) {
         _targetPosition = ballPos;
     } else {
-        _targetPosition = Utils::threePoints(ballPos , _referencePosition , _offsetBehindBall , M_PI );
+        _targetPosition = Utils::threePoints(ballPos, _referencePosition, _offsetBehindBall, static_cast<float>(M_PI));
         if(_targetPosition.isInvalid()) { // check if is inside field
             _targetPosition = ballPos;
         }
@@ -59,36 +59,6 @@ void Behavior_GoToBall::run() {
     _skill_goTo->setTargetPosition(_targetPosition);
     _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);
     setSkill(SKILL_GOTO);
-
-}
-
-float Behavior_GoToBall::getAngle(const Position &a, const Position &b) {
-    return std::atan2(b.y()-a.y(), b.x()-a.x());
-}
-
-bool Behavior_GoToBall::isBehindBall(Position posObjective) {
-    Position posBall = getWorldMap()->getBall().getPosition();
-    Position posPlayer = player()->position();
-    float anglePlayer = Utils::getAngle(posBall, posPlayer);
-    float angleDest = Utils::getAngle(posBall, posObjective);
-    float diff = Utils::angleDiff(anglePlayer, angleDest);
-    return (diff > static_cast<float>(M_PI)/18.0f);
-}
-
-Position Behavior_GoToBall::ballPrevision() {
-    Position ballPosition = getWorldMap()->getBall().getPosition();
-    Position enemyGoal = getWorldMap()->getLocations()->theirGoal();
-    float angle = atan2((enemyGoal.y() - ballPosition.y()), (enemyGoal.x() - ballPosition.x()));
-
-    Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
-    Velocity playerVelocity = getWorldMap()->getPlayer(getConstants()->teamColor(),player()->playerId()).getVelocity();
-    float fracVelX = (playerVelocity.vx()/ballVelocity.vx());
-    float fracVelY = (playerVelocity.vy()/ballVelocity.vy());
-
-    float futurePositionX = (player()->position().x() + _offsetBehindBall * cos(angle) - ballPosition.x() * fracVelX)/(1-fracVelX);
-    float futurePositionY = (player()->position().y() + _offsetBehindBall * sin(angle) - ballPosition.y() * fracVelY)/(1-fracVelY);
-
-    return Position(true, futurePositionX, futurePositionY);
 }
 
 void Behavior_GoToBall::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
@@ -97,5 +67,19 @@ void Behavior_GoToBall::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool 
     _skill_goTo->setAvoidOpponents(avoidOpponents);
     _skill_goTo->setAvoidOurGoalArea(avoidOurGoalArea);
     _skill_goTo->setAvoidTheirGoalArea(avoidTheirGoalArea);
+}
+
+Position Behavior_GoToBall::getBallProjection() {
+    Position ballPos = getWorldMap()->getBall().getPosition();
+    Velocity ballVel = getWorldMap()->getBall().getVelocity();
+
+    Position ballDirection, ballProj;
+    if(ballVel.abs() > 0 && !ballVel.isInvalid()) {
+        ballDirection = Position(true, ballVel.vx()/ballVel.abs(), ballVel.vy()/ballVel.abs());
+    } else {
+        ballDirection = Position(true, 0, 0);
+    }
+    ballProj = Position(true, ballPos.x() + ballDirection.x(), ballPos.y() + ballDirection.y());
+    return ballProj;
 }
 

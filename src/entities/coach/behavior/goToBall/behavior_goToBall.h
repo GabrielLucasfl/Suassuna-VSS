@@ -39,11 +39,7 @@ public:
     void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
 
     // Auxiliar
-    float getAngle(const Position &a, const Position &b);
-    float angleDiff(const float A, const float B);
-    bool isBehindBall(Position posObjective);
-    Position threePoints(const Position &near, const Position &far, float distance, float beta);
-    Position ballPrevision();
+    Position getBallProjection();
 
 private:
     // Behavior inherited methods
