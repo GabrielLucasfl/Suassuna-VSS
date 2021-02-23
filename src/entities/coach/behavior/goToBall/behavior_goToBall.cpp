@@ -27,7 +27,11 @@ Behavior_GoToBall::Behavior_GoToBall() {
     _offsetBehindBall = 0.0;
     _targetPosition.setPosition(false, 0.0f , 0.0f);
     _referencePosition.setPosition(false, 0.0f, 0.0f);
-
+    _avoidTeammates = false;
+    _avoidOpponents = false;
+    _avoidBall = false;
+    _avoidOurGoalArea = false;
+    _avoidTheirGoalArea = false;
 }
 QString Behavior_GoToBall::name() {
     return "Behavior_GoToBall";
@@ -58,15 +62,20 @@ void Behavior_GoToBall::run() {
     }
     _skill_goTo->setTargetPosition(_targetPosition);
     _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);
+    _skill_goTo->setAvoidBall(_avoidBall);
+    _skill_goTo->setAvoidTeammates(_avoidTeammates);
+    _skill_goTo->setAvoidOpponents(_avoidOpponents);
+    _skill_goTo->setAvoidOurGoalArea(_avoidOurGoalArea);
+    _skill_goTo->setAvoidTheirGoalArea(_avoidTheirGoalArea);
     setSkill(SKILL_GOTO);
 }
 
 void Behavior_GoToBall::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
-    _skill_goTo->setAvoidBall(avoidBall);
-    _skill_goTo->setAvoidTeammates(avoidTeammates);
-    _skill_goTo->setAvoidOpponents(avoidOpponents);
-    _skill_goTo->setAvoidOurGoalArea(avoidOurGoalArea);
-    _skill_goTo->setAvoidTheirGoalArea(avoidTheirGoalArea);
+    _avoidBall = avoidBall;
+    _avoidTeammates = avoidTeammates;
+    _avoidOpponents = avoidOpponents;
+    _avoidOurGoalArea = avoidOurGoalArea;
+    _avoidTheirGoalArea = avoidTheirGoalArea;
 }
 
 Position Behavior_GoToBall::getBallProjection() {
@@ -79,7 +88,7 @@ Position Behavior_GoToBall::getBallProjection() {
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    ballProj = Position(true, ballPos.x() + ballDirection.x(), ballPos.y() + ballDirection.y());
+    ballProj = Position(true, ballPos.x() + 0.05f*ballDirection.x(), ballPos.y() + 0.05f*ballDirection.y());
     return ballProj;
 }
 

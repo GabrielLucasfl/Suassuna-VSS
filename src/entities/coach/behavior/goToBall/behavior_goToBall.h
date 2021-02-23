@@ -59,6 +59,13 @@ private:
     float _desiredBaseSpeed;
     float _offsetBehindBall;
     Position _referencePosition;
+
+    // Avoid Parameters
+    bool _avoidTeammates;
+    bool _avoidOpponents;
+    bool _avoidBall;
+    bool _avoidOurGoalArea;
+    bool _avoidTheirGoalArea;
 };
 
 
