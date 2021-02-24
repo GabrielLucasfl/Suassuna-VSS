@@ -50,20 +50,20 @@ void Role_Attacker::run() {
     Velocity ballVel = getWorldMap()->getBall().getVelocity();
     Position ballDirection, ballProj;
     if(ballVel.abs() > 0 && !ballVel.isInvalid()) {
-        ballDirection = Position(true, ballVel.vx(), ballVel.vy());
+        ballDirection = Position(true, ballVel.vx()/getWorldMap()->getBall().getVelocity().abs(), ballVel.vy()/getWorldMap()->getBall().getVelocity().abs());
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    float factor = 5.0f * getWorldMap()->getBall().getVelocity().abs();
-    factor = std::min(factor, 5.0f);
+    float factor = 2.0f * getWorldMap()->getBall().getVelocity().abs();
+    factor = std::min(factor, 0.5f);
     ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
 
     // Bhv goToBall parameters
-    float bhvGoToBallOffset = 0.2f;    // Distance behind ball
+    float bhvGoToBallOffset = 0.25f;    // Distance behind ball
     Position bhvGoToBallRef = getWorldMap()->getLocations()->theirGoal();   // Reference position
 
     //check if player is behind ball based on its reference position
-    bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) < 0.5f);
+    bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > 0.3f);
     bool isBehindBall = Role_Attacker::isBehindBall(Utils::threePoints(ballProj, bhvGoToBallRef, bhvGoToBallOffset, static_cast<float>(M_PI)));
 
     switch (_state) {
@@ -71,6 +71,7 @@ void Role_Attacker::run() {
             _bhv_goToBall->setReferencePosition(getWorldMap()->getLocations()->theirGoal());
             _bhv_goToBall->setOffsetBehindBall(bhvGoToBallOffset);
             _bhv_goToBall->setAvoidFlags(true, true, true, true, false);
+            //_bhv_goToBall->setBaseSpeed(33);
             setBehavior(BHV_GOTOBALL);
             if(isBehindBall || isInRange) {
                 _state = MOVETO;
@@ -78,7 +79,9 @@ void Role_Attacker::run() {
             break;
         }
         case MOVETO: {
-            Position betweenBallAndRef = Utils::threePoints(bhvGoToBallRef, ballProj, Utils::distance(bhvGoToBallRef, ballProj) - 0.01f, 0);
+            Position betweenBallAndRef;
+            //betweenBallAndRef = Utils::threePoints(bhvGoToBallRef, ballProj, Utils::distance(bhvGoToBallRef, ballProj) - 0.01f, 0);
+            betweenBallAndRef = ballProj;
             if(!_push) {
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
                 _bhv_moveTo->setTargetPosition(betweenBallAndRef);
@@ -130,7 +133,8 @@ bool Role_Attacker::isBehindBallXcoord(Position pos) {
 }
 
 bool Role_Attacker::inRangeToPush(Position ballPos) {
-    Position firstPost, secondPost;
+    Position firstPost;
+    Position secondPost;
     firstPost = getWorldMap()->getLocations()->theirGoalRightPost();
     secondPost = getWorldMap()->getLocations()->theirGoalLeftPost();
 

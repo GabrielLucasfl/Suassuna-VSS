@@ -88,8 +88,8 @@ Position Behavior_GoToBall::getBallProjection() {
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    float factor = 5.0f * getWorldMap()->getBall().getVelocity().abs();
-    factor = std::min(factor, 5.0f);
+    float factor = 2.0f * getWorldMap()->getBall().getVelocity().abs();
+    factor = std::min(factor, 0.5f);
     ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
     return ballProj;
 }
