@@ -19,7 +19,7 @@
 			"playerPID": [20.0, 0.0, 2.5],
 			"playerBaseSpeed": 30.0,
 			"distToConsiderStuck": 0.1,
-			"timeToConsiderStuck": 1.0,
+			"timeToConsiderStuck": 0.6,
 			"timeToWaitStuckMovement": 0.2
 		}
 	},
