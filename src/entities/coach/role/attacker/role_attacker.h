@@ -34,6 +34,8 @@ public:
     // Auxiliar
     bool isBehindBall(Position posObjective);
     bool isBehindBallXcoord(Position pos);
+    bool inRangeToPush(Position ballPos);
+    float normAngle(float angleRadians);
 private:
     // Role inherited methods
     void configure();
@@ -55,6 +57,9 @@ private:
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_GoToBall *_bhv_goToBall;
+
+    // Attributes
+    bool _push;
 
     // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
