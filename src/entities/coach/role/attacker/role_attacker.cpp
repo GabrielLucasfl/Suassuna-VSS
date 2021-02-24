@@ -53,16 +53,10 @@ void Role_Attacker::run() {
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    ballProj = Position(true, ballPos.x() + 0.05f*ballDirection.x(), ballPos.y() + 0.05f*ballDirection.y());
+    ballProj = Position(true, ballPos.x() + 2*ballDirection.x(), ballPos.y() + 2*ballDirection.y());
 
     // Bhv goToBall parameters
     float bhvGoToBallOffset = 0.2f;    // Distance behind ball
-//    if(isBehindBallXcoord(player()->position())){
-//        float offsetBasedOnDist = Utils::distance(ballProj, player()->position())*0.1f;
-//        bhvGoToBallOffset = std::min(offsetBasedOnDist, 0.25f);
-//        bhvGoToBallOffset = std::max(bhvGoToBallOffset, 0.2f);  // Distance behind ball
-//    }
-
     Position bhvGoToBallRef = getWorldMap()->getLocations()->theirGoal();   // Reference position
 
     //check if player is behind ball based on its reference position
@@ -70,11 +64,10 @@ void Role_Attacker::run() {
 
     switch (_state) {
         case GOTOBALL: {
-            std::cout << "GOTOBALL" << std::endl;
+            //std::cout << "GOTOBALL" << std::endl;
             _bhv_goToBall->setReferencePosition(getWorldMap()->getLocations()->theirGoal());
             _bhv_goToBall->setOffsetBehindBall(bhvGoToBallOffset);
             _bhv_goToBall->setAvoidFlags(true, true, true, true, false);
-            std::cout << isBehindBall << std::endl;
             setBehavior(BHV_GOTOBALL);
             if(isBehindBall) {
                 _state = MOVETO;
@@ -82,15 +75,12 @@ void Role_Attacker::run() {
             break;
         }
         case MOVETO: {
-            std::cout << "MOVETO  " << std::endl;
-
-            Position betweenBallAndRef = Utils::threePoints(bhvGoToBallRef, ballProj, Utils::distance(bhvGoToBallRef,ballProj) - 0.01f, 0);
+            //std::cout << "MOVETO  " << std::endl;
+            Position betweenBallAndRef = Utils::threePoints(bhvGoToBallRef, ballProj, Utils::distance(bhvGoToBallRef, ballProj) - 0.01f, 0);
             _bhv_moveTo->setTargetPosition(betweenBallAndRef);
 
-            if(Utils::distance(player()->position(), ballPos) < 0.06f) {
-                _bhv_moveTo->setBaseSpeed(50);
-            }else {
-                //_bhv_moveTo->setBaseSpeed(30);
+            if(Utils::distance(player()->position(), ballProj) < 0.06f) {
+                _bhv_moveTo->setTargetPosition(Position(false, 0, 0));
             }
             setBehavior(BHV_MOVETO);
 
