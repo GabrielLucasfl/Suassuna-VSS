@@ -88,7 +88,7 @@ Position Behavior_GoToBall::getBallProjection() {
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    ballProj = Position(true, ballPos.x() + 0.05f*ballDirection.x(), ballPos.y() + 0.05f*ballDirection.y());
+    ballProj = Position(true, ballPos.x() + 2*ballDirection.x(), ballPos.y() + 2*ballDirection.y());
     return ballProj;
 }
 
