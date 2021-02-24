@@ -53,7 +53,7 @@ private:
     float calcBarrier_Xcomponent();
     void limit_Ypos(float * posy);
     float calc_x_advanced();
-
+    float calc_x_barrier();
     //vars
     float _posXbarrier;
     float _limitYup;

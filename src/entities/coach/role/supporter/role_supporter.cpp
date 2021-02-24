@@ -136,10 +136,37 @@ void Role_Supporter::run() {
             std::cout << "Nao tenho angulos livres\n";
             desiredPosition.setPosition(1,x_Barrier,positionBall.y());
         }else{
-            //std::cout << "Tenho angulos livres\n";
             desiredPosition.setPosition(1,x_Barrier,y_Barrier);
         }
+        if(y_Barrier<-0.40f){
+            y_Barrier = -0.40f;
+            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
+        }
+        else if(y_Barrier>0.40f){
+            y_Barrier = 0.40f;
+            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
+        }
+        float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
+        float xAux = (0.55f*posx_control);
 
+        if(positionBall.x()<=xAux && xAux<0.0f){
+            x_Barrier = calc_x_barrier();
+            if(positionBall.y()<0.0f){
+                desiredPosition.setPosition(1, x_Barrier, -0.40f);
+            }
+            else if(positionBall.y()>0.0f){
+                 desiredPosition.setPosition(1, x_Barrier, 0.40f);
+            }
+        }
+        else if(positionBall.x()>=xAux && xAux>0.0f){
+            x_Barrier = calc_x_barrier();
+            if(positionBall.y()<0.0f){
+                desiredPosition.setPosition(1, x_Barrier, -0.40f);
+            }
+            else if(positionBall.y()>0.0f){
+                 desiredPosition.setPosition(1, x_Barrier, 0.40f);
+            }
+        }
         //_bhv_moveTo->setMinimalVelocity(_minVelocity);
         _bhv_moveTo->setTargetPosition(desiredPosition);
         setBehavior(BHV_MOVETO);
@@ -191,10 +218,15 @@ void Role_Supporter::limit_Ypos(float * posy){
 
 float Role_Supporter::calc_x_advanced(){
     float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
-    //float distance_advanced = 0.35f;
-    float distance_advanced = 0.50f;
+    float distance_advanced = 0.35f;
     Position position_ball = getWorldMap()->getBall().getPosition();
     return position_ball.x() + (distance_advanced*posx_control);
+}
+
+float Role_Supporter::calc_x_barrier(){
+    float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
+    float x_barrier = 0.68f;
+    return (x_barrier*posx_control);
 }
 
 QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {

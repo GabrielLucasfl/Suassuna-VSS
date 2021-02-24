@@ -13,7 +13,7 @@
 	
 	"Team":{
 		"teamColor": "blue",
-		"teamSide": "right",
+		"teamSide": "left",
 		"qtPlayers": 3,
 		"Player":{
 			"playerPID": [20.0, 0.0, 2.5],
