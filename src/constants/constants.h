@@ -63,6 +63,9 @@ public:
     int qtPlayers();
     std::tuple<float, float, float> playerPID();
     float playerBaseSpeed();
+    float distToConsiderStuck();
+    float timeToConsiderStuck();
+    float timeToWaitStuckMovement();
 
 protected:
     QVariantMap documentMap() { return _documentMap; }
@@ -108,6 +111,9 @@ private:
     FieldSide _teamSide;
     std::tuple<float, float, float> _playerPID;
     float _playerBaseSpeed;
+    float _distToConsiderStuck;
+    float _timeToConsiderStuck;
+    float _timeToWaitStuckMovement;
 };
 
 #endif // CONSTANTS_H

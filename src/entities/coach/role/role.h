@@ -27,6 +27,7 @@
 #include <src/entities/referee/referee.h>
 #include <src/entities/coach/basecoach.h>
 #include <src/constants/constants.h>
+#include <src/entities/coach/behavior/moveto/behavior_moveto.h>
 
 class Role : public QObject
 {
@@ -68,6 +69,13 @@ private:
     // Player access
     Player *_player;
     QMutex _playerMutex;
+
+    // Stucked management
+    Behavior_MoveTo *_bh_stuckAvoid;
+    Timer _stuckedTimer;
+    bool _wasStucked;
+    bool isStuckedAtWall();
+    Position getProjectionInStuckedWall();
 
     // Constants
     Constants *_constants;

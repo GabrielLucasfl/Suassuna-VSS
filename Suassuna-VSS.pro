@@ -98,6 +98,7 @@ SOURCES += \
     src/utils/types/object/object.cpp \
     src/utils/types/position/position.cpp \
     src/utils/types/velocity/velocity.cpp \
+    src/utils/types/wall/wall.cpp \
     src/utils/utils.cpp
 
 
@@ -174,6 +175,7 @@ HEADERS += \
     src/utils/types/object/object.h \
     src/utils/types/position/position.h \
     src/utils/types/velocity/velocity.h \
+    src/utils/types/wall/wall.h \
     src/utils/utils.h
 
 

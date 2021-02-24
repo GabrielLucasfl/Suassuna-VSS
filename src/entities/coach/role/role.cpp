@@ -29,6 +29,7 @@ Role::Role() {
     _constants = nullptr;
     _actualBehavior = nullptr;
     _initialized = false;
+    _wasStucked = false;
 }
 
 Role::~Role() {
@@ -39,6 +40,9 @@ Role::~Role() {
     for(it = behaviorList.begin(); it != behaviorList.end(); it++) {
         delete *it;
     }
+
+    // Delete behavior stuck
+    delete _bh_stuckAvoid;
 
     // Cleaning map
     _behaviorList.clear();
@@ -53,6 +57,9 @@ void Role::initialize(Constants *constants, Referee *referee, WorldMap *worldMap
     _constants = constants;
     _referee = referee;
     _worldMap = worldMap;
+
+    // Create moveto behavior to stucked control
+    _bh_stuckAvoid = new Behavior_MoveTo();
 
     // Call virtual configure()
     configure();
@@ -76,16 +83,57 @@ void Role::runRole() {
 
     // Run behavior (implemented by child inherited method)
     if(getReferee()->isGameOn()) {
-        run();
+        if((!isStuckedAtWall() || name() == "Role_Goalkeeper") && !_wasStucked) {
+            run();
 
-        // Check if initialized
-        if(!_actualBehavior->isInitialized()) {
-            _actualBehavior->initialize(getConstants(), getWorldMap());
+            // Check if initialized
+            if(!_actualBehavior->isInitialized()) {
+                _actualBehavior->initialize(getConstants(), getWorldMap());
+            }
+
+            // Run skill
+            _actualBehavior->setPlayer(player());
+            _actualBehavior->runBehavior();
+
+            // Reset stucked timer
+            _stuckedTimer.start();
         }
+        else {
+            if(_wasStucked) {
+                // Stop stucked timer
+                _stuckedTimer.stop();
 
-        // Run skill
-        _actualBehavior->setPlayer(player());
-        _actualBehavior->runBehavior();
+                if(_stuckedTimer.getSeconds() >= getConstants()->timeToWaitStuckMovement()) {
+                    _wasStucked = false;
+                }
+                else {
+                    _bh_stuckAvoid->runBehavior();
+                }
+            }
+            else {
+                // Stop stucked timer
+                _stuckedTimer.stop();
+
+                if(_stuckedTimer.getSeconds() >= getConstants()->timeToConsiderStuck()) {
+                    // Check if stucked bhv is initialized
+                    if(!_bh_stuckAvoid->isInitialized()) {
+                        _bh_stuckAvoid->initialize(getConstants(), getWorldMap());
+                    }
+
+                    // Set desired position
+                    Position targetPosition = Utils::threePoints(getProjectionInStuckedWall(), player()->position(), 0.3f, 0.0);
+                    _bh_stuckAvoid->setTargetPosition(targetPosition);
+
+                    // Set player and run
+                    _bh_stuckAvoid->setPlayer(player());
+                    _bh_stuckAvoid->runBehavior();
+
+                    // Mark as stucked
+                    _wasStucked = true;
+                    _stuckedTimer.start();
+                }
+            }
+        }
     }
     else {
         if(player() != nullptr) {
@@ -106,6 +154,28 @@ void Role::addBehavior(int id, Behavior *behavior) {
     }
 
     _behaviorList.insert(id, behavior);
+}
+
+bool Role::isStuckedAtWall() {
+    Position projectedPosition = getProjectionInStuckedWall();
+
+    return !projectedPosition.isInvalid();
+}
+
+Position Role::getProjectionInStuckedWall() {
+    QList<Wall> walls = getWorldMap()->getLocations()->getWalls();
+
+    Position projection = Position(false, 0.0, 0.0);
+    float playerSpeed = getWorldMap()->getPlayer(getConstants()->teamColor(), player()->playerId()).getVelocity().abs();
+    for(int i = 0; i < walls.size(); i++) {
+        Wall actualWall = walls.at(i);
+        if(actualWall.getDistanceToWall(player()->position()) <= getConstants()->distToConsiderStuck() && playerSpeed <= player()->getLinearError()) {
+            projection = actualWall.getProjectionAtWall(player()->position());
+            break;
+        }
+    }
+
+    return projection;
 }
 
 void Role::setBehavior(int id) {

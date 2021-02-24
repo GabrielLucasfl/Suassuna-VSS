@@ -138,6 +138,15 @@ void Constants::readTeamConstants() {
 
     _playerBaseSpeed = playerMap["playerBaseSpeed"].toFloat();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded playerBaseSpeed: " + std::to_string(_playerBaseSpeed)) + '\n';
+
+    _distToConsiderStuck = playerMap["distToConsiderStuck"].toFloat();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded distToConsiderStuck: " + std::to_string(_distToConsiderStuck)) + '\n';
+
+    _timeToConsiderStuck = playerMap["timeToConsiderStuck"].toFloat();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded timeToConsiderStuck: " + std::to_string(_timeToConsiderStuck)) + '\n';
+
+    _timeToWaitStuckMovement = playerMap["timeToWaitStuckMovement"].toFloat();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded timeToWaitStuckMovement: " + std::to_string(_timeToWaitStuckMovement)) + '\n';
 }
 
 int Constants::threadFrequency() {
@@ -210,4 +219,16 @@ std::tuple<float, float, float> Constants::playerPID() {
 
 float Constants::playerBaseSpeed() {
     return _playerBaseSpeed;
+}
+
+float Constants::distToConsiderStuck() {
+    return _distToConsiderStuck;
+}
+
+float Constants::timeToConsiderStuck() {
+    return _timeToConsiderStuck;
+}
+
+float Constants::timeToWaitStuckMovement() {
+    return _timeToWaitStuckMovement;
 }

@@ -68,6 +68,24 @@ Locations::Locations(FieldSide ourSide, Field *field) {
     // Penalty marks
     _rightPenaltyMark = Position(true, (fieldX/2.0f - defenseAreaWidth), 0.0);
     _leftPenaltyMark = Position(true, (-fieldX/2.0f + defenseAreaWidth), 0.0);
+
+    // Setting Walls points
+    //bottom and upper walls
+    _walls.push_back(Wall(Position(true, -fieldX, -fieldY) , Position(true, fieldX, -fieldY)));
+    _walls.push_back(Wall(Position(true, -fieldX, fieldY) , Position(true, fieldX, fieldY)));
+    //left side walls
+    _walls.push_back(Wall(Position(true, -fieldX, -goalY) , Position(true, -fieldX, -fieldY)));
+    _walls.push_back(Wall(Position(true, -fieldX, goalY) , Position(true, -fieldX, fieldY)));
+    //right side walls
+    _walls.push_back(Wall(Position(true, fieldX, -goalY) , Position(true, fieldX, -fieldY)));
+    _walls.push_back(Wall(Position(true, fieldX, goalY) , Position(true, fieldX, fieldY)));
+    //triangle walls
+    //right triangles
+    _walls.push_back(Wall(Position(true, -fieldX, -fieldY + 0.07) , Position(true, -fieldX + 0.07, -fieldY)));
+    _walls.push_back(Wall(Position(true, -fieldX, fieldY - 0.07) , Position(true, -fieldX + 0.07 , fieldY)));
+    //left triangles
+    _walls.push_back(Wall(Position(true, fieldX, -fieldY + 0.07) , Position(true, fieldX - 0.07, -fieldY)));
+    _walls.push_back(Wall(Position(true, fieldX, fieldY - 0.07) , Position(true, fieldX - 0.07, fieldY)));
 }
 
 Locations::~Locations() {
@@ -80,6 +98,14 @@ FieldSide Locations::ourSide() {
 
 FieldSide Locations::theirSide() {
     return (_ourSide.isRight() ? Sides::LEFT : Sides::RIGHT);
+}
+
+QList<Wall> Locations::getWalls() {
+    _mutex.lockForRead();
+    QList<Wall> walls = _walls;
+    _mutex.unlock();
+
+    return walls;
 }
 
 Position Locations::fieldCenter() {

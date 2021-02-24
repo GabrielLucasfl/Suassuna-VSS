@@ -23,8 +23,10 @@
 #define LOCATIONS_H
 
 #include <QReadWriteLock>
+#include <QList>
 
 #include <math.h>
+#include <src/utils/types/wall/wall.h>
 #include <src/utils/types/field/field.h>
 #include <src/utils/types/position/position.h>
 #include <src/utils/types/fieldside/fieldside.h>
@@ -39,6 +41,9 @@ public:
     // Side
     FieldSide ourSide();
     FieldSide theirSide();
+
+    // Walls
+    QList<Wall> getWalls();
 
     // Field
     Position fieldCenter();
@@ -110,6 +115,9 @@ private:
 
     // Geometry data
     fira_message::Field _lastData;
+
+    // Walls
+    QList<Wall> _walls;
 
     // Field data
     Position _fieldCenter;

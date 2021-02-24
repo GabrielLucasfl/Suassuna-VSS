@@ -25,6 +25,7 @@
 #include <src/entities/coach/basecoach.h>
 #include <src/constants/constants.h>
 #include <src/entities/coach/player/player.h>
+#include <src/utils/utils.h>
 
 class Skill
 {
