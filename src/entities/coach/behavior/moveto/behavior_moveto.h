@@ -56,6 +56,13 @@ private:
     Position _targetPosition;
     float _desiredBaseSpeed;
     bool _isRotationEnabled;
+
+    // Avoid Parameters
+    bool _avoidTeammates;
+    bool _avoidOpponents;
+    bool _avoidBall;
+    bool _avoidOurGoalArea;
+    bool _avoidTheirGoalArea;
 };
 
 #endif // BEHAVIOR_MOVETO_H

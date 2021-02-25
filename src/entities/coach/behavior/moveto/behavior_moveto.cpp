@@ -24,6 +24,11 @@
 Behavior_MoveTo::Behavior_MoveTo() {
     _targetPosition = Position(false, 0.0, 0.0);
     _isRotationEnabled = false;
+    _avoidTeammates = false;
+    _avoidOpponents = false;
+    _avoidBall = false;
+    _avoidOurGoalArea = false;
+    _avoidTheirGoalArea = false;
 }
 
 QString Behavior_MoveTo::name() {
@@ -50,14 +55,19 @@ void Behavior_MoveTo::run() {
         // Situation where we use the GoTo skill
         _skill_goTo->setTargetPosition(_targetPosition);
         _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);
+        _skill_goTo->setAvoidBall(_avoidBall);
+        _skill_goTo->setAvoidTeammates(_avoidTeammates);
+        _skill_goTo->setAvoidOpponents(_avoidOpponents);
+        _skill_goTo->setAvoidOurGoalArea(_avoidOurGoalArea);
+        _skill_goTo->setAvoidTheirGoalArea(_avoidTheirGoalArea);
         setSkill(SKILL_GOTO);
     }
 }
 
 void Behavior_MoveTo::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
-    _skill_goTo->setAvoidBall(avoidBall);
-    _skill_goTo->setAvoidTeammates(avoidTeammates);
-    _skill_goTo->setAvoidOpponents(avoidOpponents);
-    _skill_goTo->setAvoidOurGoalArea(avoidOurGoalArea);
-    _skill_goTo->setAvoidTheirGoalArea(avoidTheirGoalArea);
+    _avoidBall = avoidBall;
+    _avoidTeammates = avoidTeammates;
+    _avoidOpponents = avoidOpponents;
+    _avoidOurGoalArea = avoidOurGoalArea;
+    _avoidTheirGoalArea = avoidTheirGoalArea;
 }
