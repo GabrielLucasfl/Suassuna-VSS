@@ -37,11 +37,22 @@ private:
     void run(int numPlayers);
 
     // Role pointer vector
-    QList<Role_Supporter*> _roles_supporter;
-    QList<Role_Default*> _rl_default;
-    QList<Role_Goalkeeper*> _rl_gk;
-    QList<Role_Defender*> _rl_df;
-    QList<Role_Attacker*> _rl_attacker;
+    Role_Default *_rl_default;
+    Role_Goalkeeper *_rl_gk;
+    Role_Defender *_rl_df;
+    Role_Supporter *_rl_sup;
+    Role_Attacker *_rl_atk;
+
+    // Internal functions
+    void selectAttackerID();
+    void selectGoalkeeperID();
+    bool isDefenderSituation();
+    bool isBehindBallXcoord(Position pos);
+
+    // Parameters
+    quint8 _attackerID;
+    quint8 _goalkeeperID;
+    quint8 _lastID;
 };
 
 #endif // PLAYBOOK_DEFAULT_H

@@ -25,6 +25,7 @@
 #include <src/constants/constants.h>
 #include <src/entities/world/worldmap.h>
 #include <src/entities/coach/basecoach.h>
+#include <src/utils/utils.h>
 
 class Playbook
 {
