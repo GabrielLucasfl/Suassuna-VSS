@@ -63,6 +63,19 @@ private:
 
     // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
+
+    //Enum for ourTeam vs theirTeam
+    enum{
+        THEIRTEAM,
+        OURTEAM
+    };
+    //Penalty stuff
+    void penaltyKick(quint8 _teamPriority, QPair<Position, Angle> *_penaltyPlacement);
+    void goalKick(quint8 _teamPriority, QPair<Position, Angle> *_penaltyPlacement);
+    QPair<Position, Angle> _penaltyPlacement;
+    void kickOff(QPair<Position, Angle> *_penaltyPlacement);
+    void freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::Quadrant quadrant);
+
 };
 
 #endif // ROLE_ATTACKER_H
