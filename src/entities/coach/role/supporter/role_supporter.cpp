@@ -231,64 +231,62 @@ float Role_Supporter::calc_x_barrier(){
 }
 
 QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
-    Position standardPosition = ;
-    Angle standardAngle = Angle(true, 0);
-    if (getWorldMap()->getLocations()->ourSide().isRight()) {
-        standardPosition = Position(true, 0.375f, 0.0f);
-    } else {
-        standardPosition = Position(true, -0.375f, 0.0f);
-    }
-    return QPair<Position,Angle>(standardPosition, standardAngle);
-}
+    // Standard position will be at our penalty mark
+    Position standardPosition = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(), getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+    Angle standardAngle = Angle(true, M_PI / 2.0);
 
-QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
-    Position standardPosition;
-    if (getWorldMap()->getLocations()->ourSide().isRight()) {
-        standardPosition = Position(true, 0.3f, 0.25f);
-    } else {
-        standardPosition = Position(true, -0.3f, -0.25f);
-    }
+    bool isForOurTeam = (forTeam == static_cast<VSSRef::Color>(getConstants()->teamColor()));
 
-    Position foulPosition;
-    Angle foulAngle;
-
-    switch (foul) {
-    case VSSRef::Foul::PENALTY_KICK: {
-        if (VSSRef::Color(getConstants()->teamColor()) == forTeam) {
-            penaltyKick(OURTEAM, &_penaltyPlacement);
-            foulPosition = _penaltyPlacement.first;
-            foulAngle = _penaltyPlacement.second; //Angle(true, 90);
-        } else {
-            penaltyKick(THEIRTEAM, &_penaltyPlacement);
-            foulPosition = _penaltyPlacement.first;
-            foulAngle = _penaltyPlacement.second;
+    switch(foul) {
+        // In case of PENALTY_KICK, pos close to our field side
+        case VSSRef::Foul::PENALTY_KICK: {
+            if(isForOurTeam) {
+                standardPosition = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
+                                                      getWorldMap()->getLocations()->theirGoal(),
+                                                      0.1f, M_PI);
+                standardAngle = Angle(true, 0.0);
+            }
+            else {
+                standardPosition = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
+                                                      getWorldMap()->getLocations()->ourGoal(),
+                                                      0.1f, M_PI);
+                standardAngle = Angle(true, 0.0);
+            }
         }
-    } break;
-    case VSSRef::Foul::KICKOFF: {
-        kickOff(&_penaltyPlacement);
-        foulPosition = _penaltyPlacement.first;
-        foulAngle = _penaltyPlacement.second;
-    } break;
-    case VSSRef::Foul::FREE_BALL: {
-        freeBall(&_penaltyPlacement, atQuadrant);
-        foulPosition = _penaltyPlacement.first;
-        foulAngle = _penaltyPlacement.second;
-    } break;
-    case VSSRef::Foul::GOAL_KICK: {
-        if (static_cast<VSSRef::Color>(getConstants()->teamColor()) == forTeam) {
-            goalKick(OURTEAM, &_penaltyPlacement);
-            foulPosition = _penaltyPlacement.first;
-            foulAngle = _penaltyPlacement.second;
-        } else {
-            foulPosition = standardPosition;
-            foulAngle = Angle(true, 90);
+        break;
+        // In case of OUR KICKOFF, it will be positioned close to attacker
+        case VSSRef::Foul::KICKOFF: {
+            if(isForOurTeam) {
+                standardPosition = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
+                                                      getWorldMap()->getLocations()->theirGoal(),
+                                                      0.3f, M_PI);
+                standardAngle = Angle(true, 0.0);
+            }
         }
-    } break;
-    default: {
-        foulPosition = standardPosition;
-        foulAngle = Angle(true, 90);
-    }
+        break;
+        case VSSRef::Foul::GOAL_KICK: {
+            if(!isForOurTeam) {
+                standardPosition = Utils::threePoints(getWorldMap()->getLocations()->theirPenaltyMark(),
+                                                      getWorldMap()->getLocations()->theirGoalLeftMidPost(),
+                                                      0.1f, M_PI);
+                standardAngle = Angle(true, 0.0);
+            }
+        }
+        break;
+        // In free ball, pos at their penalty mark (if free ball occurs at their field side)
+        // Otherwise, pos at standard position (barrier)
+        case VSSRef::Foul::FREE_BALL: {
+            if((atQuadrant == VSSRef::Quadrant::QUADRANT_1 || atQuadrant == VSSRef::Quadrant::QUADRANT_4) && getConstants()->teamSide().isLeft()) {
+                standardPosition = getWorldMap()->getLocations()->theirPenaltyMark();
+                standardAngle = Angle(true, 0.0);
+            }
+            else if((atQuadrant == VSSRef::Quadrant::QUADRANT_2 || atQuadrant == VSSRef::Quadrant::QUADRANT_3) && !getConstants()->teamSide().isLeft()) {
+                standardPosition = getWorldMap()->getLocations()->theirPenaltyMark();
+                standardAngle = Angle(true, 0.0);
+            }
+        }
+        break;
     }
 
-    return QPair<Position, Angle>(foulPosition, foulAngle);
+    return QPair<Position, Angle>(standardPosition, standardAngle);
 }
