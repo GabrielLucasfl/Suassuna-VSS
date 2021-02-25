@@ -45,11 +45,12 @@ void Role_Supporter::configure() {
     _limitYdown = -0.6f;
     _timer.start();
     _minVelocity = 1.0f;
+    //_bhv_moveTo->setAvoidFlags(0,0,0,1,0);
+    _bhv_moveTo->setAvoidFlags(0,1,1,1,0);
 }
 
 void Role_Supporter::run() {
     //_bhv_moveTo->setTargetPosition(player()->position());
-
     Position positionVar;
     Position positionBall = getWorldMap()->getBall().getPosition();
     positionVar = Position(true, positionBall.x()-0.3f, positionBall.y());
