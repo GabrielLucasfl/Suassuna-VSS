@@ -62,7 +62,7 @@ void Role_Goalkeeper::run() {
         _bhv_moveTo->setTargetPosition(standardPosition);
         setBehavior(BHV_MOVETO);
     }
-    else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition) && ballVelocity.abs() < 0.01f) {
+    else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition)) {
         // Clear the ball if it is stationed at our goal area (or almost stationed)
         _bhv_moveTo->setTargetPosition(ballPosition);
         setBehavior(BHV_MOVETO);
@@ -74,14 +74,35 @@ void Role_Goalkeeper::run() {
 //        setBehavior(BHV_MOVETO);
 //    }
     else {
-        // Intercept the ball movement in order to prevent a goal
-        Position firstLimitationPoint(true, standardPosition.x(), 0.3f);
-        Position secondLimitationPoint(true, standardPosition.x(), -0.3f);
-        _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
-        _bhv_intercept->setObjectPosition(ballPosition);
-        _bhv_intercept->setObjectVelocity(ballVelocity);
-        _bhv_intercept->setBaseSpeed(getConstants()->playerBaseSpeed() + 20.0f);
-        setBehavior(BHV_INTERCEPT);
+        if (ballPosition.x() > 0.6f && getWorldMap()->getLocations()->ourSide().isRight()) {
+            if (ballPosition.y() > 0.35f) {
+                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), 0.3f));
+                setBehavior(BHV_MOVETO);
+            }
+            else if (ballPosition.y() < -0.35f) {
+                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), -0.3f));
+                setBehavior(BHV_MOVETO);
+            }
+        }
+        else if (ballPosition.x() < -0.6f && getWorldMap()->getLocations()->ourSide().isLeft()) {
+            if (ballPosition.y() > 0.35f) {
+                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), 0.3f));
+                setBehavior(BHV_MOVETO);
+            }
+            else if (ballPosition.y() < -0.35f) {
+                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), -0.3f));
+                setBehavior(BHV_MOVETO);
+            }
+        } else {
+            // Intercept the ball movement in order to prevent a goal
+            Position firstLimitationPoint(true, standardPosition.x(), 0.2f);
+            Position secondLimitationPoint(true, standardPosition.x(), -0.2f);
+            _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
+            _bhv_intercept->setObjectPosition(ballPosition);
+            _bhv_intercept->setObjectVelocity(ballVelocity);
+            _bhv_intercept->setBaseSpeed(getConstants()->playerBaseSpeed());
+            setBehavior(BHV_INTERCEPT);
+        }
     }
 }
 
