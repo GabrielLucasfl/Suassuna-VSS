@@ -122,8 +122,8 @@ void Role_Supporter::run() {
     _timer.stop();
     double tempo = _timer.getSeconds();
     if(tempo >= 1.0){
-        printf("O intervalo escolhido foi: %f \t %f\n e a maior abertura eh %f\n",dbAngI, dbAngF, largestMid);
-        printf("Tam lista %d \n", obstacles.size());
+        //printf("O intervalo escolhido foi: %f \t %f\n e a maior abertura eh %f\n",dbAngI, dbAngF, largestMid);
+        //printf("Tam lista %d \n", obstacles.size());
         _timer.start();
     }
     Position desiredPosition = player()->position();
@@ -134,7 +134,7 @@ void Role_Supporter::run() {
         float modulo_vet = abs((x_Barrier - positionBall.x())/cos(largestMid));
         y_Barrier = positionBall.y() + (modulo_vet * sin(largestMid));
         if(_nofreeAngles){
-            std::cout << "Nao tenho angulos livres\n";
+            // std::cout << "Nao tenho angulos livres\n";
             desiredPosition.setPosition(1,x_Barrier,positionBall.y());
         }else{
             desiredPosition.setPosition(1,x_Barrier,y_Barrier);

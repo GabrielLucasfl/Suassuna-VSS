@@ -9,7 +9,7 @@
 
 QList<Obstacle> FreeAngles::getObstacles(const Position watcher, float distanceRadius, QList<Object> players){
     if(players.isEmpty()){
-        std::cout << "[FREEANGLES] Sem times";
+        //std::cout << "[FREEANGLES] Sem times";
         return QList<Obstacle>();
     }
 
