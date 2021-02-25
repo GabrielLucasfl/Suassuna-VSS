@@ -26,7 +26,6 @@ Behavior_Intercept::Behavior_Intercept() {
     _secondLimitationPoint = Position(false, 0.0, 0.0);
     _objectPos = Position(false, 0.0, 0.0);
     _objectVel = Velocity(false, 0.0, 0.0);
-    _velocityFactor = 1.0f;
     _spinEnabled = false;
 }
 
@@ -40,6 +39,8 @@ void Behavior_Intercept::setInterceptSegment(Position firstPoint, Position secon
 }
 
 void Behavior_Intercept::configure() {
+    _baseSpeed = getConstants()->playerBaseSpeed();
+
     // Starting skills
     _skill_goTo = new Skill_GoTo();
     _skill_spin = new Skill_Spin();
@@ -74,7 +75,7 @@ void Behavior_Intercept::run() {
         setSkill(SKILL_SPIN);
     } else {
         _skill_goTo->setTargetPosition(_interceptPos);
-        //_skill_goTo->setMinimalVelocity(_velocityFactor * playerVelocity);
+        _skill_goTo->setMovementBaseSpeed(_baseSpeed);
         setSkill(SKILL_GOTO);
     }
 }

@@ -172,7 +172,7 @@ float Player::getPlayerDistanceTo(Position &targetPosition) {
 }
 
 float Player::getLinearError() {
-    return 0.02f; // 5cm
+    return 0.05f; // 5cm
 }
 
 float Player::getAngularError() {

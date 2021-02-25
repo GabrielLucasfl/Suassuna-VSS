@@ -54,7 +54,7 @@ void Role_Goalkeeper::run() {
     // Reference position to look at
     Position lookingPosition(true, standardPosition.x(), 2.0f);
     _bhv_moveTo->enableRotation(false);
-    _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed() + 20.0f);
+    _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
 
     if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
             || getWorldMap()->getLocations()->isInsideTheirField(ballPosition)) {
@@ -65,21 +65,22 @@ void Role_Goalkeeper::run() {
     else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition) && ballVelocity.abs() < 0.01f) {
         // Clear the ball if it is stationed at our goal area (or almost stationed)
         _bhv_moveTo->setTargetPosition(ballPosition);
-        _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
         setBehavior(BHV_MOVETO);
     }
-    else if (!player()->isLookingTo(lookingPosition, 0.3f)) {
-        // Rotates to a better angle of movement
-        _bhv_moveTo->setTargetPosition(lookingPosition);
-        _bhv_moveTo->enableRotation(true);
-        setBehavior(BHV_MOVETO);
-    } else {
+//    else if (!player()->isLookingTo(lookingPosition, 0.3f)) {
+//        // Rotates to a better angle of movement
+//        _bhv_moveTo->setTargetPosition(lookingPosition);
+//        _bhv_moveTo->enableRotation(true);
+//        setBehavior(BHV_MOVETO);
+//    }
+    else {
         // Intercept the ball movement in order to prevent a goal
         Position firstLimitationPoint(true, standardPosition.x(), 0.3f);
         Position secondLimitationPoint(true, standardPosition.x(), -0.3f);
         _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
         _bhv_intercept->setObjectPosition(ballPosition);
         _bhv_intercept->setObjectVelocity(ballVelocity);
+        _bhv_intercept->setBaseSpeed(getConstants()->playerBaseSpeed() + 20.0f);
         setBehavior(BHV_INTERCEPT);
     }
 }

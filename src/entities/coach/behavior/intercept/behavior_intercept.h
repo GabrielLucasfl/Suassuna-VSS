@@ -33,7 +33,7 @@ public:
 
     // Setters
     void setInterceptSegment(Position firstPoint, Position secondPoint);
-    void setVelocityFactor(float velocityFActor) { _velocityFactor = velocityFActor; }
+    void setBaseSpeed(float baseSpeed) { _baseSpeed = baseSpeed; }
     void setObjectPosition(Position objectPos) { _objectPos = objectPos; }
     void setObjectVelocity(Velocity objectVel) { _objectVel = objectVel; }
     void enableSpin(bool spinEnabled) { _spinEnabled = spinEnabled; }
@@ -64,7 +64,7 @@ private:
     Velocity _objectVel;
     Position _interceptPos;
     Velocity _interceptVel;
-    float _velocityFactor;
+    float _baseSpeed;
     bool _spinEnabled;
 
     // Auxiliary Functions
