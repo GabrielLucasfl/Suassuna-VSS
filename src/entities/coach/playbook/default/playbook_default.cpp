@@ -28,9 +28,8 @@ Playbook_Default::Playbook_Default() {
     _rl_sup = nullptr;
     _rl_atk = nullptr;
 
-    _attackerID = 0;
-    _goalkeeperID = 1;
-    _lastID = 2;
+    _switchedPlayers = false;
+    _atkStuck = false;
 }
 
 QString Playbook_Default::name() {
@@ -39,21 +38,30 @@ QString Playbook_Default::name() {
 
 void Playbook_Default::configure(int numPlayers) {
     // For each player, register an role and call usesRole() to register it in the table
-    usesRole(_rl_default = new Role_Default());
-    usesRole(_rl_gk = new Role_Goalkeeper());
-    usesRole(_rl_df = new Role_Defender());
-    usesRole(_rl_sup = new Role_Supporter());
-    usesRole(_rl_atk = new Role_Attacker());
+    _rl_default = new Role_Default();
+    _rl_gk = new Role_Goalkeeper();
+    _rl_df = new Role_Defender();
+    _rl_sup = new Role_Supporter();
+    _rl_atk = new Role_Attacker();
 
-    setPlayerRole(_attackerID, _rl_atk);
-    setPlayerRole(_goalkeeperID, _rl_df);
-    setPlayerRole(_lastID, _rl_gk);
+    usesRole(_rl_default);
+    usesRole(_rl_gk);
+    usesRole(_rl_df);
+    usesRole(_rl_sup);
+    usesRole(_rl_atk);
 }
 
 void Playbook_Default::run(int numPlayers) {
     // Defining robot IDs
-    selectGoalkeeperID();
-    selectAttackerID();
+    if(_first) {
+        selectInitialIDs();
+        _first = false;
+    }
+    _switchPlayersTimer.stop();
+    if(_switchedPlayers && _switchPlayersTimer.getSeconds() > 4) {
+        _switchedPlayers = false;
+    }
+    switchPlayersIDs();
 
     // Setting roles
     setPlayerRole(_goalkeeperID, _rl_gk);
@@ -65,102 +73,86 @@ void Playbook_Default::run(int numPlayers) {
     }
 }
 
-void Playbook_Default::selectAttackerID() {
-    QList<QPair<quint8, float>> playerData;
-    bool hasSomeoneBehindBall = false;
+void Playbook_Default::switchPlayersIDs() {
+    Position ballPos = getWorldMap()->getBall().getPosition();
+    Colors::Color ourColor = getConstants()->teamColor();
+    Position ourArea = getWorldMap()->getLocations()->ourGoal();
 
-    // Generating list of possible goalkeepers
-    QList<quint8> players = getPlayers();
-    for (int i = 0; i < players.size(); i++) {
-        Position playerPosition = getWorldMap()->getPlayer(getConstants()->teamColor(), players[i]).getPosition();
-        float ballDistance = Utils::distance(playerPosition, getWorldMap()->getBall().getPosition());
-        if (players[i] != _goalkeeperID) {
-            playerData.push_back(QPair<quint8, float>(players[i], ballDistance));
-            if (isBehindBallXcoord(playerPosition)) {
-                hasSomeoneBehindBall = true;
-            }
-        }
-    }
-
-    // Ordering the best goalkeepers
-    for (int i = 0; i < playerData.size() - 1; i++) {
-        for (int j = i; j < playerData.size(); j++) {
-            if (playerData[i].second > playerData[j].second) {
-                playerData.swap(i,j);
-            }
-        }
-    }
-
-    Colors::Color enemyColor;
-    if (getConstants()->teamColor() == Colors::BLUE) {
-        enemyColor = Colors::YELLOW;
-    } else {
-        enemyColor = Colors::BLUE;
-    }
-    bool isEnemyNearBall = false;
-
-    // Generating enemy list
-    QList<quint8> enemyPlayers = getWorldMap()->getAvailablePlayers(enemyColor);
-    for (int i = 0; i < enemyPlayers.size(); i++) {
-        Position enemyPlayerPosition = getWorldMap()->getPlayer(enemyColor, enemyPlayers[i]).getPosition();
-        float enemyBalDistance = Utils::distance(enemyPlayerPosition, getWorldMap()->getBall().getPosition());
-        if (playerData[0].second > enemyBalDistance) {
-            isEnemyNearBall = true;
-            break;
-        }
-    }
-
-    float ballDistanceToOurGoal = Utils::distance(getWorldMap()->getBall().getPosition(), getWorldMap()->getLocations()->ourGoal());
-    float ballDistanceToTheirGoal = Utils::distance(getWorldMap()->getBall().getPosition(), getWorldMap()->getLocations()->theirGoal());
-    if (ballDistanceToOurGoal < ballDistanceToTheirGoal) {
-        if (isEnemyNearBall) {
-            if (hasSomeoneBehindBall) {
-                if (isBehindBallXcoord(getWorldMap()->getPlayer(getConstants()->teamColor(), playerData[0].first).getPosition())) {
-                    _lastID = playerData[0].first;
-                    _attackerID = playerData[1].first;
-                } else {
-                    _lastID = playerData[1].first;
-                    _attackerID = playerData[0].first;
-                }
-            } else {
-                float goalDistanceZero = Utils::distance(getWorldMap()->getLocations()->ourGoal(),
-                            getWorldMap()->getPlayer(getConstants()->teamColor(), playerData[0].first).getPosition());
-                float goalDistanceOne = Utils::distance(getWorldMap()->getLocations()->ourGoal(),
-                            getWorldMap()->getPlayer(getConstants()->teamColor(), playerData[1].first).getPosition());
-                if (goalDistanceZero < goalDistanceOne) {
-                    _lastID = playerData[0].first;
-                    _attackerID = playerData[1].first;
-                } else {
-                    _lastID = playerData[1].first;
-                    _attackerID = playerData[0].first;
+    float attackerVel = getWorldMap()->getPlayer(ourColor, _attackerID).getVelocity().abs();
+    // If our attacker has stopped (possibly stuck)
+    if(attackerVel <= 0.02f) {
+        // If it already was stuck
+        if(_atkStuck) {
+            _atkStuckTimer.stop();
+            // If it is stuck for more than 2 seconds: switch players if we can
+            if(_atkStuckTimer.getSeconds() > 2) {
+                if(!_switchedPlayers) {
+                    quint8 attId = _attackerID;
+                    _attackerID = _lastID;
+                    _lastID = attId;
+                    _switchedPlayers = true;
+                    _switchPlayersTimer.start();
                 }
             }
-        } else {
-            if (hasSomeoneBehindBall) {
-                _attackerID = playerData[0].first;
-                _lastID = playerData[1].first;
-            } else {
-                _lastID = playerData[1].first;
-                _attackerID = playerData[0].first;
+        }
+        // If it wasn't stuck: start the timer!
+        else {
+            _atkStuck = true;
+            _atkStuckTimer.start();
+        }
+    }else {
+        _atkStuck = false;
+    }
+
+    // If ball is inside our field
+    if(getWorldMap()->getLocations()->isInsideOurField(ballPos)) {
+        // Get our players list
+        QList<quint8> ourPlayers = getWorldMap()->getAvailablePlayers(ourColor);
+
+        // Look for the closest player to our goal
+        quint8 closest = _lastID;
+        float minorDist = 1000;
+
+        for(int i=0; i<ourPlayers.size(); i++) {
+            // If it isn't our goalkeeper
+            if(ourPlayers[i] != _goalkeeperID) {
+                Position playerPos = getWorldMap()->getPlayer(ourColor, ourPlayers[i]).getPosition();
+                float distPlayerBall = Utils::distance(playerPos, ourArea);
+                // If found someone closer
+                if(distPlayerBall < minorDist) {
+                    closest = ourPlayers[i];
+                    minorDist = distPlayerBall;
+                }
             }
         }
+        // If we haven't switched players in the last seconds and
+        // the closest player isn't our third player: switch them!!!
+        if(closest != _lastID && !_switchedPlayers) {
+            _attackerID = _lastID;
+            _lastID = closest;
+            _switchedPlayers = true;
+            _switchPlayersTimer.start();
+        }
     } else {
-        if (hasSomeoneBehindBall) {
-            if (isBehindBallXcoord(getWorldMap()->getPlayer(getConstants()->teamColor(), playerData[0].first).getPosition())) {
-                _attackerID = playerData[0].first;
-                _lastID = playerData[1].first;
-            } else {
-                _attackerID = playerData[1].first;
-                _lastID = playerData[0].first;
+        Position attackerPos = getWorldMap()->getPlayer(ourColor, _attackerID).getPosition();
+        Position thirdPlayerPos = getWorldMap()->getPlayer(ourColor, _lastID).getPosition();
+        // If our attacker isn't behind ball, but our third player is (and we can swicth them now): switch them!!!
+        // OR
+        // If both players are behind ball, but the thirdPlayer is closer to it (and we can switch them now): switch them!!!
+        if((!isBehindBallXcoord(attackerPos) && (isBehindBallXcoord(thirdPlayerPos) && Utils::distance(thirdPlayerPos, ballPos) < 0.4f))
+            || ((isBehindBallXcoord(attackerPos) && isBehindBallXcoord(thirdPlayerPos)) && (Utils::distance(attackerPos, ballPos) > Utils::distance(thirdPlayerPos, ballPos)))) {
+            if(!_switchedPlayers) {
+                quint8 attId = _attackerID;
+                _attackerID = _lastID;
+                _lastID = attId;
+                _switchedPlayers = true;
+                _switchPlayersTimer.start();
             }
-        } else {
-            _lastID = playerData[0].first;
-            _attackerID = playerData[1].first;
         }
     }
 }
 
-void Playbook_Default::selectGoalkeeperID() {
+void Playbook_Default::selectInitialIDs() {
     QList<quint8> players = getPlayers();
     QList<float> goalDistance;
 
@@ -181,6 +173,8 @@ void Playbook_Default::selectGoalkeeperID() {
     }
 
     _goalkeeperID = players[0];
+    _lastID = players[1];
+    _attackerID = players[2];
 }
 
 bool Playbook_Default::isDefenderSituation() {

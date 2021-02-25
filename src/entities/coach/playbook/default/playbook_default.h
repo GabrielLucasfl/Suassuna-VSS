@@ -44,8 +44,8 @@ private:
     Role_Attacker *_rl_atk;
 
     // Internal functions
-    void selectAttackerID();
-    void selectGoalkeeperID();
+    void switchPlayersIDs();
+    void selectInitialIDs();
     bool isDefenderSituation();
     bool isBehindBallXcoord(Position pos);
 
@@ -53,6 +53,15 @@ private:
     quint8 _attackerID;
     quint8 _goalkeeperID;
     quint8 _lastID;
+
+    // Initial
+    bool _first = true;
+
+    // Switch players parameters
+    Timer _switchPlayersTimer;
+    bool _switchedPlayers;
+    Timer _atkStuckTimer;
+    bool _atkStuck;
 };
 
 #endif // PLAYBOOK_DEFAULT_H
