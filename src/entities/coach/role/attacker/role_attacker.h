@@ -69,11 +69,19 @@ private:
         THEIRTEAM,
         OURTEAM
     };
-    //Penalty stuff
+    //Penalty function
     void penaltyKick(quint8 _teamPriority, QPair<Position, Angle> *_penaltyPlacement);
+
+    //GoalKick function
     void goalKick(quint8 _teamPriority, QPair<Position, Angle> *_penaltyPlacement);
+
+    //Control placement variable
     QPair<Position, Angle> _penaltyPlacement;
+
+    //KickOff function
     void kickOff(QPair<Position, Angle> *_penaltyPlacement);
+
+    //FreeBall Function
     void freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::Quadrant quadrant);
 
 };

@@ -231,7 +231,7 @@ float Role_Supporter::calc_x_barrier(){
 }
 
 QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
-    Position standardPosition;
+    Position standardPosition = ;
     Angle standardAngle = Angle(true, 0);
     if (getWorldMap()->getLocations()->ourSide().isRight()) {
         standardPosition = Position(true, 0.375f, 0.0f);
@@ -239,4 +239,56 @@ QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, V
         standardPosition = Position(true, -0.375f, 0.0f);
     }
     return QPair<Position,Angle>(standardPosition, standardAngle);
+}
+
+QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+    Position standardPosition;
+    if (getWorldMap()->getLocations()->ourSide().isRight()) {
+        standardPosition = Position(true, 0.3f, 0.25f);
+    } else {
+        standardPosition = Position(true, -0.3f, -0.25f);
+    }
+
+    Position foulPosition;
+    Angle foulAngle;
+
+    switch (foul) {
+    case VSSRef::Foul::PENALTY_KICK: {
+        if (VSSRef::Color(getConstants()->teamColor()) == forTeam) {
+            penaltyKick(OURTEAM, &_penaltyPlacement);
+            foulPosition = _penaltyPlacement.first;
+            foulAngle = _penaltyPlacement.second; //Angle(true, 90);
+        } else {
+            penaltyKick(THEIRTEAM, &_penaltyPlacement);
+            foulPosition = _penaltyPlacement.first;
+            foulAngle = _penaltyPlacement.second;
+        }
+    } break;
+    case VSSRef::Foul::KICKOFF: {
+        kickOff(&_penaltyPlacement);
+        foulPosition = _penaltyPlacement.first;
+        foulAngle = _penaltyPlacement.second;
+    } break;
+    case VSSRef::Foul::FREE_BALL: {
+        freeBall(&_penaltyPlacement, atQuadrant);
+        foulPosition = _penaltyPlacement.first;
+        foulAngle = _penaltyPlacement.second;
+    } break;
+    case VSSRef::Foul::GOAL_KICK: {
+        if (static_cast<VSSRef::Color>(getConstants()->teamColor()) == forTeam) {
+            goalKick(OURTEAM, &_penaltyPlacement);
+            foulPosition = _penaltyPlacement.first;
+            foulAngle = _penaltyPlacement.second;
+        } else {
+            foulPosition = standardPosition;
+            foulAngle = Angle(true, 90);
+        }
+    } break;
+    default: {
+        foulPosition = standardPosition;
+        foulAngle = Angle(true, 90);
+    }
+    }
+
+    return QPair<Position, Angle>(foulPosition, foulAngle);
 }

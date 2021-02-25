@@ -179,11 +179,6 @@ float Role_Attacker::normAngle(float angleRadians) {
     }
 }
 
-//QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
-//    //// TODO: Configure this in new roles!!!!!!!!!!!!!!!!!!!!!!!!!
-//    return QPair<Position, Angle>(Position(true, 0.0, 0.0), Angle(true, 0.0));
-//}
-
 QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
     Position standardPosition;
     if (getWorldMap()->getLocations()->ourSide().isRight()) {
