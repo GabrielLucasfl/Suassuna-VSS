@@ -72,6 +72,7 @@ void Role_Attacker::run() {
             _bhv_goToBall->setOffsetBehindBall(bhvGoToBallOffset);
             _bhv_goToBall->setAvoidFlags(true, true, true, true, false);
             //_bhv_goToBall->setBaseSpeed(33);
+            _bhv_goToBall->setLinearError(0.02f);
             setBehavior(BHV_GOTOBALL);
             if(isBehindBall || isInRange) {
                 _state = MOVETO;
@@ -93,6 +94,7 @@ void Role_Attacker::run() {
             if(Utils::distance(player()->position(), ballProj) < 0.058f && !_push) {
                 _push = true;
             }
+            _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
 
             //transitions

@@ -40,6 +40,7 @@ void Behavior_Intercept::setInterceptSegment(Position firstPoint, Position secon
 
 void Behavior_Intercept::configure() {
     _baseSpeed = getConstants()->playerBaseSpeed();
+    _desiredLinearError = player()->getLinearError();
 
     // Starting skills
     _skill_goTo = new Skill_GoTo();
@@ -76,6 +77,7 @@ void Behavior_Intercept::run() {
     } else {
         _skill_goTo->setTargetPosition(_interceptPos);
         _skill_goTo->setMovementBaseSpeed(_baseSpeed);
+        _skill_goTo->setLinearError(_desiredLinearError);
         setSkill(SKILL_GOTO);
     }
 }

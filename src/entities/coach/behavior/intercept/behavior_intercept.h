@@ -37,6 +37,7 @@ public:
     void setObjectPosition(Position objectPos) { _objectPos = objectPos; }
     void setObjectVelocity(Velocity objectVel) { _objectVel = objectVel; }
     void enableSpin(bool spinEnabled) { _spinEnabled = spinEnabled; }
+    void setLinearError(float desiredLinearError) { _desiredLinearError = desiredLinearError; }
 
     // Getters
     Position getInterceptPosition() { return _interceptPos; }
@@ -66,6 +67,7 @@ private:
     Velocity _interceptVel;
     float _baseSpeed;
     bool _spinEnabled;
+    float _desiredLinearError;
 
     // Auxiliary Functions
     Position getOrthogonalProjection();

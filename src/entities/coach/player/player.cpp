@@ -189,10 +189,11 @@ std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destinati
     return movement;
 }
 
-void Player::goTo(Position &targetPosition, float desiredBaseSpeed, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
+void Player::goTo(Position &targetPosition, float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
     // Take angle to target
     float angleToTarget;
     float baseSpeed = desiredBaseSpeed;
+    float linearError = desiredLinearError;
     // If there isn't a valid target position: move forward
     if(targetPosition.isInvalid()) {
         angleToTarget = orientation().value();
@@ -201,7 +202,7 @@ void Player::goTo(Position &targetPosition, float desiredBaseSpeed, bool avoidTe
     else {
         std::pair<Angle,float> movement = getNavDirectionDistance(targetPosition, orientation(), avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
         angleToTarget = movement.first.value();
-        if(getPlayerDistanceTo(targetPosition) <= getLinearError()) {
+        if(getPlayerDistanceTo(targetPosition) <= linearError) {
             idle();
             return;
         }

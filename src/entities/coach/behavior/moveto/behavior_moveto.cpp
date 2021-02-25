@@ -37,6 +37,7 @@ QString Behavior_MoveTo::name() {
 
 void Behavior_MoveTo::configure() {
     _desiredBaseSpeed = getConstants()->playerBaseSpeed();
+    _desiredLinearError = player()->getLinearError();
 
     // Starting skills
     _skill_goTo = new Skill_GoTo();
@@ -60,6 +61,7 @@ void Behavior_MoveTo::run() {
         _skill_goTo->setAvoidOpponents(_avoidOpponents);
         _skill_goTo->setAvoidOurGoalArea(_avoidOurGoalArea);
         _skill_goTo->setAvoidTheirGoalArea(_avoidTheirGoalArea);
+        _skill_goTo->setLinearError(_desiredLinearError);
         setSkill(SKILL_GOTO);
     }
 }

@@ -37,6 +37,7 @@ public:
     void setOffsetBehindBall(float offsetBehindBall) { _offsetBehindBall = offsetBehindBall; }
     void setReferencePosition(Position referencePosition) {_referencePosition = referencePosition; }    
     void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
+    void setLinearError(float desiredLinearError) { _desiredLinearError = desiredLinearError; }
 
     // Auxiliar
     Position getBallProjection();
@@ -59,6 +60,7 @@ private:
     float _desiredBaseSpeed;
     float _offsetBehindBall;
     Position _referencePosition;
+    float _desiredLinearError;
 
     // Avoid Parameters
     bool _avoidTeammates;

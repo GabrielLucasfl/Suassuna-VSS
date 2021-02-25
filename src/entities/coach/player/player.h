@@ -63,7 +63,7 @@ public:
     void setRole(Role* role);
 
     // Skills
-    void goTo(Position &targetPosition, float desiredBaseSpeed, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea);
+    void goTo(Position &targetPosition, float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea);
     void rotateTo(Position &targetPosition);
     void spin(bool isClockWise);
     void idle();

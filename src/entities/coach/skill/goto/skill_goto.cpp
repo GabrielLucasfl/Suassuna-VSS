@@ -36,8 +36,9 @@ QString Skill_GoTo::name() {
 
 void Skill_GoTo::configure() {
     _desiredBaseSpeed = getConstants()->playerBaseSpeed();
+    _desiredLinearError = player()->getLinearError();
 }
 
 void Skill_GoTo::run() {
-    player()->goTo(_targetPosition, _desiredBaseSpeed, _avoidTeammates, _avoidOpponents, _avoidBall, _avoidOurGoalArea, _avoidTheirGoalArea);
+    player()->goTo(_targetPosition, _desiredBaseSpeed, _desiredLinearError, _avoidTeammates, _avoidOpponents, _avoidBall, _avoidOurGoalArea, _avoidTheirGoalArea);
 }
