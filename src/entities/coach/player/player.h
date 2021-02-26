@@ -100,6 +100,8 @@ private:
 
     // Path Planning
     Navigation *_nav;
+    Position projectPosOutsideGoalArea(Position targetPosition, bool avoidOurArea, bool avoidTheirArea);
+    float _displacement;
 
 signals:
     void setWheelsSpeed(quint8 playerId, float wheelLeft, float wheelRight);
