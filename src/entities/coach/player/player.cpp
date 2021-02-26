@@ -233,9 +233,9 @@ void Player::rotateTo(Position &targetPosition) {
 
 void Player::spin(bool isClockWise) {
     if (isClockWise) {
-        emit setWheelsSpeed(playerId(), 50, 0);
+        emit setWheelsSpeed(playerId(), 80, -80);
     } else {
-        emit setWheelsSpeed(playerId(), 0, 50);
+        emit setWheelsSpeed(playerId(), -80, 80);
     }
 }
 

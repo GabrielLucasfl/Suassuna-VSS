@@ -29,6 +29,8 @@ Behavior_MoveTo::Behavior_MoveTo() {
     _avoidBall = false;
     _avoidOurGoalArea = false;
     _avoidTheirGoalArea = false;
+    _spin = false;
+    _spinClock = true;
 }
 
 QString Behavior_MoveTo::name() {
@@ -42,17 +44,23 @@ void Behavior_MoveTo::configure() {
     // Starting skills
     _skill_goTo = new Skill_GoTo();
     _skill_rotateTo = new Skill_RotateTo();
+    _skill_spin = new Skill_Spin();
 
     // Adding to behavior skill list
     addSkill(SKILL_GOTO, _skill_goTo);
     addSkill(SKILL_ROTATE, _skill_rotateTo);
+    addSkill(SKILL_SPIN, _skill_spin);
 }
 
 void Behavior_MoveTo::run() {
     if (_isRotationEnabled) {
         _skill_rotateTo->setTargetPosition(_targetPosition);
         setSkill(SKILL_ROTATE);
-    } else {
+    } else if(_spin) {
+        _skill_spin->setClockWise(_spinClock);
+        setSkill(SKILL_SPIN);
+    }
+    else {
         // Situation where we use the GoTo skill
         _skill_goTo->setTargetPosition(_targetPosition);
         _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);

@@ -37,7 +37,8 @@ public:
     void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
     void enableRotation(bool isRotationEnabled) { _isRotationEnabled = isRotationEnabled; }
     void setLinearError(float desiredLinearError) { _desiredLinearError = desiredLinearError; }
-
+    void setSpin(bool set) { _spin = set; }
+    void setSpinOrientation(bool clockwise) { _spinClock = clockwise; }
 private:
     // Behavior inherited methods
     void configure();
@@ -46,18 +47,22 @@ private:
     // Skills enum
     enum {
         SKILL_GOTO,
-        SKILL_ROTATE
+        SKILL_ROTATE,
+        SKILL_SPIN
     };
 
     // Skills pointers
     Skill_GoTo *_skill_goTo;
     Skill_RotateTo *_skill_rotateTo;
+    Skill_Spin *_skill_spin;
 
     // Parameters
     Position _targetPosition;
     float _desiredBaseSpeed;
     bool _isRotationEnabled;
     float _desiredLinearError;
+    bool _spin;
+    bool _spinClock; // positive = clockwise
 
     // Avoid Parameters
     bool _avoidTeammates;
