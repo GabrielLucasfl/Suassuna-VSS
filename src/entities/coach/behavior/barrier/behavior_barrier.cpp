@@ -31,6 +31,12 @@
 
 Behavior_Barrier::Behavior_Barrier() {
     setRadius(0.29f);
+
+    _avoidTeammates = true;
+    _avoidOpponents = false;
+    _avoidBall = false;
+    _avoidOurGoalArea = true;
+    _avoidTheirGoalArea = true;
 }
 
 QString Behavior_Barrier::name() {
@@ -113,16 +119,20 @@ void Behavior_Barrier::run() {
     Position interceptPoinLeft(true, multFactor * (getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth()), multFactor * getWorldMap()->getLocations()->fieldDefenseLength()/2.0f);
     Position interceptPointRight(true, multFactor * (getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth()), -1.0f * multFactor * getWorldMap()->getLocations()->fieldDefenseLength()/2.0f);
 
-    setAvoidFlags(false,false,false,true,true);
+    _skill_goTo->setAvoidBall(_avoidBall);
+    _skill_goTo->setAvoidTeammates(_avoidTeammates);
+    _skill_goTo->setAvoidOpponents(_avoidOpponents);
+    _skill_goTo->setAvoidOurGoalArea(_avoidOurGoalArea);
+    _skill_goTo->setAvoidTheirGoalArea(_avoidTheirGoalArea);
     setSkill(SKILL_GOTO);
 }
 
 void Behavior_Barrier::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
-    _skill_goTo->setAvoidBall(avoidBall);
-    _skill_goTo->setAvoidTeammates(avoidTeammates);
-    _skill_goTo->setAvoidOpponents(avoidOpponents);
-    _skill_goTo->setAvoidOurGoalArea(avoidOurGoalArea);
-    _skill_goTo->setAvoidTheirGoalArea(avoidTheirGoalArea);
+    _avoidBall = avoidBall;
+    _avoidTeammates = avoidTeammates;
+    _avoidOpponents = avoidOpponents;
+    _avoidOurGoalArea = avoidOurGoalArea;
+    _avoidTheirGoalArea = avoidTheirGoalArea;
 }
 
 Position Behavior_Barrier::projectPosOutsideGoalArea(Position pos, bool avoidOurArea, bool avoidTheirArea){

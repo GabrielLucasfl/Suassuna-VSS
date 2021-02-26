@@ -68,6 +68,13 @@ private:
 
     // Internal functions
     Position projectPosOutsideGoalArea(Position pos, bool avoidOurArea, bool avoidTheirArea);
+
+    // Avoid Parameters
+    bool _avoidTeammates;
+    bool _avoidOpponents;
+    bool _avoidBall;
+    bool _avoidOurGoalArea;
+    bool _avoidTheirGoalArea;
 };
 
 #endif // BEHAVIOR_BARRIER_H
