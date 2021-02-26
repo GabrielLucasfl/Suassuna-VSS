@@ -54,22 +54,26 @@ void Role_Attacker::run() {
     // Ball projection
     Position ballPos = getWorldMap()->getBall().getPosition();
     Velocity ballVel = getWorldMap()->getBall().getVelocity();
+    float velMod = ballVel.abs();
     Position ballDirection, ballProj;
-    if(ballVel.abs() > 0 && !ballVel.isInvalid()) {
-        ballDirection = Position(true, ballVel.vx()/getWorldMap()->getBall().getVelocity().abs(), ballVel.vy()/getWorldMap()->getBall().getVelocity().abs());
+    if(ballVel.abs() > 0.03f) {
+        ballDirection = Position(true, ballVel.vx()/velMod, ballVel.vy()/velMod);
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    float factor = 2.0f * getWorldMap()->getBall().getVelocity().abs();
+    float factor = 0.2f * velMod;
     factor = std::min(factor, 0.5f);
     ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
 
     // Bhv goToBall parameters
     float bhvGoToBallOffset = 0.25f;
-    if(getWorldMap()->getLocations()->isInsideOurField(ballProj)) {
-        bhvGoToBallOffset = 0.1f;
+    Position theirGoal = getWorldMap()->getLocations()->theirGoal();
+    Position bhvGoToBallRef;
+    if(theirGoal.x() < 0) {
+        bhvGoToBallRef.setPosition(true, theirGoal.x() - 0.12f, theirGoal.y());
+    }else {
+        bhvGoToBallRef.setPosition(true, theirGoal.x() + 0.12f, theirGoal.y());
     }
-    Position bhvGoToBallRef = getWorldMap()->getLocations()->theirGoal();   // Reference position
 
     Colors::Color ourColor = getConstants()->teamColor();
     if(getWorldMap()->getPlayer(ourColor, player()->playerId()).getVelocity().abs() < 0.02f && getWorldMap()->getBall().getVelocity().abs() < 0.02f) {
@@ -82,7 +86,7 @@ void Role_Attacker::run() {
     bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > _offsetAngleRange);
     bool isBehindBall = Role_Attacker::isBehindBall(Utils::threePoints(ballProj, bhvGoToBallRef, bhvGoToBallOffset, static_cast<float>(M_PI)));
 
-    _avoidTheirGoalArea = hasAllyInTheirArea();
+    _avoidTheirGoalArea = false;
 
     switch (_state) {
         case GOTOBALL: {
@@ -102,20 +106,25 @@ void Role_Attacker::run() {
             break;
         }
         case MOVETO: {
+            //std::cout << "moveeeeee" << std::endl;
             _avoidBall = false;
             _avoidTeammates = false;
             _avoidOpponents = false;
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             if(!_push) {
+                //std::cout << "devagar" << std::endl;
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
                 _bhv_moveTo->setTargetPosition(ballProj);
             }else {
+                //std::cout << "acelerou" << std::endl << std::endl;
                 _bhv_moveTo->setBaseSpeed(50);
                 _bhv_moveTo->setTargetPosition(ballProj);
             }
 
-            if(Utils::distance(player()->position(), ballProj) < 0.058f && !_push) {
+            //std::cout << "ballProj: " << ballProj.x() << " " << ballProj.y() << std::endl;
+
+            if(Utils::distance(player()->position(), ballPos) < 0.06f && !_push) {
                 _push = true;
             }
             _bhv_moveTo->setLinearError(0.02f);
@@ -173,17 +182,29 @@ bool Role_Attacker::isBehindBallXcoord(Position pos) {
 bool Role_Attacker::inRangeToPush(Position ballPos) {
     Position firstPost;
     Position secondPost;
+    float offsetX = 0.12f;
+
     firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
     if(firstPost.y() < 0) {
         firstPost.setPosition(true, firstPost.x(), firstPost.y() - 0.1f);
     }else {
         firstPost.setPosition(true, firstPost.x(), firstPost.y() + 0.1f);
     }
+    if(firstPost.x() < 0) {
+        firstPost.setPosition(true, firstPost.x() - offsetX, firstPost.y());
+    }else {
+        firstPost.setPosition(true, firstPost.x() + offsetX, firstPost.y());
+    }
     secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
     if(secondPost.y() < 0) {
         secondPost.setPosition(true, secondPost.x(), secondPost.y() - 0.1f);
     }else {
         secondPost.setPosition(true, secondPost.x(), secondPost.y() + 0.1f);
+    }
+    if(secondPost.x() < 0) {
+        secondPost.setPosition(true, secondPost.x() - offsetX, secondPost.y());
+    }else {
+        secondPost.setPosition(true, secondPost.x() + offsetX, secondPost.y());
     }
 
     // Angle from ball to posts of their goal

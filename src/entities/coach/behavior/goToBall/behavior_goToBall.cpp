@@ -81,16 +81,18 @@ void Behavior_GoToBall::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool 
 }
 
 Position Behavior_GoToBall::getBallProjection() {
+    // Ball projection
     Position ballPos = getWorldMap()->getBall().getPosition();
     Velocity ballVel = getWorldMap()->getBall().getVelocity();
+    float velMod = ballVel.abs();
 
     Position ballDirection, ballProj;
-    if(ballVel.abs() > 0 && !ballVel.isInvalid()) {
-        ballDirection = Position(true, ballVel.vx(), ballVel.vy());
+    if(ballVel.abs() > 0) {
+        ballDirection = Position(true, ballVel.vx()/velMod, ballVel.vy()/velMod);
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    float factor = 2.0f * getWorldMap()->getBall().getVelocity().abs();
+    float factor = 0.2f * velMod;
     factor = std::min(factor, 0.5f);
     ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
     return ballProj;
