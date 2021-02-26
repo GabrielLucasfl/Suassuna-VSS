@@ -474,7 +474,7 @@ Position Player::limitPosInsideField(Position dest) {
     Position s1;
     Position s2;
     Position res;
-    float offset = 0.03f;
+    float offset = 0.04f;
 
     // Check if intersect areas
 
@@ -485,17 +485,15 @@ Position Player::limitPosInsideField(Position dest) {
         s1 = Position(true, minX, maxY);
         s2 = Position(true, maxX, maxY);
         Position proj = Utils::projectPointAtLine(s1, s2, dest);
-        //Position proj = Utils::segmentsIntersect(s1, s2, ori, dest);
-        return Position(true, proj.x(), proj.y() - offset);
+        dest.setPosition(true, proj.x(), proj.y() - offset);
     }
     // If dest is bellow lower wall
     if(dest.y() < minY) {
         // Project on lower wall line
-        s1 = Position(true, minX, maxY);
-        s2 = Position(true, maxX, maxY);
+        s1 = Position(true, minX, minY);
+        s2 = Position(true, maxX, minY);
         Position proj = Utils::projectPointAtLine(s1, s2, dest);
-        //Position proj = Utils::segmentsIntersect(s1, s2, ori, dest);
-        return Position(true, proj.x(), proj.y() - offset);
+        dest.setPosition(true, proj.x(), proj.y() + offset);
     }
     // If dest is behind left wall
     if(dest.x() < minX) {
@@ -503,9 +501,7 @@ Position Player::limitPosInsideField(Position dest) {
         s1 = Position(true, minX, minY);
         s2 = Position(true, minX, maxY);
         Position proj = Utils::projectPointAtLine(s1, s2, dest);
-        //Position proj = Utils::segmentsIntersect(s1, s2, ori, dest);
-        proj.setPosition(true, proj.x() + offset, proj.y());
-        dest = proj;
+        dest.setPosition(true, proj.x() + offset, proj.y());
     }
     // If dest if behind right wall
     if(dest.x() > maxX) {
@@ -513,9 +509,7 @@ Position Player::limitPosInsideField(Position dest) {
         s1 = Position(true, maxX, minY);
         s2 = Position(true, maxX, maxY);
         Position proj = Utils::projectPointAtLine(s1, s2, dest);
-        //Position proj = Utils::segmentsIntersect(s1, s2, ori, dest);
-        proj.setPosition(true, proj.x() - offset, proj.y());
-        dest = proj;
+        dest.setPosition(true, proj.x() - offset, proj.y());
     }
     return dest;
 }
