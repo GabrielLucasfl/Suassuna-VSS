@@ -42,6 +42,10 @@ private:
         BHV_INTERCEPT
     };
 
+    // Parameters
+    bool _gkOverlap;
+    Timer _overlapTimer;
+
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_Intercept *_bhv_intercept;

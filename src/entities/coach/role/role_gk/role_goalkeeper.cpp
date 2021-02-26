@@ -22,6 +22,7 @@
 #include "role_goalkeeper.h"
 
 Role_Goalkeeper::Role_Goalkeeper() {
+    _gkOverlap = false;
 }
 
 QString Role_Goalkeeper::name() {
@@ -56,52 +57,62 @@ void Role_Goalkeeper::run() {
     _bhv_moveTo->enableRotation(false);
     _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
 
-    if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
-            || getWorldMap()->getLocations()->isInsideTheirField(ballPosition)) {
-        // Get a break at the standard position if the ball is far away or if the player is outside our goal area
-        _bhv_moveTo->setTargetPosition(standardPosition);
-        setBehavior(BHV_MOVETO);
-    }
-    else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition)) {
-        // Clear the ball if it is stationed at our goal area (or almost stationed)
-        _bhv_moveTo->setTargetPosition(ballPosition);
-        setBehavior(BHV_MOVETO);
-    }
-//    else if (!player()->isLookingTo(lookingPosition, 0.3f)) {
-//        // Rotates to a better angle of movement
-//        _bhv_moveTo->setTargetPosition(lookingPosition);
-//        _bhv_moveTo->enableRotation(true);
-//        setBehavior(BHV_MOVETO);
-//    }
-    else {
-        if (ballPosition.x() > 0.6f && getWorldMap()->getLocations()->ourSide().isRight()) {
-            if (ballPosition.y() > 0.35f) {
-                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), 0.3f));
-                setBehavior(BHV_MOVETO);
-            }
-            else if (ballPosition.y() < -0.35f) {
-                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), -0.3f));
-                setBehavior(BHV_MOVETO);
-            }
+    if (_gkOverlap) {
+        _bhv_moveTo->setTargetPosition(getWorldMap()->getBall().getPosition());
+        _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
+
+        _overlapTimer.stop();
+        if (_overlapTimer.getSeconds() > 8.0) {
+            _gkOverlap = false;
         }
-        else if (ballPosition.x() < -0.6f && getWorldMap()->getLocations()->ourSide().isLeft()) {
-            if (ballPosition.y() > 0.35f) {
-                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), 0.3f));
-                setBehavior(BHV_MOVETO);
+    } else {
+        if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
+                || getWorldMap()->getLocations()->isInsideTheirField(ballPosition)) {
+            // Get a break at the standard position if the ball is far away or if the player is outside our goal area
+            _bhv_moveTo->setTargetPosition(standardPosition);
+            setBehavior(BHV_MOVETO);
+        }
+        else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition)) {
+            // Clear the ball if it is stationed at our goal area (or almost stationed)
+            _bhv_moveTo->setTargetPosition(ballPosition);
+            setBehavior(BHV_MOVETO);
+        }
+    //    else if (!player()->isLookingTo(lookingPosition, 0.3f)) {
+    //        // Rotates to a better angle of movement
+    //        _bhv_moveTo->setTargetPosition(lookingPosition);
+    //        _bhv_moveTo->enableRotation(true);
+    //        setBehavior(BHV_MOVETO);
+    //    }
+        else {
+            if (ballPosition.x() > 0.6f && getWorldMap()->getLocations()->ourSide().isRight()) {
+                if (ballPosition.y() > 0.35f) {
+                    _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), 0.3f));
+                    setBehavior(BHV_MOVETO);
+                }
+                else if (ballPosition.y() < -0.35f) {
+                    _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), -0.3f));
+                    setBehavior(BHV_MOVETO);
+                }
             }
-            else if (ballPosition.y() < -0.35f) {
-                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), -0.3f));
-                setBehavior(BHV_MOVETO);
+            else if (ballPosition.x() < -0.6f && getWorldMap()->getLocations()->ourSide().isLeft()) {
+                if (ballPosition.y() > 0.35f) {
+                    _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), 0.3f));
+                    setBehavior(BHV_MOVETO);
+                }
+                else if (ballPosition.y() < -0.35f) {
+                    _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), -0.3f));
+                    setBehavior(BHV_MOVETO);
+                }
+            } else {
+                // Intercept the ball movement in order to prevent a goal
+                Position firstLimitationPoint(true, standardPosition.x(), 0.2f);
+                Position secondLimitationPoint(true, standardPosition.x(), -0.2f);
+                _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
+                _bhv_intercept->setObjectPosition(ballPosition);
+                _bhv_intercept->setObjectVelocity(ballVelocity);
+                _bhv_intercept->setBaseSpeed(getConstants()->playerBaseSpeed());
+                setBehavior(BHV_INTERCEPT);
             }
-        } else {
-            // Intercept the ball movement in order to prevent a goal
-            Position firstLimitationPoint(true, standardPosition.x(), 0.2f);
-            Position secondLimitationPoint(true, standardPosition.x(), -0.2f);
-            _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
-            _bhv_intercept->setObjectPosition(ballPosition);
-            _bhv_intercept->setObjectVelocity(ballVelocity);
-            _bhv_intercept->setBaseSpeed(getConstants()->playerBaseSpeed());
-            setBehavior(BHV_INTERCEPT);
         }
     }
 }
@@ -109,49 +120,75 @@ void Role_Goalkeeper::run() {
 QPair<Position, Angle> Role_Goalkeeper::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
     Position standardPosition;
     if (getWorldMap()->getLocations()->ourSide().isRight()) {
-        standardPosition = Position(true, 0.69f, 0.0f);
+        standardPosition = Position(true, 0.67f, 0.0f);
     } else {
-        standardPosition = Position(true, -0.69f, 0.0f);
+        standardPosition = Position(true, -0.67f, 0.0f);
     }
 
     Position foulPosition;
     Angle foulAngle;
 
+    _gkOverlap = false;
+    _overlapTimer.stop();
+
     switch (foul) {
     case VSSRef::Foul::PENALTY_KICK: {
         if (VSSRef::Color(getConstants()->teamColor()) == forTeam) {
             foulPosition = standardPosition;
-            foulAngle = Angle(true, 90);
+            foulAngle = Angle(true, static_cast<float>(M_PI) / 2);
         } else {
+            _gkOverlap = true;
+            _overlapTimer.start();
             foulPosition = standardPosition;
-            foulAngle = Angle(true, 0);
+            if (getWorldMap()->getLocations()->ourSide().isLeft()) {
+                foulAngle = Angle(true, 0);
+            } else {
+                foulAngle = Angle(true, static_cast<float>(M_PI));
+            }
         }
     } break;
     case VSSRef::Foul::KICKOFF: {
         foulPosition = standardPosition;
-        foulAngle = Angle(true, 90);
+        foulAngle = Angle(true, static_cast<float>(M_PI) / 2);
     } break;
     case VSSRef::Foul::FREE_BALL: {
         foulPosition = standardPosition;
-        foulAngle = Angle(true, 90);
+        foulAngle = Angle(true, static_cast<float>(M_PI) / 2);
     } break;
     case VSSRef::Foul::GOAL_KICK: {
         if (static_cast<VSSRef::Color>(getConstants()->teamColor()) == forTeam) {
-            if (atQuadrant == VSSRef::Quadrant::QUADRANT_2 || atQuadrant == VSSRef::Quadrant::QUADRANT_3) {
-                foulPosition = Position(true, standardPosition.x(), 0.2f);
-                foulAngle = Angle(true, 135);
+            _gkOverlap = true;
+            _overlapTimer.start();
+            Position ballPosition = getWorldMap()->getBall().getPosition();
+            if (getWorldMap()->getLocations()->ourSide().isLeft()) {
+                if (ballPosition.y() > 0.0f) {
+                    //Quadrant 2
+                    foulPosition = Position(true, standardPosition.x(), 0.28f);
+                    foulAngle = Angle(true, static_cast<float>(M_PI) / 4);
+                } else {
+                    // Quadrant 3
+                    foulPosition = Position(true, standardPosition.x(), -0.28f);
+                    foulAngle = Angle(true, static_cast<float>(M_PI) * 7 / 4);
+                }
             } else {
-                foulPosition = Position(true, standardPosition.x(), -0.2f);
-                foulAngle = Angle(true, 45);
+                if (ballPosition.y() > 0.0f) {
+                    // Quadrant 1
+                    foulPosition = Position(true, standardPosition.x(), 0.28f);
+                    foulAngle = Angle(true, static_cast<float>(M_PI) * 3 / 4);
+                } else {
+                    //Quadrant 4
+                    foulPosition = Position(true, standardPosition.x(), -0.28f);
+                    foulAngle = Angle(true, static_cast<float>(M_PI) * 5 / 4);
+                }
             }
         } else {
             foulPosition = standardPosition;
-            foulAngle = Angle(true, 90);
+            foulAngle = Angle(true, static_cast<float>(M_PI) / 2);
         }
     } break;
     default: {
         foulPosition = standardPosition;
-        foulAngle = Angle(true, 90);
+        foulAngle = Angle(true, static_cast<float>(M_PI) / 2);
     }
     }
 
