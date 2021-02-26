@@ -41,6 +41,9 @@ private:
     void configure();
     void run();
 
+    // Methods
+    bool hasAllyInTheirArea();
+
     // Behaviors enum
     enum {
         BHV_MOVETO,
@@ -60,6 +63,11 @@ private:
 
     // Attributes
     bool _push;
+    bool _avoidTeammates;
+    bool _avoidOpponents;
+    bool _avoidBall;
+    bool _avoidOurGoalArea;
+    bool _avoidTheirGoalArea;
 
     // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);

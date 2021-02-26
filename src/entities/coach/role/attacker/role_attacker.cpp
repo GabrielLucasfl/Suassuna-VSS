@@ -23,6 +23,11 @@
 #include <src/utils/utils.h>
 
 Role_Attacker::Role_Attacker() {
+    _avoidTeammates = false;
+    _avoidOpponents = false;
+    _avoidBall = false;
+    _avoidOurGoalArea = false;
+    _avoidTheirGoalArea = false;
 }
 
 QString Role_Attacker::name() {
@@ -66,11 +71,17 @@ void Role_Attacker::run() {
     bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > 0.3f);
     bool isBehindBall = Role_Attacker::isBehindBall(Utils::threePoints(ballProj, bhvGoToBallRef, bhvGoToBallOffset, static_cast<float>(M_PI)));
 
+    _avoidTheirGoalArea = hasAllyInTheirArea();
+
     switch (_state) {
         case GOTOBALL: {
+            _avoidBall = true;
+            _avoidTeammates = true;
+            _avoidOpponents = true;
+            _avoidOurGoalArea = true;
             _bhv_goToBall->setReferencePosition(getWorldMap()->getLocations()->theirGoal());
             _bhv_goToBall->setOffsetBehindBall(bhvGoToBallOffset);
-            _bhv_goToBall->setAvoidFlags(true, true, true, true, false);
+            _bhv_goToBall->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             //_bhv_goToBall->setBaseSpeed(33);
             _bhv_goToBall->setLinearError(0.02f);
             setBehavior(BHV_GOTOBALL);
@@ -80,15 +91,17 @@ void Role_Attacker::run() {
             break;
         }
         case MOVETO: {
-            Position betweenBallAndRef;
-            //betweenBallAndRef = Utils::threePoints(bhvGoToBallRef, ballProj, Utils::distance(bhvGoToBallRef, ballProj) - 0.01f, 0);
-            betweenBallAndRef = ballProj;
+            _avoidBall = false;
+            _avoidTeammates = false;
+            _avoidOpponents = false;
+            _avoidOurGoalArea = true;
+            _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             if(!_push) {
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
-                _bhv_moveTo->setTargetPosition(betweenBallAndRef);
+                _bhv_moveTo->setTargetPosition(ballProj);
             }else {
                 _bhv_moveTo->setBaseSpeed(50);
-                _bhv_moveTo->setTargetPosition(betweenBallAndRef);
+                _bhv_moveTo->setTargetPosition(ballProj);
             }
 
             if(Utils::distance(player()->position(), ballProj) < 0.058f && !_push) {
@@ -108,6 +121,18 @@ void Role_Attacker::run() {
             break;
         }
     }
+}
+
+bool Role_Attacker::hasAllyInTheirArea() {
+    Colors::Color ourColor = getConstants()->teamColor();
+    QList<quint8> ourPlayers = getWorldMap()->getAvailablePlayers(ourColor);
+    for(int i=0; i<ourPlayers.size(); i++) {
+        Position posPlayer = getWorldMap()->getPlayer(ourColor, ourPlayers[i]).getPosition();
+        if((ourPlayers[i] != player()->playerId()) && getWorldMap()->getLocations()->isInsideTheirArea(posPlayer)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool Role_Attacker::isBehindBall(Position posObjective) {
