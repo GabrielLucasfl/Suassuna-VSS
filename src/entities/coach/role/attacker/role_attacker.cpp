@@ -86,7 +86,7 @@ void Role_Attacker::run() {
     bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > _offsetAngleRange);
     bool isBehindBall = Role_Attacker::isBehindBall(Utils::threePoints(ballProj, bhvGoToBallRef, bhvGoToBallOffset, static_cast<float>(M_PI)));
 
-    _avoidTheirGoalArea = false;
+    _avoidTheirGoalArea = hasAllyInTheirArea();
 
     switch (_state) {
         case GOTOBALL: {
