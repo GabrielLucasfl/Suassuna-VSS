@@ -81,6 +81,12 @@ void Role::runRole() {
         return ;
     }
 
+    // TODO: check if this is the cause
+    if(_player == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold(this->name().toStdString() + ":Player is null!.") + '\n';
+        return ;
+    }
+
     // Run behavior (implemented by child inherited method)
     if(getReferee()->isGameOn()) {
         if((!isStuckedAtWall() || name() == "Role_Goalkeeper") && !_wasStucked) {

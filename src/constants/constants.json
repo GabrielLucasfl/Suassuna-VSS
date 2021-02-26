@@ -12,15 +12,15 @@
 	},
 	
 	"Team":{
-		"teamColor": "blue",
-		"teamSide": "left",
+		"teamColor": "yellow",
+		"teamSide": "right",
 		"qtPlayers": 3,
 		"Player":{
 			"playerPID": [20.0, 0.0, 2.5],
 			"playerBaseSpeed": 30.0,
 			"distToConsiderStuck": 0.1,
 			"timeToConsiderStuck": 0.6,
-			"timeToWaitStuckMovement": 0.2
+			"timeToWaitStuckMovement": 0.4
 		}
 	},
 	

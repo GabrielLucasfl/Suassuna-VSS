@@ -230,7 +230,7 @@ void Playbook::setPlayerRole(quint8 id, Role *role) {
     if(_assignmentTable.values().contains(role)) {
         quint8 oldID = _assignmentTable.key(role);
         if(_players.contains(oldID)) {
-            _assignmentTable.insert(oldID, NULL);
+            _assignmentTable.insert(oldID, nullptr);
         }
     }
 

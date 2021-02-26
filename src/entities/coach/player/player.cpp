@@ -73,6 +73,9 @@ void Player::setRole(Role *role) {
     // Set new role
     _playerRole = role;
 
+    // Assign player to this role
+    if(_playerRole != nullptr) _playerRole->setPlayer(this);
+
     _mutexRole.unlock();
 }
 

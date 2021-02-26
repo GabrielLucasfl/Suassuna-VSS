@@ -146,7 +146,7 @@ void NavigationAlgorithm::generatePath() {
 }
 
 Constants *NavigationAlgorithm::getConstants() {
-    if(_mrcconstants==NULL)
+    if(_mrcconstants==nullptr)
         std::cout << "[ERROR] " << name().toStdString() << ", requesting getConstants(), _mrcconstants not initialized!\n";
     return _mrcconstants;
 }
