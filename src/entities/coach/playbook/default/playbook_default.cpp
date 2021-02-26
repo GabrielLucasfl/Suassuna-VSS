@@ -28,7 +28,7 @@ Playbook_Default::Playbook_Default() {
     _rl_sup = nullptr;
     _rl_atk = nullptr;
 
-    _switchedPlayers = false;
+    _switchedPlayers = true;
     _atkStuck = false;
 }
 
@@ -54,20 +54,21 @@ void Playbook_Default::configure(int numPlayers) {
 void Playbook_Default::run(int numPlayers) {
     // Defining robot IDs
     if(_first) {
+        _switchPlayersTimer.start();
         selectInitialIDs();
         _first = false;
     }
     _switchPlayersTimer.stop();
-    if(_switchedPlayers && _switchPlayersTimer.getSeconds() > 4) {
+    if(_switchPlayersTimer.getSeconds() > 2.0) {
         _switchedPlayers = false;
+        switchPlayersIDs();
     }
-    switchPlayersIDs();
 
     // Setting roles
     setPlayerRole(_goalkeeperID, _rl_gk);
     setPlayerRole(_attackerID, _rl_atk);
     if (isDefenderSituation()) {
-        setPlayerRole(_lastID, _rl_df);
+        setPlayerRole(_lastID, _rl_sup);
     } else {
         setPlayerRole(_lastID, _rl_sup);
     }
@@ -75,12 +76,12 @@ void Playbook_Default::run(int numPlayers) {
 
 void Playbook_Default::switchPlayersIDs() {
     Position ballPos = getWorldMap()->getBall().getPosition();
+    float ballVel = getWorldMap()->getBall().getVelocity().abs();
     Colors::Color ourColor = getConstants()->teamColor();
-    Position ourArea = getWorldMap()->getLocations()->ourGoal();
 
     float attackerVel = getWorldMap()->getPlayer(ourColor, _attackerID).getVelocity().abs();
     // If our attacker has stopped (possibly stuck)
-    if(attackerVel <= 0.02f) {
+    if(attackerVel <= 0.02f && !(ballVel <= 0.02f)) {
         // If it already was stuck
         if(_atkStuck) {
             _atkStuckTimer.stop();
@@ -104,50 +105,22 @@ void Playbook_Default::switchPlayersIDs() {
         _atkStuck = false;
     }
 
-    // If ball is inside our field
-    if(getWorldMap()->getLocations()->isInsideOurField(ballPos)) {
-        // Get our players list
-        QList<quint8> ourPlayers = getWorldMap()->getAvailablePlayers(ourColor);
-
-        // Look for the closest player to our goal
-        quint8 closest = _lastID;
-        float minorDist = 1000;
-
-        for(int i=0; i<ourPlayers.size(); i++) {
-            // If it isn't our goalkeeper
-            if(ourPlayers[i] != _goalkeeperID) {
-                Position playerPos = getWorldMap()->getPlayer(ourColor, ourPlayers[i]).getPosition();
-                float distPlayerBall = Utils::distance(playerPos, ourArea);
-                // If found someone closer
-                if(distPlayerBall < minorDist) {
-                    closest = ourPlayers[i];
-                    minorDist = distPlayerBall;
-                }
-            }
-        }
-        // If we haven't switched players in the last seconds and
-        // the closest player isn't our third player: switch them!!!
-        if(closest != _lastID && !_switchedPlayers) {
+    Position attackerPos = getWorldMap()->getPlayer(ourColor, _attackerID).getPosition();
+    Position thirdPlayerPos = getWorldMap()->getPlayer(ourColor, _lastID).getPosition();
+    // If our attacker isn't behind ball, but our third player is (and we can swicth them now): switch them!!!
+    // OR
+    // If both players are behind ball, but the thirdPlayer is closer to it (and we can switch them now): switch them!!!
+    // OR
+    // If the third player is closer to ball: switch them!!!
+    if((!isBehindBallXcoord(attackerPos) && (isBehindBallXcoord(thirdPlayerPos)))
+        || (Utils::distance(attackerPos, ballPos) > Utils::distance(thirdPlayerPos, ballPos))) {
+        _atkStuckTimer.stop();
+        if(!_switchedPlayers && !_atkStuck) {
+            quint8 attId = _attackerID;
             _attackerID = _lastID;
-            _lastID = closest;
+            _lastID = attId;
             _switchedPlayers = true;
             _switchPlayersTimer.start();
-        }
-    } else {
-        Position attackerPos = getWorldMap()->getPlayer(ourColor, _attackerID).getPosition();
-        Position thirdPlayerPos = getWorldMap()->getPlayer(ourColor, _lastID).getPosition();
-        // If our attacker isn't behind ball, but our third player is (and we can swicth them now): switch them!!!
-        // OR
-        // If both players are behind ball, but the thirdPlayer is closer to it (and we can switch them now): switch them!!!
-        if((!isBehindBallXcoord(attackerPos) && (isBehindBallXcoord(thirdPlayerPos) && Utils::distance(thirdPlayerPos, ballPos) < 0.4f))
-            || ((isBehindBallXcoord(attackerPos) && isBehindBallXcoord(thirdPlayerPos)) && (Utils::distance(attackerPos, ballPos) > Utils::distance(thirdPlayerPos, ballPos)))) {
-            if(!_switchedPlayers) {
-                quint8 attId = _attackerID;
-                _attackerID = _lastID;
-                _lastID = attId;
-                _switchedPlayers = true;
-                _switchPlayersTimer.start();
-            }
         }
     }
 }
@@ -206,12 +179,12 @@ bool Playbook_Default::isDefenderSituation() {
 
 bool Playbook_Default::isBehindBallXcoord(Position pos) {
     Position posBall = getWorldMap()->getBall().getPosition();
-    float robotRadius = 0.035f;
+    float robotRadius = 0.08f;
     bool isBehindObjX;
     if(getWorldMap()->getLocations()->ourSide().isLeft()) {
-        isBehindObjX = pos.x() < (posBall.x() - robotRadius);
+        isBehindObjX = pos.x() < (posBall.x() + robotRadius);
     }else {
-        isBehindObjX = pos.x() > (posBall.x() + robotRadius);
+        isBehindObjX = pos.x() > (posBall.x() - robotRadius);
     }
     return isBehindObjX;
 }
