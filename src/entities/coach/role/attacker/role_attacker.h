@@ -87,7 +87,7 @@ private:
     QPair<Position, Angle> _penaltyPlacement;
 
     //KickOff function
-    void kickOff(QPair<Position, Angle> *_penaltyPlacement);
+    void kickOff(quint8 _teamPriority, QPair<Position, Angle> *_penaltyPlacement);
 
     //FreeBall Function
     void freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::Quadrant quadrant);
