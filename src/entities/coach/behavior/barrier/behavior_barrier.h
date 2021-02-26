@@ -38,6 +38,8 @@ public:
     void setEllipseAxis(float ellipseAxis_X, float ellipseAxis_Y) { _ellipseAxis_X = ellipseAxis_X; _ellipseAxis_Y = ellipseAxis_Y; }
     void enableRotation(bool isRotationEnabled) { _isRotationEnabled = isRotationEnabled; }
 
+    void setRadius(float radius) {_radius = radius;}
+
 private:
     // Behavior inherited methods
     void configure();
@@ -60,8 +62,12 @@ private:
     float _ellipseAxis_X;
     float _ellipseAxis_Y;
 
+
+    //default _radius value
+    float _radius;
+
     // Internal functions
-    Position getInterceptPosition();
+    Position projectPosOutsideGoalArea(Position pos, bool avoidOurArea, bool avoidTheirArea);
 };
 
 #endif // BEHAVIOR_BARRIER_H

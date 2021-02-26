@@ -25,5 +25,6 @@
 #include <src/entities/coach/behavior/intercept/behavior_intercept.h>
 #include <src/entities/coach/behavior/moveto/behavior_moveto.h>
 #include <src/entities/coach/behavior/goToBall/behavior_goToBall.h>
+#include <src/entities/coach/behavior/barrier/behavior_barrier.h>
 
 #endif // BEHAVIORS_H

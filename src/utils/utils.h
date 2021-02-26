@@ -44,6 +44,8 @@ public:
     static Position segmentsIntersect(Position sA1, Position sA2, Position sB1, Position sB2);
     static float angleDiff(const float A, const float B);
     static void angleLimitZeroTwoPi(float *angle);
+    static void limitValue(float *value, float minValue, float maxValue);
+    static Position hasInterceptionSegments(const Position &s1, const Position &s2, const Position &s3, const Position &s4);
 private:
     static Constants *_constants;
     static Constants* getConstants();

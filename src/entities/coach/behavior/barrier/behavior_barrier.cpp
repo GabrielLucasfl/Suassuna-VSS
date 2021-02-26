@@ -21,11 +21,16 @@
 
 #include "behavior_barrier.h"
 
-Behavior_Barrier::Behavior_Barrier() {
-    _ellipseAxis_X = 0.0;
-    _ellipseAxis_Y = 0.0;
-    _isRotationEnabled = false;
+#define INTERCEPT_MINBALLVELOCITY 0.03f//hyperparameter
+#define INTERCEPT_MINBALLDIST 0.2f //hyperparameter
+#define ERROR_GOAL_OFFSET 0.02f//hyperparameter
 
+#define BALLPREVISION_MINVELOCITY 0.02f
+#define BALLPREVISION_VELOCITY_FACTOR 3.0f
+#define BALLPREVISION_FACTOR_LIMIT 0.15f
+
+Behavior_Barrier::Behavior_Barrier() {
+    setRadius(0.29f);
 }
 
 QString Behavior_Barrier::name() {
@@ -42,32 +47,74 @@ void Behavior_Barrier::configure() {
     // Adding to behavior skill list
     addSkill(SKILL_GOTO, _skill_goTo);
     addSkill(SKILL_ROTATE, _skill_rotateTo);
+
 }
 
 void Behavior_Barrier::run() {
-    Position ellipseCenter = getWorldMap()->getLocations()->ourGoal();
-    Position ballPosition = getWorldMap()->getBall().getPosition();
-    Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
+    Position goalProjection;
+    Position projectedBall = getWorldMap()->getBall().getPosition();
+    goalProjection.setInvalid();
+    //considering ball velocity to define player position
+    if(getWorldMap()->getBall().getVelocity().abs() > BALLPREVISION_MINVELOCITY){
+        //calc unitary vector of velocity
+        const Position velUni(true, getWorldMap()->getBall().getVelocity().vx() /getWorldMap()->getBall().getVelocity().abs(),
+                              getWorldMap()->getBall().getVelocity().vy()/getWorldMap()->getBall().getVelocity().abs());
 
-    float angularCoefficient;
+        //calc velocity factor
+        float factor = BALLPREVISION_VELOCITY_FACTOR*getWorldMap()->getBall().getVelocity().abs();
+        Utils::limitValue(&factor, 0.0f, BALLPREVISION_FACTOR_LIMIT);
 
-    // Ellipse equation: x²/a² + y²/b² = 1
-    // The center of the ellipse is the goal center, so locomotion will occur in half ellipse (left or right)
-    // So the important equation is: x = (+/-)a * sqrt(1 - y²/b²)
+        //calc projected position
+        const Position delta(true, factor*velUni.x(), factor*velUni.y());
+        Position projectedPos(true, getWorldMap()->getBall().getPosition().x()+delta.x(),
+                              getWorldMap()->getBall().getPosition().y()+delta.y());
+        projectedBall = projectedPos;
 
-    // The barrier has to intercept the ball in the point where the line of interest intercepts the ellipse,
-    // or at least, in the nearest point the ellipse is from the line. So it is a optimization problem.
-    angularCoefficient = ballVelocity.vy() / ballVelocity.vx();
+        goalProjection = Utils::hasInterceptionSegments( getWorldMap()->getBall().getPosition(),
+                                                  projectedBall,
+                                                  getWorldMap()->getLocations()->ourGoalRightPost(),
+                                                  getWorldMap()->getLocations()->ourGoalLeftPost());
+    }
+    //if interception isn't inside our defense area: consider only ball position
+    if((abs(goalProjection.y()) > getWorldMap()->getLocations()->fieldDefenseLength()/2.0f) || goalProjection.isInvalid()){
+        goalProjection = Utils::projectPointAtSegment(getWorldMap()->getLocations()->ourGoalRightPost(),
+                                               getWorldMap()->getLocations()->ourGoalLeftPost(),
+                                               getWorldMap()->getBall().getPosition());
+    }
 
-    // It is also possible to use the line which connects the ball to our goal. This case is much easier to deal with.
-    angularCoefficient = (ellipseCenter.y() - ballPosition.y()) / (ellipseCenter.x() - ballPosition.x());
-    float linearCoefficient = ballPosition.y() - angularCoefficient * ballPosition.x();
+    //Pos barrier
+    Position desiredPosition = Utils::threePoints(goalProjection, projectedBall, _radius, 0.0f);
 
-    float interceptX = ellipseCenter.x() - (ellipseCenter.x() / abs(ellipseCenter.x())) * (powf(_ellipseAxis_X, 2.0) * angularCoefficient)
-            / sqrt(powf(_ellipseAxis_Y, 2.0) + powf(_ellipseAxis_X, 2.0) * powf(angularCoefficient, 2.0));
-    float interceptY = (ellipseCenter.x() / abs(ellipseCenter.x())) * powf(_ellipseAxis_Y, 2.0)
-            / sqrt(powf(_ellipseAxis_Y, 2.0) + powf(_ellipseAxis_X, 2.0) * powf(angularCoefficient, 2.0));
+    // Error goal (desiredPosition sometimes goes off the field)
+    if(getWorldMap()->getLocations()->ourSide().isRight() && desiredPosition.x() > (getWorldMap()->getLocations()->ourGoal().x()-ERROR_GOAL_OFFSET)){
+        desiredPosition.setPosition(getWorldMap()->getLocations()->ourGoal().x()-ERROR_GOAL_OFFSET, desiredPosition.y(), 0.0);
+    }else if(getWorldMap()->getLocations()->ourSide().isLeft() && desiredPosition.x() < (getWorldMap()->getLocations()->ourGoal().x()+ERROR_GOAL_OFFSET)){
+        desiredPosition.setPosition(getWorldMap()->getLocations()->ourGoal().x()+ERROR_GOAL_OFFSET, desiredPosition.y(), 0.0);
+    }
 
+    //if ball is inside our defense area (function isInsideOurArea doesn't consider the area inside the goal)
+    if(fabs(desiredPosition.x())>(getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth())
+            && fabs(desiredPosition.y()) < getWorldMap()->getLocations()->fieldDefenseLength()/2.0f &&
+            getWorldMap()->getLocations()->isInsideOurField(desiredPosition)){
+        desiredPosition = projectPosOutsideGoalArea(desiredPosition, true, false);
+    }
+
+    //setting goto
+    _skill_goTo->setTargetPosition(desiredPosition);
+    _skill_goTo->setAvoidOurGoalArea(true);
+    //setting skill goTo velocity factor
+    _skill_goTo->setMovementBaseSpeed(getConstants()->playerBaseSpeed());
+
+    //setting intercept
+    float multFactor = 1.0;
+    if(getWorldMap()->getLocations()->ourSide().isLeft()){
+        multFactor = -1.0;
+    }
+    Position interceptPoinLeft(true, multFactor * (getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth()), multFactor * getWorldMap()->getLocations()->fieldDefenseLength()/2.0f);
+    Position interceptPointRight(true, multFactor * (getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth()), -1.0f * multFactor * getWorldMap()->getLocations()->fieldDefenseLength()/2.0f);
+
+    setAvoidFlags(false,false,false,true,true);
+    setSkill(SKILL_GOTO);
 }
 
 void Behavior_Barrier::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
@@ -78,18 +125,79 @@ void Behavior_Barrier::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool a
     _skill_goTo->setAvoidTheirGoalArea(avoidTheirGoalArea);
 }
 
-Position Behavior_Barrier::getInterceptPosition() {
-    Position ellipseCenter = getWorldMap()->getLocations()->ourGoal();
-    Position ballPosition = getWorldMap()->getBall().getPosition();
-    Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
-    float angularCoefficient;
+Position Behavior_Barrier::projectPosOutsideGoalArea(Position pos, bool avoidOurArea, bool avoidTheirArea){
+    Position L1, L2, R1, R2, goal;
+    bool shouldProjectPos = false, isOurArea = false;
+    float smallMargin = 0.05f;
 
-    if (ellipseCenter.y() == ballPosition.y()) {
-        return player()->position();
-    } else {
-        angularCoefficient = (ellipseCenter.x() - ballPosition.x()) / (ellipseCenter.y() - ballPosition.y());
+    if(fabs(pos.x()) > (getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth()) &&
+            fabs(pos.y()) < getWorldMap()->getLocations()->fieldDefenseLength()/2){
+
+        shouldProjectPos = true;
+        //check if desiredPosition is inside our defense area and if we should avoid it
+        if(getWorldMap()->getLocations()->isInsideOurField(pos) && avoidOurArea){
+            shouldProjectPos = true;
+            isOurArea = true;
+            goal = getWorldMap()->getLocations()->ourGoal();
+        }
+        //check if desiredPosition is inside their defense area and if we should avoid it
+        else if(getWorldMap()->getLocations()->isInsideTheirField(pos) && avoidTheirArea){
+            shouldProjectPos = true;
+            isOurArea = false;
+            goal = getWorldMap()->getLocations()->theirGoal();
+        }else{
+            shouldProjectPos = false;
+        }
     }
-    float linearCoefficient = ballPosition.x() - angularCoefficient * ballPosition.y();
+    //if should project position outside a defense area
+    if(shouldProjectPos){
+        //multiplying factor changes if area's team is the left team or the right team
+        float mult = -1.0;
+        if(isOurArea){
+            if(getWorldMap()->getLocations()->ourSide().isLeft()) mult = 1.0;
+        }else{
+            if(getWorldMap()->getLocations()->theirSide().isLeft()) mult = 1.0;
+        }
+        //getting segments
 
+        //left segment points (defense area)
+        L1 = Position(true, -mult*getWorldMap()->getLocations()->fieldMaxX(), getWorldMap()->getLocations()->fieldDefenseLength()/2 + smallMargin);
+        L2 = Position(true, L1.x() + mult * (getWorldMap()->getLocations()->fieldDefenseWidth() + smallMargin), L1.y());
+        //right segment points (defense area)
+        R1 = Position(true, -mult*getWorldMap()->getLocations()->fieldMaxX(), -(getWorldMap()->getLocations()->fieldDefenseLength()/2 + smallMargin));
+        R2 = Position(true, R1.x() + mult * (getWorldMap()->getLocations()->fieldDefenseWidth() + smallMargin), R1.y());
+        //front segment is composed by L2 and R2 (defense area)
 
+        //projecting position on segments L1->L2, R1->R2, L2->R2
+        Position pointProjLeft = Utils::projectPointAtSegment(L1, L2, pos);
+        Position pointProjRight = Utils::projectPointAtSegment(R1, R2, pos);
+        Position pointProjFront = Utils::projectPointAtSegment(L2, R2, pos);
+
+        //interception points between the segment playerPos->pos and defense area segments (L1->L2, R1->R2, L2->R2)
+        Position left = Utils::hasInterceptionSegments(L1, L2, goal, pos);
+        Position right = Utils::hasInterceptionSegments(R1, R2, goal, pos);
+        Position front = Utils::hasInterceptionSegments(L2, R2, goal, pos);
+
+        //if there is an interception between playerPos->pos and L1->L2 on L1->L2
+        if(!(left.isInvalid()) &&
+                fabs(left.x()) >= (getWorldMap()->getLocations()->fieldMaxX() - (getWorldMap()->getLocations()->fieldDefenseWidth()+smallMargin)) &&
+                fabs(left.x()) <= getWorldMap()->getLocations()->fieldMaxX()){
+            return pointProjLeft;
+        }
+        //if there is an interception between playerPos->pos and R1->R2 on R1->R2
+        else if(!(right.isInvalid()) &&
+                fabs(right.x()) >= (getWorldMap()->getLocations()->fieldMaxX() - (getWorldMap()->getLocations()->fieldDefenseWidth()+smallMargin)) &&
+                fabs(right.x()) <= getWorldMap()->getLocations()->fieldMaxX()){
+            return pointProjRight;
+        }
+        //if there is an interception between playerPos->pos and L2->R2 on L2->R2
+        else if(!(front.isInvalid()) &&
+                fabs(front.x()) >= (getWorldMap()->getLocations()->fieldMaxX() - (getWorldMap()->getLocations()->fieldDefenseWidth()+smallMargin)) && fabs(front.x()) <= getWorldMap()->getLocations()->fieldMaxX()){
+            return pointProjFront;
+        }else{
+            return pos;
+        }
+    }else{
+        return pos;
+    }
 }
