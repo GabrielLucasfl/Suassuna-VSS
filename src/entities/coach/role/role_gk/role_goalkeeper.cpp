@@ -56,6 +56,7 @@ void Role_Goalkeeper::run() {
     Position lookingPosition(true, standardPosition.x(), 2.0f);
     _bhv_moveTo->enableRotation(false);
     _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
+    _bhv_moveTo->setSpin(false);
 
     if (_gkOverlap) {
         _bhv_moveTo->setTargetPosition(getWorldMap()->getBall().getPosition());
@@ -74,15 +75,21 @@ void Role_Goalkeeper::run() {
         }
         else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition)) {
             // Clear the ball if it is stationed at our goal area (or almost stationed)
-            _bhv_moveTo->setTargetPosition(ballPosition);
+            if(Utils::distance(player()->position(), ballPosition) > 0.1f) {
+                _bhv_moveTo->setTargetPosition(ballPosition);
+                setBehavior(BHV_MOVETO);
+            }else {
+                _bhv_moveTo->setSpinOrientation(spinOrientarion());
+                _bhv_moveTo->setSpin(true);
+                setBehavior(BHV_MOVETO);
+            }
+        }
+        else if (!player()->isLookingTo(lookingPosition, 0.17f)) {
+            // Rotates to a better angle of movement
+            _bhv_moveTo->setTargetPosition(lookingPosition);
+            _bhv_moveTo->enableRotation(true);
             setBehavior(BHV_MOVETO);
         }
-    //    else if (!player()->isLookingTo(lookingPosition, 0.3f)) {
-    //        // Rotates to a better angle of movement
-    //        _bhv_moveTo->setTargetPosition(lookingPosition);
-    //        _bhv_moveTo->enableRotation(true);
-    //        setBehavior(BHV_MOVETO);
-    //    }
         else {
             if (ballPosition.x() > 0.6f && getWorldMap()->getLocations()->ourSide().isRight()) {
                 if (ballPosition.y() > 0.35f) {
@@ -113,6 +120,24 @@ void Role_Goalkeeper::run() {
                 _bhv_intercept->setBaseSpeed(getConstants()->playerBaseSpeed());
                 setBehavior(BHV_INTERCEPT);
             }
+        }
+    }
+}
+
+bool Role_Goalkeeper::spinOrientarion() {
+    Position ballPos = getWorldMap()->getBall().getPosition();
+    Position playerPos = player()->position();
+    if(getWorldMap()->getLocations()->ourSide().isRight()) {
+        if(ballPos.y() > playerPos.y()) {
+            return false;
+        }else {
+            return true;
+        }
+    }else {
+        if(ballPos.y() > playerPos.y()) {
+            return true;
+        }else {
+            return false;
         }
     }
 }
