@@ -61,18 +61,30 @@ void RRT::addGoalArea(const Position &pos) {
     float radius = areaLength/6;
     float centersX = abs(loc()->ourAreaLeftCorner().x()) + radius;
     Position c1, c2, c3;
+    // Corners of areas
+    float areaWidth = loc()->defenseAreaWidth();
+    float minorRadius = areaWidth/4.0f;
+    float cornerX = abs(loc()->ourAreaLeftCorner().x()) + minorRadius;
+    float cornerY = abs(loc()->ourAreaLeftCorner().y()) - minorRadius;
+    Position cCorner1, cCorner2;
     if(pos.x() > 0) {
         c1 = Position(true, centersX, 2*radius);
         c2 = Position(true, centersX, 0);
         c3 = Position(true, centersX, -2*radius);
+        cCorner1 = Position(true, cornerX, -cornerY);
+        cCorner2 = Position(true, cornerX, cornerY);
     }else {
         c1 = Position(true, -centersX, 2*radius);
         c2 = Position(true, -centersX, 0);
         c3 = Position(true, -centersX, -2*radius);
+        cCorner1 = Position(true, -cornerX, -cornerY);
+        cCorner2 = Position(true, -cornerX, cornerY);
     }
     addObstacles(c1, radius);
     addObstacles(c2, radius);
     addObstacles(c3, radius);
+    addObstacles(cCorner1, minorRadius);
+    addObstacles(cCorner2, minorRadius);
 }
 
 void RRT::addOwnRobot(const Position &pos) {
