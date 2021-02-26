@@ -68,6 +68,7 @@ private:
     bool _avoidBall;
     bool _avoidOurGoalArea;
     bool _avoidTheirGoalArea;
+    float _offsetAngleRange;
 
     // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);

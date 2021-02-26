@@ -28,6 +28,7 @@ Role_Attacker::Role_Attacker() {
     _avoidBall = false;
     _avoidOurGoalArea = false;
     _avoidTheirGoalArea = false;
+    _offsetAngleRange = 0.3f;
 }
 
 QString Role_Attacker::name() {
@@ -64,11 +65,21 @@ void Role_Attacker::run() {
     ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
 
     // Bhv goToBall parameters
-    float bhvGoToBallOffset = 0.25f;    // Distance behind ball
+    float bhvGoToBallOffset = 0.25f;
+    if(getWorldMap()->getLocations()->isInsideOurField(ballProj)) {
+        bhvGoToBallOffset = 0.1f;
+    }
     Position bhvGoToBallRef = getWorldMap()->getLocations()->theirGoal();   // Reference position
 
+    Colors::Color ourColor = getConstants()->teamColor();
+    if(getWorldMap()->getPlayer(ourColor, player()->playerId()).getVelocity().abs() < 0.02f && getWorldMap()->getBall().getVelocity().abs() < 0.02f) {
+        _offsetAngleRange = 0.1f;
+    }else {
+        _offsetAngleRange = 0.3f;
+    }
+
     //check if player is behind ball based on its reference position
-    bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > 0.3f);
+    bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > _offsetAngleRange);
     bool isBehindBall = Role_Attacker::isBehindBall(Utils::threePoints(ballProj, bhvGoToBallRef, bhvGoToBallOffset, static_cast<float>(M_PI)));
 
     _avoidTheirGoalArea = hasAllyInTheirArea();
@@ -162,8 +173,18 @@ bool Role_Attacker::isBehindBallXcoord(Position pos) {
 bool Role_Attacker::inRangeToPush(Position ballPos) {
     Position firstPost;
     Position secondPost;
-    firstPost = getWorldMap()->getLocations()->theirGoalRightPost();
-    secondPost = getWorldMap()->getLocations()->theirGoalLeftPost();
+    firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
+    if(firstPost.y() < 0) {
+        firstPost.setPosition(true, firstPost.x(), firstPost.y() - 0.1f);
+    }else {
+        firstPost.setPosition(true, firstPost.x(), firstPost.y() + 0.1f);
+    }
+    secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
+    if(secondPost.y() < 0) {
+        secondPost.setPosition(true, secondPost.x(), secondPost.y() - 0.1f);
+    }else {
+        secondPost.setPosition(true, secondPost.x(), secondPost.y() + 0.1f);
+    }
 
     // Angle from ball to posts of their goal
     float ballFirstPost = Utils::getAngle(ballPos, firstPost) - static_cast<float>(M_PI);
