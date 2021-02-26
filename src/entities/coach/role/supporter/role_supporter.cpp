@@ -23,7 +23,11 @@
 
 
 Role_Supporter::Role_Supporter(){
-
+    _avoidTeammates = false;
+    _avoidOpponents = true;
+    _avoidBall = true;
+    _avoidOurGoalArea = true;
+    _avoidTheirGoalArea = false;
 }
 
 QString Role_Supporter::name() {
@@ -45,11 +49,21 @@ void Role_Supporter::configure() {
     _limitYdown = -0.6f;
     _timer.start();
     _minVelocity = 1.0f;
-    //_bhv_moveTo->setAvoidFlags(0,0,0,1,0);
-    _bhv_moveTo->setAvoidFlags(0,1,1,1,0);
 }
 
 void Role_Supporter::run() {
+    if(isBehindBallXcoord(player()->position())) {
+        _avoidBall = true;
+    }else {
+        _avoidBall = false;
+    }
+    if(hasAllyInTheirArea()) {
+        _avoidTheirGoalArea = true;
+    }else {
+        _avoidTheirGoalArea = false;
+    }
+    _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
+
     //_bhv_moveTo->setTargetPosition(player()->position());
     Position positionVar;
     Position positionBall = getWorldMap()->getBall().getPosition();
@@ -189,6 +203,30 @@ void Role_Supporter::run() {
     }
     setBehavior(BHV_MOVETO);
     player()->rotateTo(positionBall);
+}
+
+bool Role_Supporter::hasAllyInTheirArea() {
+    Colors::Color ourColor = getConstants()->teamColor();
+    QList<quint8> ourPlayers = getWorldMap()->getAvailablePlayers(ourColor);
+    for(int i=0; i<ourPlayers.size(); i++) {
+        Position posPlayer = getWorldMap()->getPlayer(ourColor, ourPlayers[i]).getPosition();
+        if((ourPlayers[i] != player()->playerId()) && getWorldMap()->getLocations()->isInsideTheirArea(posPlayer)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Role_Supporter::isBehindBallXcoord(Position pos) {
+    Position posBall = getWorldMap()->getBall().getPosition();
+    float robotRadius = 0.035f;
+    bool isBehindObjX;
+    if(getWorldMap()->getLocations()->ourSide().isLeft()) {
+        isBehindObjX = pos.x() < (posBall.x() - robotRadius);
+    }else {
+        isBehindObjX = pos.x() > (posBall.x() + robotRadius);
+    }
+    return isBehindObjX;
 }
 
 bool Role_Supporter::isBall_ourfield(){

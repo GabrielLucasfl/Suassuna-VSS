@@ -54,6 +54,16 @@ private:
     void limit_Ypos(float * posy);
     float calc_x_advanced();
     float calc_x_barrier();
+    bool isBehindBallXcoord(Position pos);
+    bool hasAllyInTheirArea();
+
+    // Avoid Flags
+    bool _avoidTeammates;
+    bool _avoidOpponents;
+    bool _avoidBall;
+    bool _avoidOurGoalArea;
+    bool _avoidTheirGoalArea;
+
     //vars
     float _posXbarrier;
     float _limitYup;
