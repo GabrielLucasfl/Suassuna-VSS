@@ -195,8 +195,9 @@ std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destinati
 }
 
 void Player::goTo(Position &targetPosition, float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
-    Position destination;
-    destination = projectPosOutsideGoalArea(targetPosition, avoidOurGoalArea, avoidTheirGoalArea);
+    targetPosition = limitPosInsideField(targetPosition);
+    Position destination = projectPosOutsideGoalArea(targetPosition, avoidOurGoalArea, avoidTheirGoalArea);
+    destination = limitPosInsideField(destination);
 
     // Take angle to target
     float angleToTarget;
@@ -463,4 +464,58 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
             }
         }
     }
+}
+
+Position Player::limitPosInsideField(Position dest) {
+    float minX = getWorldMap()->getLocations()->fieldMinX();
+    float maxX = getWorldMap()->getLocations()->fieldMaxX();
+    float minY = getWorldMap()->getLocations()->fieldMinY();
+    float maxY = getWorldMap()->getLocations()->fieldMaxY();
+    Position s1;
+    Position s2;
+    Position res;
+    float offset = 0.03f;
+
+    // Check if intersect areas
+
+
+    // If dest is above upper wall
+    if(dest.y() > maxY) {
+        // Project on upper wall line
+        s1 = Position(true, minX, maxY);
+        s2 = Position(true, maxX, maxY);
+        Position proj = Utils::projectPointAtLine(s1, s2, dest);
+        //Position proj = Utils::segmentsIntersect(s1, s2, ori, dest);
+        return Position(true, proj.x(), proj.y() - offset);
+    }
+    // If dest is bellow lower wall
+    if(dest.y() < minY) {
+        // Project on lower wall line
+        s1 = Position(true, minX, maxY);
+        s2 = Position(true, maxX, maxY);
+        Position proj = Utils::projectPointAtLine(s1, s2, dest);
+        //Position proj = Utils::segmentsIntersect(s1, s2, ori, dest);
+        return Position(true, proj.x(), proj.y() - offset);
+    }
+    // If dest is behind left wall
+    if(dest.x() < minX) {
+        // Project on left wall line
+        s1 = Position(true, minX, minY);
+        s2 = Position(true, minX, maxY);
+        Position proj = Utils::projectPointAtLine(s1, s2, dest);
+        //Position proj = Utils::segmentsIntersect(s1, s2, ori, dest);
+        proj.setPosition(true, proj.x() + offset, proj.y());
+        dest = proj;
+    }
+    // If dest if behind right wall
+    if(dest.x() > maxX) {
+        // Project on right wall line
+        s1 = Position(true, maxX, minY);
+        s2 = Position(true, maxX, maxY);
+        Position proj = Utils::projectPointAtLine(s1, s2, dest);
+        //Position proj = Utils::segmentsIntersect(s1, s2, ori, dest);
+        proj.setPosition(true, proj.x() - offset, proj.y());
+        dest = proj;
+    }
+    return dest;
 }

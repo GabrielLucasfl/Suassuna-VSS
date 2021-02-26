@@ -71,6 +71,7 @@ public:
     // Path planning
     QLinkedList<Position> getPath() const;
     std::pair<Angle,float> getNavDirectionDistance(const Position &destination, const Angle &positionToLook, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea, bool avoidTheirGoalArea);
+    Position limitPosInsideField(Position dest);
 
 private:
     float _lastError;
