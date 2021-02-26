@@ -417,7 +417,6 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
             }
         }
     }
-
     // Check their area
     if (avoidTheirArea) {
         if (isInsideTheirArea) {
@@ -464,6 +463,7 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
             }
         }
     }
+    return targetPosition;
 }
 
 Position Player::limitPosInsideField(Position dest) {
