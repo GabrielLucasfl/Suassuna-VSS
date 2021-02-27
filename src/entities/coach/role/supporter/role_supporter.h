@@ -41,12 +41,14 @@ private:
     // Behaviors enum
     enum {
         BHV_MOVETO,
-        BHV_INTERCEPT
+        BHV_INTERCEPT,
+        BHV_BARRIER
     };
 
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_Intercept *_bhv_intercept;
+    Behavior_Barrier *_bhv_barrier;
 
     // Behaiors util functions
     bool isBall_ourfield();
@@ -56,6 +58,7 @@ private:
     float calc_x_barrier();
     bool isBehindBallXcoord(Position pos);
     bool hasAllyInTheirArea();
+    bool inRangeToPush(Position ballPos);
 
     // Avoid Flags
     bool _avoidTeammates;
@@ -71,6 +74,7 @@ private:
     bool _nofreeAngles;
     float _minVelocity;
     Timer _timer;
+    bool _pushBall;
 
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
 

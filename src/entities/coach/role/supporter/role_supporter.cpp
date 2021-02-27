@@ -28,6 +28,7 @@ Role_Supporter::Role_Supporter(){
     _avoidBall = true;
     _avoidOurGoalArea = true;
     _avoidTheirGoalArea = false;
+    _pushBall = false;
 }
 
 QString Role_Supporter::name() {
@@ -38,10 +39,12 @@ void Role_Supporter::configure() {
     // Starting behaviors
     _bhv_moveTo = new Behavior_MoveTo();
     _bhv_intercept = new Behavior_Intercept();
+    _bhv_barrier = new Behavior_Barrier();
 
     // Adding behaviors to behaviors list
     addBehavior(BHV_MOVETO, _bhv_moveTo);
     addBehavior(BHV_INTERCEPT, _bhv_intercept);
+    addBehavior(BHV_BARRIER, _bhv_barrier);
 
     //configure vars
     _posXbarrier = 0.2f;
@@ -143,66 +146,153 @@ void Role_Supporter::run() {
     Position desiredPosition = player()->position();
     if(isBall_ourfield()){
         // Barrier
-        float y_Barrier;
-        float x_Barrier = calcBarrier_Xcomponent();
-        float modulo_vet = abs((x_Barrier - positionBall.x())/cos(largestMid));
-        y_Barrier = positionBall.y() + (modulo_vet * sin(largestMid));
-        if(_nofreeAngles){
-            // std::cout << "Nao tenho angulos livres\n";
-            desiredPosition.setPosition(1,x_Barrier,positionBall.y());
-        }else{
-            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
-        }
-        if(y_Barrier<-0.40f){
-            y_Barrier = -0.40f;
-            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
-        }
-        else if(y_Barrier>0.40f){
-            y_Barrier = 0.40f;
-            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
-        }
-        float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
-        float xAux = (0.55f*posx_control);
+//        float y_Barrier;
+//        float x_Barrier = calcBarrier_Xcomponent();
+//        float modulo_vet = abs((x_Barrier - positionBall.x())/cos(largestMid));
+//        y_Barrier = positionBall.y() + (modulo_vet * sin(largestMid));
+//        if(_nofreeAngles){
+//            // std::cout << "Nao tenho angulos livres\n";
+//            desiredPosition.setPosition(1,x_Barrier,positionBall.y());
+//        }else{
+//            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
+//        }
+//        if(y_Barrier<-0.40f){
+//            y_Barrier = -0.40f;
+//            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
+//        }
+//        else if(y_Barrier>0.40f){
+//            y_Barrier = 0.40f;
+//            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
+//        }
+//        float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
+//        float xAux = (0.55f*posx_control);
 
-        if(positionBall.x()<=xAux && xAux<0.0f){
-            x_Barrier = calc_x_barrier();
-            if(positionBall.y()<0.0f){
-                desiredPosition.setPosition(1, x_Barrier, -0.40f);
-            }
-            else if(positionBall.y()>0.0f){
-                 desiredPosition.setPosition(1, x_Barrier, 0.40f);
-            }
-        }
-        else if(positionBall.x()>=xAux && xAux>0.0f){
-            x_Barrier = calc_x_barrier();
-            if(positionBall.y()<0.0f){
-                desiredPosition.setPosition(1, x_Barrier, -0.40f);
-            }
-            else if(positionBall.y()>0.0f){
-                 desiredPosition.setPosition(1, x_Barrier, 0.40f);
-            }
-        }
-        //_bhv_moveTo->setMinimalVelocity(_minVelocity);
-        _bhv_moveTo->setTargetPosition(desiredPosition);
-        setBehavior(BHV_MOVETO);
+//        if(positionBall.x()<=xAux && xAux<0.0f){
+//            x_Barrier = calc_x_barrier();
+//            if(positionBall.y()<0.0f){
+//                desiredPosition.setPosition(1, x_Barrier, -0.40f);
+//            }
+//            else if(positionBall.y()>0.0f){
+//                 desiredPosition.setPosition(1, x_Barrier, 0.40f);
+//            }
+//        }
+//        else if(positionBall.x()>=xAux && xAux>0.0f){
+//            x_Barrier = calc_x_barrier();
+//            if(positionBall.y()<0.0f){
+//                desiredPosition.setPosition(1, x_Barrier, -0.40f);
+//            }
+//            else if(positionBall.y()>0.0f){
+//                 desiredPosition.setPosition(1, x_Barrier, 0.40f);
+//            }
+//        }
+        setBehavior(BHV_BARRIER);
     }else{
-        // Advanced Support
-        float posx_advanced = calc_x_advanced();
-        float moduloVet = abs((posx_advanced - positionBall.x())/cos(largestMid));
-        float posy_advanced;
-        if(_nofreeAngles){
-            posy_advanced = positionBall.y();
-            desiredPosition.setPosition(1,posx_advanced,posy_advanced);
-        }else{
-            posy_advanced = positionBall.y() + (moduloVet * sin(largestMid));
-            desiredPosition.setPosition(1,posx_advanced,posy_advanced);
+        if(!_pushBall) {
+            // Advanced Support
+            float posx_advanced = calc_x_advanced();
+            float moduloVet = abs((posx_advanced - positionBall.x())/cos(largestMid));
+            float posy_advanced;
+            if(_nofreeAngles){
+                posy_advanced = positionBall.y();
+                desiredPosition.setPosition(1,posx_advanced,posy_advanced);
+            }else{
+                posy_advanced = positionBall.y() + (moduloVet * sin(largestMid));
+                desiredPosition.setPosition(1,posx_advanced,posy_advanced);
+            }
+            QList<quint8> ourPlayers = getWorldMap()->getAvailablePlayers(getConstants()->teamColor());
+            for(int i = 0; i < ourPlayers.size(); i++) {
+                if(ourPlayers[i] != player()->playerId()) {
+                    if(!isBehindBallXcoord(getWorldMap()->getPlayer(getConstants()->teamColor(), ourPlayers[i]).getPosition())) {
+                        _pushBall = true;
+                    }
+                }
+            }
+            if(inRangeToPush(positionBall)) {
+                _pushBall = true;
+            }
+            _bhv_moveTo->enableRotation(false);
+            _bhv_moveTo->setTargetPosition(desiredPosition);
+            //_bhv_moveTo->setMinimalVelocity(_minVelocity);
+            setBehavior(BHV_MOVETO);
+        }else {
+            // Fixed variables
+            Position ballPosition;
+            Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
+
+            // Ball projection
+            Position ballPos = getWorldMap()->getBall().getPosition();
+            float velMod = ballVelocity.abs();
+
+            Position ballDirection, ballProj;
+            if(ballVelocity.abs() > 0) {
+                ballDirection = Position(true, ballVelocity.vx()/velMod, ballVelocity.vy()/velMod);
+            } else {
+                ballDirection = Position(true, 0, 0);
+            }
+            float factor = 0.2f * velMod;
+            factor = std::min(factor, 0.5f);
+            ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
+            ballPosition = ballProj;
+            if(!isBehindBallXcoord(player()->position())) {
+                _pushBall = false;
+            }
+            _bhv_moveTo->enableRotation(false);
+            _bhv_moveTo->setTargetPosition(ballProj);
+            _bhv_moveTo->setBaseSpeed(30);
+            if(Utils::distance(player()->position(), ballPos) < 0.06f) {
+                _bhv_moveTo->setBaseSpeed(50);
+            }
+            //_bhv_moveTo->setMinimalVelocity(_minVelocity);
+            setBehavior(BHV_MOVETO);
         }
-        _bhv_moveTo->setTargetPosition(desiredPosition);
-        //_bhv_moveTo->setMinimalVelocity(_minVelocity);
-        setBehavior(BHV_MOVETO);
     }
-    setBehavior(BHV_MOVETO);
-    player()->rotateTo(positionBall);
+}
+
+bool Role_Supporter::inRangeToPush(Position ballPos) {
+    Position firstPost;
+    Position secondPost;
+    float offsetX = 0.12f;
+
+    firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
+    if(firstPost.x() < 0) {
+        firstPost.setPosition(true, firstPost.x() - offsetX, firstPost.y());
+    }else {
+        firstPost.setPosition(true, firstPost.x() + offsetX, firstPost.y());
+    }
+    secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
+    if(secondPost.x() < 0) {
+        secondPost.setPosition(true, secondPost.x() - offsetX, secondPost.y());
+    }else {
+        secondPost.setPosition(true, secondPost.x() + offsetX, secondPost.y());
+    }
+
+    // Angle from ball to posts of their goal
+    float ballFirstPost = Utils::getAngle(ballPos, firstPost) - static_cast<float>(M_PI);
+    Utils::angleLimitZeroTwoPi(&ballFirstPost);
+    float ballSecondPost = Utils::getAngle(ballPos, secondPost) - static_cast<float>(M_PI);
+    Utils::angleLimitZeroTwoPi(&ballSecondPost);
+
+    // Angle from ball to player
+    float ballPlayer = Utils::getAngle(ballPos, player()->position());
+
+    // Compare angles to know if player is in the angle range to push the ball to their goal
+    if(getWorldMap()->getLocations()->theirSide().isRight()) {
+        if((ballSecondPost < 0 && ballFirstPost > 0) || (ballSecondPost > 0 && ballFirstPost < 0)) {
+            if(ballPlayer > std::max(ballSecondPost, ballFirstPost)
+                || ballPlayer < std::min(ballSecondPost, ballFirstPost)) {
+                return true;
+            }else {
+                return false;
+            }
+        }
+    }
+    if(ballPlayer < std::max(ballSecondPost, ballFirstPost)
+        && ballPlayer > std::min(ballSecondPost, ballFirstPost)) {
+        return true;
+    } else {
+        return false;
+    }
+
 }
 
 bool Role_Supporter::hasAllyInTheirArea() {
