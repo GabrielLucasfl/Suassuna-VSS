@@ -79,12 +79,11 @@ void Role_Attacker::run() {
     if(getWorldMap()->getPlayer(ourColor, player()->playerId()).getVelocity().abs() < 0.02f && getWorldMap()->getBall().getVelocity().abs() < 0.02f) {
         _offsetAngleRange = 0.1f;
     }else {
-        _offsetAngleRange = 0.3f;
+        _offsetAngleRange = 0.2f;
     }
 
     //check if player is behind ball based on its reference position
     bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > _offsetAngleRange);
-    bool isBehindBall = Role_Attacker::isBehindBall(Utils::threePoints(ballProj, bhvGoToBallRef, bhvGoToBallOffset, static_cast<float>(M_PI)));
 
     _avoidTheirGoalArea = hasAllyInTheirArea();
 
@@ -100,7 +99,7 @@ void Role_Attacker::run() {
             //_bhv_goToBall->setBaseSpeed(33);
             _bhv_goToBall->setLinearError(0.02f);
             setBehavior(BHV_GOTOBALL);
-            if(isBehindBall || isInRange) {
+            if(isInRange) {
                 _state = MOVETO;
             }
             break;
@@ -153,18 +152,6 @@ bool Role_Attacker::hasAllyInTheirArea() {
         }
     }
     return false;
-}
-
-bool Role_Attacker::isBehindBall(Position posObjective) {
-    Position posBall = getWorldMap()->getBall().getPosition();
-    Position posPlayer = player()->position();
-    float anglePlayer = Utils::getAngle(posBall, posPlayer);
-    float angleDest = Utils::getAngle(posBall, posObjective);
-    float diff = Utils::angleDiff(anglePlayer, angleDest);
-
-    bool isBehindObjX = isBehindBallXcoord(player()->position());
-
-    return ((diff < static_cast<float>(M_PI)/18.0f) && isBehindObjX);
 }
 
 bool Role_Attacker::isBehindBallXcoord(Position pos) {

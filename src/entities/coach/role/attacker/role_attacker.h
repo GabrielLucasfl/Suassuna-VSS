@@ -32,7 +32,6 @@ public:
     QString name();
 
     // Auxiliar
-    bool isBehindBall(Position posObjective);
     bool isBehindBallXcoord(Position pos);
     bool inRangeToPush(Position ballPos);
     float normAngle(float angleRadians);
@@ -54,7 +53,8 @@ private:
     int _state;
     enum {
         MOVETO,
-        GOTOBALL
+        GOTOBALL,
+        AVOIDBALL
     };
 
     // Behaviors pointers
