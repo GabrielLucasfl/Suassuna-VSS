@@ -178,6 +178,11 @@ void Role_Goalkeeper::run() {
 
                 Position firstLimitationPoint(true, standardPosition.x(), 0.2f);
                 Position secondLimitationPoint(true, standardPosition.x(), -0.2f);
+                if(ballPos.y() > 0.0){
+                    secondLimitationPoint.setPosition(true, standardPosition.x(), 0.0f);
+                }else{
+                    firstLimitationPoint.setPosition(true, standardPosition.x(), 0.0f);
+                }
                 _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
                 _bhv_intercept->setObjectPosition(ballPosition);
                 _bhv_intercept->setObjectVelocity(ballVelocity);
