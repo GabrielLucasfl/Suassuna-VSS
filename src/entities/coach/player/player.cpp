@@ -474,7 +474,7 @@ Position Player::limitPosInsideField(Position dest) {
     Position s1;
     Position s2;
     Position res;
-    float offset = 0.04f;
+    float offset = 0.07f;
 
     // Check if intersect areas
 
