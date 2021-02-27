@@ -70,6 +70,7 @@ private:
 
     // Internal functions
     Position projectPosOutsideGoalArea(Position pos, bool avoidOurArea, bool avoidTheirArea);
+    bool spinOrientarion();
 
     // Avoid Parameters
     bool _avoidTeammates;

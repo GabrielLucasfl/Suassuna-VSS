@@ -123,39 +123,7 @@ void Behavior_Barrier::run() {
 
     //getWorldMap()->getBall().getPosition().y();
 
-    if(getWorldMap()->getLocations()->ourSide().isLeft()){//se for lado esquerdo
-          if(player()->position().y() >=0){
-              if(getWorldMap()->getBall().getPosition().y() < (getWorldMap()->getLocations()->fieldMaxY())/2){
-                  _skill_spin->setClockWise(false);
-              }else{
-                  _skill_spin->setClockWise(true);
-              }
-          }
-          else{
-              if(getWorldMap()->getBall().getPosition().y() < (getWorldMap()->getLocations()->fieldMinY())/2){
-                  _skill_spin->setClockWise(false);
-              }else{
-                  _skill_spin->setClockWise(true);
-              }
-          }
-
-      }
-      else{//lado direito tem que inverter o giro
-          if(player()->position().y() >=0){
-              if(getWorldMap()->getBall().getPosition().y() < (getWorldMap()->getLocations()->fieldMaxY())/2){
-                  _skill_spin->setClockWise(true);
-              }else{
-                  _skill_spin->setClockWise(false);
-              }
-          }
-          else{
-              if(getWorldMap()->getBall().getPosition().y() < (getWorldMap()->getLocations()->fieldMinY())/2){
-                  _skill_spin->setClockWise(true);
-              }else{
-                  _skill_spin->setClockWise(false);
-              }
-          }
-      }
+    _skill_spin->setClockWise(spinOrientarion());
 
     _skill_goTo->setAvoidBall(_avoidBall);
     _skill_goTo->setAvoidTeammates(_avoidTeammates);
@@ -168,6 +136,24 @@ void Behavior_Barrier::run() {
             && (Utils::distance(player()->position(), getWorldMap()->getLocations()->ourGoal()) < Utils::distance(getWorldMap()->getBall().getPosition(), getWorldMap()->getLocations()->ourGoal()))){ //hyperparameter
         //std::cout<<"SPIN\n";
         setSkill(SKILL_SPIN);
+    }
+}
+
+bool Behavior_Barrier::spinOrientarion() {
+    Position ballPos = getWorldMap()->getBall().getPosition();
+    Position playerPos = player()->position();
+    if(getWorldMap()->getLocations()->ourSide().isRight()) {
+        if(ballPos.y() > playerPos.y()) {
+            return false;
+        }else {
+            return true;
+        }
+    }else {
+        if(ballPos.y() > playerPos.y()) {
+            return true;
+        }else {
+            return false;
+        }
     }
 }
 
