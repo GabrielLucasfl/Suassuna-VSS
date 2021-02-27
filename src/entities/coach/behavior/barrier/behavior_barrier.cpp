@@ -48,18 +48,20 @@ void Behavior_Barrier::configure() {
 
     // Starting skills
     _skill_goTo = new Skill_GoTo();
-    _skill_rotateTo = new Skill_RotateTo();
+    _skill_spin = new Skill_Spin();
 
     // Adding to behavior skill list
     addSkill(SKILL_GOTO, _skill_goTo);
-    addSkill(SKILL_ROTATE, _skill_rotateTo);
+    addSkill(SKILL_SPIN, _skill_spin);
 
 }
 
 void Behavior_Barrier::run() {
     Position goalProjection;
     Position projectedBall = getWorldMap()->getBall().getPosition();
+
     goalProjection.setInvalid();
+
     //considering ball velocity to define player position
     if(getWorldMap()->getBall().getVelocity().abs() > BALLPREVISION_MINVELOCITY){
         //calc unitary vector of velocity
@@ -119,12 +121,54 @@ void Behavior_Barrier::run() {
     Position interceptPoinLeft(true, multFactor * (getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth()), multFactor * getWorldMap()->getLocations()->fieldDefenseLength()/2.0f);
     Position interceptPointRight(true, multFactor * (getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth()), -1.0f * multFactor * getWorldMap()->getLocations()->fieldDefenseLength()/2.0f);
 
+    //getWorldMap()->getBall().getPosition().y();
+
+    if(getWorldMap()->getLocations()->ourSide().isLeft()){//se for lado esquerdo
+          if(player()->position().y() >=0){
+              if(getWorldMap()->getBall().getPosition().y() < (getWorldMap()->getLocations()->fieldMaxY())/2){
+                  _skill_spin->setClockWise(false);
+              }else{
+                  _skill_spin->setClockWise(true);
+              }
+          }
+          else{
+              if(getWorldMap()->getBall().getPosition().y() < (getWorldMap()->getLocations()->fieldMinY())/2){
+                  _skill_spin->setClockWise(false);
+              }else{
+                  _skill_spin->setClockWise(true);
+              }
+          }
+
+      }
+      else{//lado direito tem que inverter o giro
+          if(player()->position().y() >=0){
+              if(getWorldMap()->getBall().getPosition().y() < (getWorldMap()->getLocations()->fieldMaxY())/2){
+                  _skill_spin->setClockWise(true);
+              }else{
+                  _skill_spin->setClockWise(false);
+              }
+          }
+          else{
+              if(getWorldMap()->getBall().getPosition().y() < (getWorldMap()->getLocations()->fieldMinY())/2){
+                  _skill_spin->setClockWise(true);
+              }else{
+                  _skill_spin->setClockWise(false);
+              }
+          }
+      }
+
     _skill_goTo->setAvoidBall(_avoidBall);
     _skill_goTo->setAvoidTeammates(_avoidTeammates);
     _skill_goTo->setAvoidOpponents(_avoidOpponents);
     _skill_goTo->setAvoidOurGoalArea(_avoidOurGoalArea);
     _skill_goTo->setAvoidTheirGoalArea(_avoidTheirGoalArea);
     setSkill(SKILL_GOTO);
+
+    if( Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) <=0.1f
+            && (Utils::distance(player()->position(), getWorldMap()->getLocations()->ourGoal()) < Utils::distance(getWorldMap()->getBall().getPosition(), getWorldMap()->getLocations()->ourGoal()))){ //hyperparameter
+        //std::cout<<"SPIN\n";
+        setSkill(SKILL_SPIN);
+    }
 }
 
 void Behavior_Barrier::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {

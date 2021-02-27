@@ -48,12 +48,14 @@ private:
     // Skills enum
     enum {
         SKILL_GOTO,
-        SKILL_ROTATE
+        SKILL_ROTATE,
+        SKILL_SPIN
     };
 
     // Skills pointers
     Skill_GoTo *_skill_goTo;
     Skill_RotateTo *_skill_rotateTo;
+    Skill_Spin *_skill_spin;
 
     // Parameters
     Position _targetPosition;
