@@ -32,7 +32,7 @@
 Behavior_Barrier::Behavior_Barrier() {
     setRadius(0.29f);
 
-    _avoidTeammates = true;
+    _avoidTeammates = false;
     _avoidOpponents = false;
     _avoidBall = false;
     _avoidOurGoalArea = true;
@@ -76,7 +76,7 @@ void Behavior_Barrier::run() {
         const Position delta(true, factor*velUni.x(), factor*velUni.y());
         Position projectedPos(true, getWorldMap()->getBall().getPosition().x()+delta.x(),
                               getWorldMap()->getBall().getPosition().y()+delta.y());
-        projectedBall = projectedPos;
+        //projectedBall = projectedPos;
 
         goalProjection = Utils::hasInterceptionSegments( getWorldMap()->getBall().getPosition(),
                                                   projectedBall,
@@ -118,10 +118,6 @@ void Behavior_Barrier::run() {
     if(getWorldMap()->getLocations()->ourSide().isLeft()){
         multFactor = -1.0;
     }
-    Position interceptPoinLeft(true, multFactor * (getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth()), multFactor * getWorldMap()->getLocations()->fieldDefenseLength()/2.0f);
-    Position interceptPointRight(true, multFactor * (getWorldMap()->getLocations()->fieldMaxX() - getWorldMap()->getLocations()->fieldDefenseWidth()), -1.0f * multFactor * getWorldMap()->getLocations()->fieldDefenseLength()/2.0f);
-
-    //getWorldMap()->getBall().getPosition().y();
 
     _skill_spin->setClockWise(spinOrientarion());
 
