@@ -102,6 +102,9 @@ void Role_Attacker::run() {
             if(isInRange) {
                 _state = MOVETO;
             }
+            if((getWorldMap()->getLocations()->isInsideOurField(ballPos)) && (abs(ballPos.y()) < 0.37f) && !isBehindBallXcoord(player()->position())) {
+                _state = AVOIDBALL;
+            }
             break;
         }
         case MOVETO: {
@@ -132,6 +135,21 @@ void Role_Attacker::run() {
             //transitions
             if(Utils::distance(player()->position(), ballProj) >= 0.3f || !isBehindBallXcoord(player()->position())) {
                 _push = false;
+                _state = GOTOBALL;
+            }
+            break;
+        }
+        case AVOIDBALL: {
+            _avoidBall = true;
+            _avoidTeammates = true;
+            _avoidOpponents = false;
+            _avoidOurGoalArea = true;
+            _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
+
+            _bhv_moveTo->setTargetPosition(Position(true, getWorldMap()->getLocations()->ourSide().isLeft()? -0.3f : 0.3f, (ballProj.y() > 0)? 0.4f : -0.4f ));
+            setBehavior(MOVETO);
+
+            if((abs(ballPos.y()) > 0.4f) || isBehindBallXcoord(player()->position())) {
                 _state = GOTOBALL;
             }
             break;
