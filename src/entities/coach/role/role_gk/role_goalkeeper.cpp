@@ -66,6 +66,16 @@ void Role_Goalkeeper::run() {
     float maxPlus = 0.16f;
     distSpin += maxPlus*(ballVelo/2.8f);
 
+    Position vetAux = Position(false,0,0);
+    if(ballDirection.x() != 0.0f){
+        float distxBG = player()->position().x() - ballPos.x();
+        if(distxBG != 0.0f){
+            float coefM = distxBG/ballDirection.x();
+            float interY = ballPos.y() + (coefM*ballDirection.y());
+            vetAux.setPosition(true,player()->position().x(),interY);
+        }
+    }
+
     // Taking the position where the GK wait for
     Position standardPosition;
     if (getWorldMap()->getLocations()->ourSide().isRight()) {
@@ -108,7 +118,18 @@ void Role_Goalkeeper::run() {
         }
         else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition)) {
             // Clear the ball if it is stationed at our goal area (or almost stationed)
-            if(Utils::distance(player()->position(), ballPosition) > distSpin) {
+            bool podespin;
+            if(vetAux.isInvalid()){
+                bool podespin = false;
+            }else{
+                podespin = (abs(player()->position().y() - vetAux.y()) < 0.07);
+            }
+
+            if(!podespin){
+                podespin = (Utils::distance(player()->position(), ballPos) < 0.1);
+            }
+
+            if(Utils::distance(player()->position(), ballPosition) > distSpin && !podespin) {
                 _bhv_moveTo->setTargetPosition(ballPosition);
                 setBehavior(BHV_MOVETO);
             }else {
