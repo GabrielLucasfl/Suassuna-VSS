@@ -170,7 +170,9 @@ void Role_Goalkeeper::run() {
                     setBehavior(BHV_MOVETO);
                 }
             } else if(Utils::distance(ballPos, getWorldMap()->getLocations()->ourGoal()) < 0.38){
-                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), ballPos.y()));
+                float _limity = ballPos.y();
+                Utils::limitValue(&_limity,-0.2,0.2);
+                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), _limity));
                 setBehavior(BHV_MOVETO);
               }
               else{
