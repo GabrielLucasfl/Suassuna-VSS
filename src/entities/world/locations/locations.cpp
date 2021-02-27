@@ -23,9 +23,10 @@
 
 #define MM2METER 1.0f/1000.0f
 
-Locations::Locations(FieldSide ourSide, Field *field) {
+Locations::Locations(FieldSide ourSide, Field *field, Constants *constants) {
     _field = field;
     _ourSide = ourSide;
+    _constants = constants;
 
     // Load default dimensions based on defaultField
     const float fieldX = _field->maxX();
@@ -70,15 +71,18 @@ Locations::Locations(FieldSide ourSide, Field *field) {
     _leftPenaltyMark = Position(true, (-fieldX/2.0f + defenseAreaWidth), 0.0);
 
     // Setting Walls points
+    if(getConstants()->teamSide().isLeft()) {
+        //right side walls
+        _walls.push_back(Wall(Position(true, fieldX, -goalY) , Position(true, fieldX, -fieldY)));
+        _walls.push_back(Wall(Position(true, fieldX, goalY) , Position(true, fieldX, fieldY)));
+    }else {
+        //left side walls
+        _walls.push_back(Wall(Position(true, -fieldX, -goalY) , Position(true, -fieldX, -fieldY)));
+        _walls.push_back(Wall(Position(true, -fieldX, goalY) , Position(true, -fieldX, fieldY)));
+    }
     //bottom and upper walls
     _walls.push_back(Wall(Position(true, -fieldX, -fieldY) , Position(true, fieldX, -fieldY)));
-    _walls.push_back(Wall(Position(true, -fieldX, fieldY) , Position(true, fieldX, fieldY)));
-    //left side walls
-    _walls.push_back(Wall(Position(true, -fieldX, -goalY) , Position(true, -fieldX, -fieldY)));
-    _walls.push_back(Wall(Position(true, -fieldX, goalY) , Position(true, -fieldX, fieldY)));
-    //right side walls
-    _walls.push_back(Wall(Position(true, fieldX, -goalY) , Position(true, fieldX, -fieldY)));
-    _walls.push_back(Wall(Position(true, fieldX, goalY) , Position(true, fieldX, fieldY)));
+    _walls.push_back(Wall(Position(true, -fieldX, fieldY) , Position(true, fieldX, fieldY)));    
     //triangle walls
     //right triangles
     _walls.push_back(Wall(Position(true, -fieldX, -fieldY + 0.07) , Position(true, -fieldX + 0.07, -fieldY)));
@@ -90,6 +94,17 @@ Locations::Locations(FieldSide ourSide, Field *field) {
 
 Locations::~Locations() {
     delete _field;
+}
+
+Constants* Locations::getConstants() {
+    if(_constants == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Locations") + '\n';
+    }
+    else {
+        return _constants;
+    }
+
+    return nullptr;
 }
 
 FieldSide Locations::ourSide() {

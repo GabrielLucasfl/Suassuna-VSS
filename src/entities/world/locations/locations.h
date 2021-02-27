@@ -31,11 +31,12 @@
 #include <src/utils/types/position/position.h>
 #include <src/utils/types/fieldside/fieldside.h>
 #include <include/packet.pb.h>
+#include <src/constants/constants.h>
 
 class Locations
 {
 public:
-    Locations(FieldSide ourSide, Field *field);
+    Locations(FieldSide ourSide, Field *field, Constants *constants);
     ~Locations();
 
     // Side
@@ -106,7 +107,11 @@ public:
     // Update geometry
     void updateGeometryData(fira_message::Field geometryData);
 
-private:
+private:    
+    // Constants
+    Constants *_constants;
+    Constants* getConstants();
+
     // Field
     Field *_field;
 

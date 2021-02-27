@@ -37,7 +37,7 @@ WorldMap::WorldMap(Constants *constants, FieldSide ourSide, Field *field) {
     }
 
     // Initializing locations
-    _locations = new Locations(ourSide, field);
+    _locations = new Locations(ourSide, field, getConstants());
 }
 
 WorldMap::~WorldMap() {
