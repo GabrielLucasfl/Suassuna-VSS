@@ -57,6 +57,9 @@ void Behavior_GoToBall::run() {
         _targetPosition = ballPos;
     } else {
         _targetPosition = Utils::threePoints(ballPos, _referencePosition, _offsetBehindBall, static_cast<float>(M_PI));
+        if(getWorldMap()->getLocations()->isOutsideField(_targetPosition, 0.95)){
+            _targetPosition.setInvalid();
+        }
         if(_targetPosition.isInvalid()) { // check if is inside field
             _targetPosition = ballPos;
         }
