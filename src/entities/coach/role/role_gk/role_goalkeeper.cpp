@@ -39,17 +39,39 @@ void Role_Goalkeeper::configure() {
     addBehavior(BHV_INTERCEPT, _bhv_intercept);
 }
 
-void Role_Goalkeeper::run() {
+void Role_Goalkeeper::run() {    
     // Fixed variables
-    Position ballPosition = getWorldMap()->getBall().getPosition();
+    Position ballPosition;
     Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
+
+    // Ball projection
+    Position ballPos = getWorldMap()->getBall().getPosition();
+    float velMod = ballVelocity.abs();
+
+    Position ballDirection, ballProj;
+    if(ballVelocity.abs() > 0) {
+        ballDirection = Position(true, ballVelocity.vx()/velMod, ballVelocity.vy()/velMod);
+    } else {
+        ballDirection = Position(true, 0, 0);
+    }
+    float factor = 0.2f * velMod;
+    factor = std::min(factor, 0.5f);
+    ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
+    ballPosition = ballProj;
+
+    // Spin minimal distance from ball
+    float distSpin = 0.09f;
+    float ballVelo = ballVelocity.abs();
+    // max vx = 2.8  min vx = 0
+    float maxPlus = 0.16f;
+    distSpin += maxPlus*(ballVelo/2.8f);
 
     // Taking the position where the GK wait for
     Position standardPosition;
     if (getWorldMap()->getLocations()->ourSide().isRight()) {
-        standardPosition = Position(true, 0.69f, 0.0f);
+        standardPosition = Position(true, 0.72f, 0.0f);
     } else {
-        standardPosition = Position(true, -0.69f, 0.0f);
+        standardPosition = Position(true, -0.72f, 0.0f);
     }
 
     // Reference position to look at
@@ -75,7 +97,7 @@ void Role_Goalkeeper::run() {
         }
         else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition)) {
             // Clear the ball if it is stationed at our goal area (or almost stationed)
-            if(Utils::distance(player()->position(), ballPosition) > 0.1f) {
+            if(Utils::distance(player()->position(), ballPosition) > distSpin) {
                 _bhv_moveTo->setTargetPosition(ballPosition);
                 setBehavior(BHV_MOVETO);
             }else {
@@ -83,6 +105,9 @@ void Role_Goalkeeper::run() {
                 _bhv_moveTo->setSpin(true);
                 setBehavior(BHV_MOVETO);
             }
+        }else if(getWorldMap()->getLocations()->isInsideTheirField(ballPos) && (getWorldMap()->getLocations()->ourSide().isLeft()? ballVelocity.vx() > 0 : ballVelocity.vx() < 0)) {
+            _bhv_moveTo->setTargetPosition(standardPosition);
+            setBehavior(BHV_MOVETO);
         }
         else if (!player()->isLookingTo(lookingPosition, 0.17f)) {
             // Rotates to a better angle of movement
