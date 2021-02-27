@@ -83,7 +83,8 @@ void Role_Goalkeeper::run() {
     } else {
         standardPosition = Position(true, -0.72f, 0.0f);
     }
-
+    bool areanokl = (ballPos.y() < -0.35f && ballPos.x() < -0.375f) || (ballPos.y() > 0.35f && ballPos.x() < -0.375f);
+    bool areanokr = (ballPos.y() < -0.35f && ballPos.x() > 0.375f) || (ballPos.y() > 0.35f && ballPos.x() > 0.375f);
     // Reference position to look at
     Position lookingPosition(true, standardPosition.x(), 2.0f);
     _bhv_moveTo->enableRotation(false);
@@ -137,7 +138,8 @@ void Role_Goalkeeper::run() {
                 _bhv_moveTo->setSpin(true);
                 setBehavior(BHV_MOVETO);
             }
-        }else if((getWorldMap()->getLocations()->ourSide().isLeft()? ballVelocity.vx() > 0 : ballVelocity.vx() < 0)) {
+        }else if((getWorldMap()->getLocations()->ourSide().isLeft()? ballVelocity.vx() > 0 : ballVelocity.vx() < 0)
+                 && (getWorldMap()->getLocations()->ourSide().isLeft()? !areanokl : !areanokr) ) {
             _bhv_moveTo->setTargetPosition(standardPosition);
             setBehavior(BHV_MOVETO);
         }
@@ -167,8 +169,13 @@ void Role_Goalkeeper::run() {
                     _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), -0.3f));
                     setBehavior(BHV_MOVETO);
                 }
-            } else {
+            } else if(Utils::distance(ballPos, getWorldMap()->getLocations()->ourGoal()) < 0.38){
+                _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), ballPos.y()));
+                setBehavior(BHV_MOVETO);
+              }
+              else{
                 // Intercept the ball movement in order to prevent a goal
+
                 Position firstLimitationPoint(true, standardPosition.x(), 0.2f);
                 Position secondLimitationPoint(true, standardPosition.x(), -0.2f);
                 _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
