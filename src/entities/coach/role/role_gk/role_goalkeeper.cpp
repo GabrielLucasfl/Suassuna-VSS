@@ -105,7 +105,7 @@ void Role_Goalkeeper::run() {
                 _bhv_moveTo->setSpin(true);
                 setBehavior(BHV_MOVETO);
             }
-        }else if(getWorldMap()->getLocations()->isInsideTheirField(ballPos) && (getWorldMap()->getLocations()->ourSide().isLeft()? ballVelocity.vx() > 0 : ballVelocity.vx() < 0)) {
+        }else if((getWorldMap()->getLocations()->ourSide().isLeft()? ballVelocity.vx() > 0 : ballVelocity.vx() < 0)) {
             _bhv_moveTo->setTargetPosition(standardPosition);
             setBehavior(BHV_MOVETO);
         }
