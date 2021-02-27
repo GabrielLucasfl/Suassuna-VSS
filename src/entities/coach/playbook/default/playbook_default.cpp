@@ -61,7 +61,7 @@ void Playbook_Default::run(int numPlayers) {
     _switchPlayersTimer.stop();
     if(_switchPlayersTimer.getSeconds() > 2.0) {
         _switchedPlayers = false;
-        switchPlayersIDs();
+        //switchPlayersIDs();
     }
 
     // Setting roles
