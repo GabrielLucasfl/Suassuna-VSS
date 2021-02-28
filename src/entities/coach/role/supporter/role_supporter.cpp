@@ -211,11 +211,11 @@ void Role_Supporter::run() {
                     }
                 }
             }
-            if(inRangeToPush(positionBall)) {
+            if(inRangeToPush(positionBall) && Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.3f) {
                 _pushBall = true;
             }
             _bhv_moveTo->enableRotation(false);
-            _bhv_moveTo->setBaseSpeed(30);
+            _bhv_moveTo->setBaseSpeed(33);
             _bhv_moveTo->setTargetPosition(desiredPosition);
             //_bhv_moveTo->setMinimalVelocity(_minVelocity);
             setBehavior(BHV_MOVETO);
@@ -262,9 +262,9 @@ bool Role_Supporter::inRangeToPush(Position ballPos) {
     Position firstPost;
     Position secondPost;
     float offsetX = 0.12f;
-    float offsetY = 0.2f;
+    float offsetY = 0;
 
-    firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
+    firstPost = getWorldMap()->getLocations()->theirGoalRightPost();
     if(firstPost.y() < 0) {
         firstPost.setPosition(true, firstPost.x(), firstPost.y() - offsetY);
     }else {
@@ -275,7 +275,7 @@ bool Role_Supporter::inRangeToPush(Position ballPos) {
     }else {
         firstPost.setPosition(true, firstPost.x() + offsetX, firstPost.y());
     }
-    secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
+    secondPost = getWorldMap()->getLocations()->theirGoalLeftPost();
     if(secondPost.y() < 0) {
         secondPost.setPosition(true, secondPost.x(), secondPost.y() - offsetY);
     }else {
