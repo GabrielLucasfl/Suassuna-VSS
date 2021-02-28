@@ -99,11 +99,11 @@ void Role_Goalkeeper::run() {
         _overlapTimer.stop();
 
 
-        if(Utils::distance(player()->position(), getWorldMap()->getLocations()->ourGoal()) > 0.35 ){
+        if(Utils::distance(player()->position(), getWorldMap()->getLocations()->ourGoal()) > 0.38 ){
             _gkOverlap = false;
         }
 
-        if(Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.35 ){
+        if(Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.38 ){
             _gkOverlap = false;
         }
 
@@ -235,10 +235,11 @@ QPair<Position, Angle> Role_Goalkeeper::getPlacementPosition(VSSRef::Foul foul, 
         } else {
             _gkOverlap = true;
             _overlapTimer.start();
-            foulPosition = standardPosition;
             if (getWorldMap()->getLocations()->ourSide().isLeft()) {
+                foulPosition = Position(true, -0.7125f, 0.0f);
                 foulAngle = Angle(true, 0);
             } else {
+                foulPosition = Position(true, 0.7125f, 0.0f);
                 foulAngle = Angle(true, static_cast<float>(M_PI));
             }
         }
