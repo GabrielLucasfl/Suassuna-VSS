@@ -29,6 +29,7 @@ Role_Attacker::Role_Attacker() {
     _avoidOurGoalArea = false;
     _avoidTheirGoalArea = false;
     _offsetAngleRange = 0.3f;
+    _charge = true;
 }
 
 QString Role_Attacker::name() {
@@ -78,8 +79,10 @@ void Role_Attacker::run() {
     Colors::Color ourColor = getConstants()->teamColor();
     if(getWorldMap()->getPlayer(ourColor, player()->playerId()).getVelocity().abs() < 0.02f && getWorldMap()->getBall().getVelocity().abs() < 0.02f) {
         _offsetAngleRange = 0.1f;
+        _charge = true;
     }else {
-        _offsetAngleRange = 0.3f;
+        _offsetAngleRange = 0.2f;
+        _charge = false;
     }
 
     //check if player is behind ball based on its reference position
@@ -103,7 +106,7 @@ void Role_Attacker::run() {
                 _state = MOVETO;
             }
             if((getWorldMap()->getLocations()->isInsideOurField(ballPos)) && (abs(ballPos.y()) < 0.37f) && !isBehindBallXcoord(player()->position())) {
-                _state = AVOIDBALL;
+                //_state = AVOIDBALL;
             }
             break;
         }
@@ -189,7 +192,11 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
     Position secondPost;
     float offsetX = 0.12f;
 
-    firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
+    if(_charge) {
+        firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
+    }else {
+        firstPost = getWorldMap()->getLocations()->theirGoalRightPost();
+    }
     if(firstPost.y() < 0) {
         firstPost.setPosition(true, firstPost.x(), firstPost.y() - 0.1f);
     }else {
@@ -199,6 +206,12 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
         firstPost.setPosition(true, firstPost.x() - offsetX, firstPost.y());
     }else {
         firstPost.setPosition(true, firstPost.x() + offsetX, firstPost.y());
+    }
+
+    if(_charge) {
+        secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
+    }else {
+        secondPost = getWorldMap()->getLocations()->theirGoalLeftPost();
     }
     secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
     if(secondPost.y() < 0) {
