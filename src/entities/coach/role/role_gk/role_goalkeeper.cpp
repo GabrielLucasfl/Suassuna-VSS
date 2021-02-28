@@ -180,10 +180,11 @@ void Role_Goalkeeper::run() {
 
                 Position firstLimitationPoint(true, standardPosition.x(), 0.2f);
                 Position secondLimitationPoint(true, standardPosition.x(), -0.2f);
-                if(ballPos.y() > 0.0){
-                    secondLimitationPoint.setPosition(true, standardPosition.x(), 0.0f);
+                float factorRangeGK = 0.7f*0.2f*(1 - (abs(ballPos.y())/getWorldMap()->getLocations()->fieldMaxY()));
+                if(ballPos.y() > 0.0f){
+                    secondLimitationPoint.setPosition(true, standardPosition.x(), -factorRangeGK);
                 }else{
-                    firstLimitationPoint.setPosition(true, standardPosition.x(), 0.0f);
+                    firstLimitationPoint.setPosition(true, standardPosition.x(), factorRangeGK);
                 }
                 _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
                 _bhv_intercept->setObjectPosition(ballPosition);
