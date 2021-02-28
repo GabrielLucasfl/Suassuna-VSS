@@ -29,6 +29,7 @@ Role_Supporter::Role_Supporter(){
     _avoidOurGoalArea = true;
     _avoidTheirGoalArea = false;
     _pushBall = false;
+    _accelerate = false;
 }
 
 QString Role_Supporter::name() {
@@ -40,11 +41,13 @@ void Role_Supporter::configure() {
     _bhv_moveTo = new Behavior_MoveTo();
     _bhv_intercept = new Behavior_Intercept();
     _bhv_barrier = new Behavior_Barrier();
+    _bhv_goToBall = new Behavior_GoToBall();
 
     // Adding behaviors to behaviors list
     addBehavior(BHV_MOVETO, _bhv_moveTo);
     addBehavior(BHV_INTERCEPT, _bhv_intercept);
-    addBehavior(BHV_BARRIER, _bhv_barrier);
+    addBehavior(BHV_BARRIER, _bhv_barrier);    
+    addBehavior(BHV_GOTOBALL, _bhv_goToBall);
 
     //configure vars
     _posXbarrier = 0.2f;
@@ -202,7 +205,8 @@ void Role_Supporter::run() {
             QList<quint8> ourPlayers = getWorldMap()->getAvailablePlayers(getConstants()->teamColor());
             for(int i = 0; i < ourPlayers.size(); i++) {
                 if(ourPlayers[i] != player()->playerId()) {
-                    if(!isBehindBallXcoord(getWorldMap()->getPlayer(getConstants()->teamColor(), ourPlayers[i]).getPosition())) {
+                    Position allyPos = getWorldMap()->getPlayer(getConstants()->teamColor(), ourPlayers[i]).getPosition();
+                    if(!isBehindBallXcoord(allyPos) || Utils::distance(allyPos, getWorldMap()->getBall().getPosition()) > Utils::distance(player()->position(), getWorldMap()->getBall().getPosition())) {
                         _pushBall = true;
                     }
                 }
@@ -211,6 +215,7 @@ void Role_Supporter::run() {
                 _pushBall = true;
             }
             _bhv_moveTo->enableRotation(false);
+            _bhv_moveTo->setBaseSpeed(30);
             _bhv_moveTo->setTargetPosition(desiredPosition);
             //_bhv_moveTo->setMinimalVelocity(_minVelocity);
             setBehavior(BHV_MOVETO);
@@ -235,14 +240,19 @@ void Role_Supporter::run() {
             ballPosition = ballProj;
             if(!isBehindBallXcoord(player()->position())) {
                 _pushBall = false;
+                _accelerate = false;
             }
             _bhv_moveTo->enableRotation(false);
             _bhv_moveTo->setTargetPosition(ballProj);
-            _bhv_moveTo->setBaseSpeed(30);
+            // If has already accelerated: don't stop
+            if(!_accelerate || !isBehindBallXcoord(player()->position()) || Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.2f) {
+                _bhv_moveTo->setBaseSpeed(30);
+                _accelerate = false;
+            }
             if(Utils::distance(player()->position(), ballPos) < 0.06f) {
                 _bhv_moveTo->setBaseSpeed(50);
+                _accelerate = true;
             }
-            //_bhv_moveTo->setMinimalVelocity(_minVelocity);
             setBehavior(BHV_MOVETO);
         }
     }
@@ -252,14 +262,25 @@ bool Role_Supporter::inRangeToPush(Position ballPos) {
     Position firstPost;
     Position secondPost;
     float offsetX = 0.12f;
+    float offsetY = 0.2f;
 
     firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
+    if(firstPost.y() < 0) {
+        firstPost.setPosition(true, firstPost.x(), firstPost.y() - offsetY);
+    }else {
+        firstPost.setPosition(true, firstPost.x(), firstPost.y() + offsetY);
+    }
     if(firstPost.x() < 0) {
         firstPost.setPosition(true, firstPost.x() - offsetX, firstPost.y());
     }else {
         firstPost.setPosition(true, firstPost.x() + offsetX, firstPost.y());
     }
     secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
+    if(secondPost.y() < 0) {
+        secondPost.setPosition(true, secondPost.x(), secondPost.y() - offsetY);
+    }else {
+        secondPost.setPosition(true, secondPost.x(), secondPost.y() + offsetY);
+    }
     if(secondPost.x() < 0) {
         secondPost.setPosition(true, secondPost.x() - offsetX, secondPost.y());
     }else {
