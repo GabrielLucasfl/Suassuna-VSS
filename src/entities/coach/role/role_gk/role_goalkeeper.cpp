@@ -123,14 +123,14 @@ void Role_Goalkeeper::run() {
             if(vetAux.isInvalid()){
                 bool podespin = false;
             }else{
-                podespin = (abs(player()->position().y() - vetAux.y()) < 0.07);
+                podespin = (abs(player()->position().y() - vetAux.y()) < 0.03f);
             }
 
             if(!podespin){
-                podespin = (Utils::distance(player()->position(), ballPos) < 0.1);
+                podespin = (Utils::distance(player()->position(), ballPos) < 0.1f);
             }
 
-            if(Utils::distance(player()->position(), ballPosition) > distSpin && !podespin) {
+            if(Utils::distance(player()->position(), ballPosition) > 0.8f*distSpin) {
                 _bhv_moveTo->setTargetPosition(ballPosition);
                 setBehavior(BHV_MOVETO);
             }else {
