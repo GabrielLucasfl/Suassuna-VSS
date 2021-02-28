@@ -79,7 +79,7 @@ void Role_Attacker::run() {
     if(getWorldMap()->getPlayer(ourColor, player()->playerId()).getVelocity().abs() < 0.02f && getWorldMap()->getBall().getVelocity().abs() < 0.02f) {
         _offsetAngleRange = 0.1f;
     }else {
-        _offsetAngleRange = 0.2f;
+        _offsetAngleRange = 0.3f;
     }
 
     //check if player is behind ball based on its reference position
