@@ -38,6 +38,7 @@ public:
     void setReferencePosition(Position referencePosition) {_referencePosition = referencePosition; }    
     void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
     void setLinearError(float desiredLinearError) { _desiredLinearError = desiredLinearError; }
+    void setAngle(float angle) { _angle = angle; }
 
     // Auxiliar
     Position getBallProjection();
@@ -63,6 +64,7 @@ private:
     float _offsetBehindBall;
     Position _referencePosition;
     float _desiredLinearError;
+    float _angle;
 
     // Avoid Parameters
     bool _avoidTeammates;

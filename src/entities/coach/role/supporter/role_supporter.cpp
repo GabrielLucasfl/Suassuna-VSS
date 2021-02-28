@@ -30,6 +30,7 @@ Role_Supporter::Role_Supporter(){
     _avoidTheirGoalArea = false;
     _pushBall = false;
     _accelerate = false;
+    _canAvoidBall = false;
 }
 
 QString Role_Supporter::name() {
@@ -148,48 +149,34 @@ void Role_Supporter::run() {
     }
     Position desiredPosition = player()->position();
     if(isBall_ourfield()){
-        // Barrier
-//        float y_Barrier;
-//        float x_Barrier = calcBarrier_Xcomponent();
-//        float modulo_vet = abs((x_Barrier - positionBall.x())/cos(largestMid));
-//        y_Barrier = positionBall.y() + (modulo_vet * sin(largestMid));
-//        if(_nofreeAngles){
-//            // std::cout << "Nao tenho angulos livres\n";
-//            desiredPosition.setPosition(1,x_Barrier,positionBall.y());
-//        }else{
-//            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
-//        }
-//        if(y_Barrier<-0.40f){
-//            y_Barrier = -0.40f;
-//            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
-//        }
-//        else if(y_Barrier>0.40f){
-//            y_Barrier = 0.40f;
-//            desiredPosition.setPosition(1,x_Barrier,y_Barrier);
-//        }
-//        float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
-//        float xAux = (0.55f*posx_control);
-
-//        if(positionBall.x()<=xAux && xAux<0.0f){
-//            x_Barrier = calc_x_barrier();
-//            if(positionBall.y()<0.0f){
-//                desiredPosition.setPosition(1, x_Barrier, -0.40f);
-//            }
-//            else if(positionBall.y()>0.0f){
-//                 desiredPosition.setPosition(1, x_Barrier, 0.40f);
-//            }
-//        }
-//        else if(positionBall.x()>=xAux && xAux>0.0f){
-//            x_Barrier = calc_x_barrier();
-//            if(positionBall.y()<0.0f){
-//                desiredPosition.setPosition(1, x_Barrier, -0.40f);
-//            }
-//            else if(positionBall.y()>0.0f){
-//                 desiredPosition.setPosition(1, x_Barrier, 0.40f);
-//            }
-//        }
-        setBehavior(BHV_BARRIER);
+        if(getWorldMap()->getLocations()->isInsideOurArea(getWorldMap()->getBall().getPosition())) {
+            _canAvoidBall = false;
+        }
+        if(_canAvoidBall && !isBehindBallXcoord(player()->position())) {
+            Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
+            _bhv_goToBall->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
+            if(getWorldMap()->getLocations()->ourSide().isLeft()) {
+               if(ballVelocity.vy() > 0) {
+                   _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMaxX(), getWorldMap()->getLocations()->fieldMaxY()));
+               }else {
+                   _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMaxX(), getWorldMap()->getLocations()->fieldMinY()));
+               }
+            }else {
+                if(ballVelocity.vy() > 0) {
+                    _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMinX(), getWorldMap()->getLocations()->fieldMaxY()));
+                }else {
+                    _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMinX(), getWorldMap()->getLocations()->fieldMinY()));
+                }
+            }
+            _bhv_goToBall->setAngle(2.44f);
+            _bhv_goToBall->setOffsetBehindBall(0.3f);
+            setBehavior(BHV_GOTOBALL);
+        }else {
+            _canAvoidBall = false;
+            setBehavior(BHV_BARRIER);
+        }
     }else{
+        _canAvoidBall = true;
         if(!_pushBall) {
             // Advanced Support
             float posx_advanced = calc_x_advanced();
@@ -368,7 +355,7 @@ void Role_Supporter::limit_Ypos(float * posy){
 
 float Role_Supporter::calc_x_advanced(){
     float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
-    float distance_advanced = 0.35f;
+    float distance_advanced = 0.4f;
     Position position_ball = getWorldMap()->getBall().getPosition();
     return position_ball.x() + (distance_advanced*posx_control);
 }

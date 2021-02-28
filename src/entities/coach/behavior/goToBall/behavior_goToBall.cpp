@@ -32,6 +32,7 @@ Behavior_GoToBall::Behavior_GoToBall() {
     _avoidBall = false;
     _avoidOurGoalArea = false;
     _avoidTheirGoalArea = false;
+    _angle = static_cast<float>(M_PI);
 }
 QString Behavior_GoToBall::name() {
     return "Behavior_GoToBall";
@@ -56,7 +57,7 @@ void Behavior_GoToBall::run() {
     if(_referencePosition.isInvalid()) {
         _targetPosition = ballPos;
     } else {
-        _targetPosition = Utils::threePoints(ballPos, _referencePosition, _offsetBehindBall, static_cast<float>(M_PI));
+        _targetPosition = Utils::threePoints(ballPos, _referencePosition, _offsetBehindBall, _angle);
         if(getWorldMap()->getLocations()->isOutsideField(_targetPosition, 0.95f) && isBehindBallXcoord(player()->position())){
             _targetPosition.setInvalid();
         }

@@ -78,6 +78,7 @@ private:
     Timer _timer;
     bool _pushBall;
     bool _accelerate;
+    bool _canAvoidBall;
 
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
 
