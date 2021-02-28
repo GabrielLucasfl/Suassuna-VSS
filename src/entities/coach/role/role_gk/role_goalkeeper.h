@@ -45,6 +45,8 @@ private:
     // Parameters
     bool _gkOverlap;
     Timer _overlapTimer;
+    bool _isOverlapTimerInit;
+
 
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;

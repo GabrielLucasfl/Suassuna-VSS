@@ -23,6 +23,7 @@
 
 Role_Goalkeeper::Role_Goalkeeper() {
     _gkOverlap = false;
+    _isOverlapTimerInit = false;
 }
 
 QString Role_Goalkeeper::name() {
@@ -92,6 +93,10 @@ void Role_Goalkeeper::run() {
     _bhv_moveTo->setSpin(false);
 
     if (_gkOverlap) {
+        if(!_isOverlapTimerInit) {
+            _overlapTimer.start();
+            _isOverlapTimerInit = true;
+        }
         _bhv_moveTo->setTargetPosition(getWorldMap()->getBall().getPosition());
         _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
         setBehavior(BHV_MOVETO);
@@ -107,7 +112,8 @@ void Role_Goalkeeper::run() {
             _gkOverlap = false;
         }
 
-        if (_overlapTimer.getSeconds() > 7.0) {
+        if (_overlapTimer.getSeconds() > 1.0f) {
+            _isOverlapTimerInit = false;
             _gkOverlap = false;
         }
     } else {
@@ -235,6 +241,7 @@ QPair<Position, Angle> Role_Goalkeeper::getPlacementPosition(VSSRef::Foul foul, 
             foulAngle = Angle(true, static_cast<float>(M_PI) / 2);
         } else {
             _gkOverlap = true;
+            _isOverlapTimerInit = false;
             _overlapTimer.start();
             if (getWorldMap()->getLocations()->ourSide().isLeft()) {
                 foulPosition = Position(true, -0.7125f, 0.0f);
@@ -256,6 +263,7 @@ QPair<Position, Angle> Role_Goalkeeper::getPlacementPosition(VSSRef::Foul foul, 
     case VSSRef::Foul::GOAL_KICK: {
         if (static_cast<VSSRef::Color>(getConstants()->teamColor()) == forTeam) {
             _gkOverlap = true;
+            _isOverlapTimerInit = false;
             _overlapTimer.start();
             Position ballPosition = getWorldMap()->getBall().getPosition();
             if (getWorldMap()->getLocations()->ourSide().isLeft()) {
