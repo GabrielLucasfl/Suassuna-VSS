@@ -30,6 +30,7 @@ Role_Attacker::Role_Attacker() {
     _avoidTheirGoalArea = false;
     _offsetAngleRange = 0.3f;
     _charge = true;
+    _gameInterrupted = false;
 }
 
 QString Role_Attacker::name() {
@@ -90,6 +91,12 @@ void Role_Attacker::run() {
 
     _avoidTheirGoalArea = hasAllyInTheirArea();
 
+    if(getReferee()->isGameOn() && _gameInterrupted == true) {
+        _interuption.start();
+        _gameInterrupted = false;
+        _state = MOVETO;
+    }
+
     switch (_state) {
         case GOTOBALL: {
             _avoidBall = true;
@@ -136,7 +143,8 @@ void Role_Attacker::run() {
             setBehavior(BHV_MOVETO);
 
             //transitions
-            if(Utils::distance(player()->position(), ballProj) >= 0.3f || !isBehindBallXcoord(player()->position())) {
+            _interuption.stop();
+            if((Utils::distance(player()->position(), ballProj) >= 0.3f || !isBehindBallXcoord(player()->position())) && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
             }
@@ -281,6 +289,7 @@ QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VS
             penaltyKick(OURTEAM, &_penaltyPlacement);
             foulPosition = _penaltyPlacement.first;
             foulAngle = _penaltyPlacement.second; //Angle(true, 90);
+            _gameInterrupted = true;
         } else {
             penaltyKick(THEIRTEAM, &_penaltyPlacement);
             foulPosition = _penaltyPlacement.first;
@@ -292,6 +301,7 @@ QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VS
             kickOff(OURTEAM,&_penaltyPlacement);
             foulPosition = _penaltyPlacement.first;
             foulAngle = _penaltyPlacement.second;
+            _gameInterrupted = true;
         }else{
             kickOff(THEIRTEAM,&_penaltyPlacement);
             foulPosition = _penaltyPlacement.first;
@@ -302,6 +312,7 @@ QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VS
         freeBall(&_penaltyPlacement, atQuadrant);
         foulPosition = _penaltyPlacement.first;
         foulAngle = _penaltyPlacement.second;
+        _gameInterrupted = true;
     } break;
     case VSSRef::Foul::GOAL_KICK: {
         if (static_cast<VSSRef::Color>(getConstants()->teamColor()) == forTeam) {

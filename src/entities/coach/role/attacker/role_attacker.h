@@ -70,6 +70,10 @@ private:
     bool _avoidTheirGoalArea;
     float _offsetAngleRange;
     bool _charge;
+    bool _gameInterrupted;
+
+    // Timer
+    Timer _interuption;
 
     // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
