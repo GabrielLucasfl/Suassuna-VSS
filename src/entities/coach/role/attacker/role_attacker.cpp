@@ -81,7 +81,7 @@ void Role_Attacker::run() {
         _offsetAngleRange = 0.1f;
         _charge = true;
     }else {
-        _offsetAngleRange = 0.3f;
+        _offsetAngleRange = 0.25f;
         _charge = false;
     }
 
@@ -195,7 +195,7 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
     if(_charge) {
         firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
     }else {
-        firstPost = getWorldMap()->getLocations()->theirGoalRightPost();
+        firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
     }
     if(firstPost.y() < 0) {
         firstPost.setPosition(true, firstPost.x(), firstPost.y() - 0.1f);
@@ -211,7 +211,7 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
     if(_charge) {
         secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
     }else {
-        secondPost = getWorldMap()->getLocations()->theirGoalLeftPost();
+        secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
     }
     secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
     if(secondPost.y() < 0) {
