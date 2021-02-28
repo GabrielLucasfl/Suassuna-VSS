@@ -81,7 +81,7 @@ void Role_Attacker::run() {
         _offsetAngleRange = 0.1f;
         _charge = true;
     }else {
-        _offsetAngleRange = 0.2f;
+        _offsetAngleRange = 0.3f;
         _charge = false;
     }
 
