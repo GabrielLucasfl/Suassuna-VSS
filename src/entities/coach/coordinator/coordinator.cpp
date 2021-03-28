@@ -51,7 +51,8 @@ void Coordinator::initialize(Constants *constants, Referee *referee, WorldMap *w
 
 WorldMap* Coordinator::getWorldMap() {
     if(_worldMap == nullptr) {
-        std::cout << Text::red("[ERROR] ", true) << Text::bold("WorldMap with nullptr value at " + this->name().toStdString()) + '\n';
+        std::cout << Text::red("[ERROR] ", true)
+                  << Text::bold("WorldMap with nullptr value at " + this->name().toStdString()) + '\n';
     }
     else {
         return _worldMap;
@@ -62,7 +63,8 @@ WorldMap* Coordinator::getWorldMap() {
 
 Referee* Coordinator::getReferee() {
     if(_referee == nullptr) {
-        std::cout << Text::red("[ERROR] ", true) << Text::bold("Referee with nullptr value at " + this->name().toStdString()) + '\n';
+        std::cout << Text::red("[ERROR] ", true)
+                  << Text::bold("Referee with nullptr value at " + this->name().toStdString()) + '\n';
     }
     else {
         return _referee;
@@ -73,7 +75,8 @@ Referee* Coordinator::getReferee() {
 
 Constants* Coordinator::getConstants() {
     if(_constants == nullptr) {
-        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at " + this->name().toStdString()) + '\n';
+        std::cout << Text::red("[ERROR] ", true)
+                  << Text::bold("Constants with nullptr value at " + this->name().toStdString()) + '\n';
     }
     else {
         return _constants;
@@ -85,7 +88,8 @@ Constants* Coordinator::getConstants() {
 void Coordinator::addPlaybook(int id, Playbook *playbook) {
     // Check if id was already registered
     if(_playbookList.contains(id)) {
-        std::cout << Text::red("[ERROR] ", true) + Text::bold("Trying to add an playbook in an already occupied position.") + '\n';
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("Trying to add an playbook in an already occupied position.")
+                     + '\n';
         return ;
     }
 
