@@ -22,13 +22,15 @@
 #include "role_attacker.h"
 #include <src/utils/utils.h>
 
+#define ATKFACTOR 0.2f
+
 Role_Attacker::Role_Attacker() {
     _avoidTeammates = false;
     _avoidOpponents = false;
     _avoidBall = false;
     _avoidOurGoalArea = false;
     _avoidTheirGoalArea = false;
-    _offsetAngleRange = 0.3f;
+    _offsetRange = 0.3f;
     _charge = true;
     _gameInterrupted = false;
 }
@@ -56,15 +58,13 @@ void Role_Attacker::run() {
     // Ball projection
     Position ballPos = getWorldMap()->getBall().getPosition();
     Velocity ballVel = getWorldMap()->getBall().getVelocity();
-    float velMod = ballVel.abs();
     Position ballDirection, ballProj;
     if(ballVel.abs() > 0.03f) {
-        ballDirection = Position(true, ballVel.vx()/velMod, ballVel.vy()/velMod);
+        ballDirection = Position(true, ballVel.vx()/ballVel.abs(), ballVel.vy()/ballVel.abs());
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    float factor = 0.2f * velMod;
-    factor = std::min(factor, 0.5f);
+    float factor = std::min(ATKFACTOR * ballVel.abs(), 0.5f);
     ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
 
     // Bhv goToBall parameters
@@ -78,16 +78,17 @@ void Role_Attacker::run() {
     }
 
     Colors::Color ourColor = getConstants()->teamColor();
-    if(getWorldMap()->getPlayer(ourColor, player()->playerId()).getVelocity().abs() < 0.02f && getWorldMap()->getBall().getVelocity().abs() < 0.02f) {
-        _offsetAngleRange = 0.1f;
+    if(getWorldMap()->getPlayer(ourColor, player()->playerId()).getVelocity().abs() < 0.02f
+                                && getWorldMap()->getBall().getVelocity().abs() < 0.02f) {
+        _offsetRange = 0.1f;
         _charge = true;
     }else {
-        _offsetAngleRange = 0.25f;
+        _offsetRange = 0.25f;
         _charge = false;
     }
 
     //check if player is behind ball based on its reference position
-    bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > _offsetAngleRange);
+    bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > _offsetRange);
 
     _avoidTheirGoalArea = hasAllyInTheirArea();
 
@@ -105,36 +106,28 @@ void Role_Attacker::run() {
             _avoidOurGoalArea = true;
             _bhv_goToBall->setReferencePosition(getWorldMap()->getLocations()->theirGoal());
             _bhv_goToBall->setOffsetBehindBall(bhvGoToBallOffset);
-            _bhv_goToBall->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
-            //_bhv_goToBall->setBaseSpeed(33);
+            _bhv_goToBall->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea,
+                                         _avoidTheirGoalArea);
             _bhv_goToBall->setLinearError(0.02f);
             setBehavior(BHV_GOTOBALL);
             if(isInRange) {
                 _state = MOVETO;
             }
-            if((getWorldMap()->getLocations()->isInsideOurField(ballPos)) && (abs(ballPos.y()) < 0.37f) && !isBehindBallXcoord(player()->position())) {
-                //_state = AVOIDBALL;
-            }
             break;
         }
         case MOVETO: {
-            //std::cout << "moveeeeee" << std::endl;
             _avoidBall = false;
             _avoidTeammates = false;
             _avoidOpponents = false;
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             if(!_push) {
-                //std::cout << "devagar" << std::endl;
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
                 _bhv_moveTo->setTargetPosition(ballProj);
             }else {
-                //std::cout << "acelerou" << std::endl << std::endl;
                 _bhv_moveTo->setBaseSpeed(50);
                 _bhv_moveTo->setTargetPosition(ballProj);
             }
-
-            //std::cout << "ballProj: " << ballProj.x() << " " << ballProj.y() << std::endl;
 
             if(Utils::distance(player()->position(), ballPos) < 0.06f && !_push) {
                 _push = true;
@@ -144,7 +137,8 @@ void Role_Attacker::run() {
 
             //transitions
             _interuption.stop();
-            if((Utils::distance(player()->position(), ballProj) >= 0.3f || !isBehindBallXcoord(player()->position())) && _interuption.getSeconds() > 1) {
+            if((Utils::distance(player()->position(), ballProj) >= 0.3f || !isBehindBallXcoord(player()->position()))
+                                && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
             }
@@ -156,8 +150,9 @@ void Role_Attacker::run() {
             _avoidOpponents = false;
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
-
-            _bhv_moveTo->setTargetPosition(Position(true, getWorldMap()->getLocations()->ourSide().isLeft()? -0.3f : 0.3f, (ballProj.y() > 0)? 0.4f : -0.4f ));
+            float moveX = getWorldMap()->getLocations()->ourSide().isLeft()? -0.3f : 0.3f;
+            float moveY = (ballProj.y() > 0)? 0.4f : -0.4f;
+            _bhv_moveTo->setTargetPosition(Position(true, moveX, moveY));
             setBehavior(MOVETO);
 
             if((abs(ballPos.y()) > 0.4f) || isBehindBallXcoord(player()->position())) {
@@ -186,11 +181,12 @@ bool Role_Attacker::hasAllyInTheirArea() {
 bool Role_Attacker::isBehindBallXcoord(Position pos) {
     Position posBall = getWorldMap()->getBall().getPosition();
     float robotRadius = 0.035f;
+    float ballRadius = 0.0215f;
     bool isBehindObjX;
     if(getWorldMap()->getLocations()->ourSide().isLeft()) {
-        isBehindObjX = pos.x() < (posBall.x() - robotRadius);
+        isBehindObjX = pos.x() < (posBall.x() - robotRadius - ballRadius);
     }else {
-        isBehindObjX = pos.x() > (posBall.x() + robotRadius);
+        isBehindObjX = pos.x() > (posBall.x() + robotRadius + ballRadius);
     }
     return isBehindObjX;
 }
@@ -200,11 +196,10 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
     Position secondPost;
     float offsetX = 0.12f;
 
-    if(_charge) {
-        firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
-    }else {
-        firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
-    }
+    firstPost = getWorldMap()->getLocations()->theirAreaRightPost();
+    secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
+
+    //firstpost's treatment
     if(firstPost.y() < 0) {
         firstPost.setPosition(true, firstPost.x(), firstPost.y() - 0.1f);
     }else {
@@ -216,11 +211,7 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
         firstPost.setPosition(true, firstPost.x() + offsetX, firstPost.y());
     }
 
-    if(_charge) {
-        secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
-    }else {
-        secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
-    }
+    //secondpost's treatment
     secondPost = getWorldMap()->getLocations()->theirAreaLeftPost();
     if(secondPost.y() < 0) {
         secondPost.setPosition(true, secondPost.x(), secondPost.y() - 0.1f);
@@ -234,10 +225,8 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
     }
 
     // Angle from ball to posts of their goal
-    float ballFirstPost = Utils::getAngle(ballPos, firstPost) - static_cast<float>(M_PI);
-    ballFirstPost = normAngle(ballFirstPost);
-    float ballSecondPost = Utils::getAngle(ballPos, secondPost) - static_cast<float>(M_PI);
-    ballSecondPost = normAngle(ballSecondPost);
+    float ballFirstPost = normAngle(Utils::getAngle(ballPos, firstPost) - static_cast<float>(M_PI));
+    float ballSecondPost = normAngle(Utils::getAngle(ballPos, secondPost) - static_cast<float>(M_PI));
 
     // Angle from ball to player
     float ballPlayer = Utils::getAngle(ballPos, player()->position());
@@ -245,8 +234,8 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
     // Compare angles to know if player is in the angle range to push the ball to their goal
     if(getWorldMap()->getLocations()->theirSide().isRight()) {
         if((ballSecondPost < 0 && ballFirstPost > 0) || (ballSecondPost > 0 && ballFirstPost < 0)) {
-            if(ballPlayer > std::max(ballSecondPost, ballFirstPost)
-                || ballPlayer < std::min(ballSecondPost, ballFirstPost)) {
+            if((ballPlayer > std::max(ballSecondPost, ballFirstPost))
+                || (ballPlayer < std::min(ballSecondPost, ballFirstPost))) {
                 return true;
             }else {
                 return false;
@@ -254,7 +243,7 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
         }
     }
     if(ballPlayer < std::max(ballSecondPost, ballFirstPost)
-        && ballPlayer > std::min(ballSecondPost, ballFirstPost)) {
+        && (ballPlayer > std::min(ballSecondPost, ballFirstPost))) {
         return true;
     } else {
         return false;
@@ -272,7 +261,8 @@ float Role_Attacker::normAngle(float angleRadians) {
     }
 }
 
-QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam,
+                                                           VSSRef::Quadrant atQuadrant) {
     Position standardPosition;
     if (getWorldMap()->getLocations()->ourSide().isRight()) {
         standardPosition = Position(true, 0.25f, 0.0f);
@@ -288,7 +278,7 @@ QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VS
         if (VSSRef::Color(getConstants()->teamColor()) == forTeam) {
             penaltyKick(OURTEAM, &_penaltyPlacement);
             foulPosition = _penaltyPlacement.first;
-            foulAngle = _penaltyPlacement.second; //Angle(true, 90);
+            foulAngle = _penaltyPlacement.second;
             _gameInterrupted = true;
         } else {
             penaltyKick(THEIRTEAM, &_penaltyPlacement);
@@ -334,7 +324,6 @@ QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VS
 }
 
 void Role_Attacker:: penaltyKick(quint8 _teamPriority,QPair<Position, Angle> *_penaltyPlacement){
-    Position gkPos;
 
     Colors::Color enemyColor;
     if (getConstants()->teamColor() == Colors::BLUE) {
@@ -343,37 +332,38 @@ void Role_Attacker:: penaltyKick(quint8 _teamPriority,QPair<Position, Angle> *_p
         enemyColor = Colors::BLUE;
     }
 
-    Position gkpos;
+    Position gkPos;
     QList<quint8> enemyPlayers = getWorldMap()->getAvailablePlayers(enemyColor);
 
     for (int i = 0; i < enemyPlayers.size(); i++) {
         Position enemyPlayerPosition = getWorldMap()->getPlayer(enemyColor, enemyPlayers[i]).getPosition();
         if(getWorldMap()->getLocations()->isInsideTheirArea(enemyPlayerPosition)){
-            gkpos = enemyPlayerPosition;
+            gkPos = enemyPlayerPosition;
             break;
         }
     }
 
     if(_teamPriority == 1){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
-            Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),getWorldMap()->getLocations()->theirGoalLeftPost().y() - 0.05);
-            Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),getWorldMap()->getLocations()->theirGoalRightPost().y() + 0.05);
-            if(gkpos.y() > 0 ){
+            Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),
+                                    getWorldMap()->getLocations()->theirGoalLeftPost().y() - 0.05);
+            Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),
+                                     getWorldMap()->getLocations()->theirGoalRightPost().y() + 0.05);
+            if(gkPos.y() > 0 ){
                 _penaltyPlacement->first  = Utils::threePoints(Position(true,-0.375, 0), _amPenaltyLeft, 0.1f, Angle::pi);
             }else{
                 _penaltyPlacement->first = Utils::threePoints(Position(true,-0.375, 0), _amPenaltyRight, 0.1f, Angle::pi);
             }
             _penaltyPlacement->second = Angle(true,Utils::getAngle(_penaltyPlacement->first, Position(true,-0.375, 0)));
         }else{
-            Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),getWorldMap()->getLocations()->theirGoalLeftPost().y() + 0.05);
-            Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),getWorldMap()->getLocations()->theirGoalRightPost().y() - 0.05);
-            std::cout << "theirGoalLeftPost().y() " << getWorldMap()->getLocations()->theirGoalLeftPost().y() << " theirGoalRightPost().y(): " << getWorldMap()->getLocations()->theirGoalRightPost().y() << std::endl;
-            if(gkpos.y() >= 0 ){
+            Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),
+                                    getWorldMap()->getLocations()->theirGoalLeftPost().y() + 0.05);
+            Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),
+                                     getWorldMap()->getLocations()->theirGoalRightPost().y() - 0.05);
+            if(gkPos.y() >= 0 ){
                 _penaltyPlacement->first = Utils::threePoints(Position(true,0.375, 0), _amPenaltyRight, 0.1f, Angle::pi);
-                std::cout << "aimPenaltyRight:y:  " << _amPenaltyRight.y() << "aimPenaltyRight:x: " << _amPenaltyRight.x() << std::endl;
             }else{
                 _penaltyPlacement->first = Utils::threePoints(Position(true,0.375, 0), _amPenaltyLeft, 0.1f, Angle::pi);
-                std::cout << "aimPenaltyLeft:y:  " << _amPenaltyLeft.y() << "aimPenaltyLeft:x: " << _amPenaltyLeft.x() << std::endl;
             }
             _penaltyPlacement->second = Angle(true,Utils::getAngle(_penaltyPlacement->first, Position(true,0.375, 0)));
         }
@@ -396,13 +386,15 @@ void Role_Attacker:: kickOff(quint8 _teamPriority, QPair<Position, Angle> *_pena
             _penaltyPlacement->first = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
                                                           Position(true, -0.75,-0.35),
                                                           0.1f, Angle::pi);
-            _penaltyPlacement->second = Angle(true, Utils::getAngle(_penaltyPlacement->first, getWorldMap()->getLocations()->fieldCenter()));
+            _penaltyPlacement->second = Angle(true, Utils::getAngle(_penaltyPlacement->first,
+                                                                    getWorldMap()->getLocations()->fieldCenter()));
         }else{
             //assistant near the middle of the field
             _penaltyPlacement->first = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
                                                           Position(true, 0.75, 0.35),
                                                           0.1f, Angle::pi);
-            _penaltyPlacement->second = Angle(true, Utils::getAngle(_penaltyPlacement->first, getWorldMap()->getLocations()->fieldCenter()));
+            _penaltyPlacement->second = Angle(true, Utils::getAngle(_penaltyPlacement->first,
+                                                                    getWorldMap()->getLocations()->fieldCenter()));
         }
     }else{
         if(getWorldMap()->getLocations()->ourSide().isRight()){
@@ -416,7 +408,9 @@ void Role_Attacker:: kickOff(quint8 _teamPriority, QPair<Position, Angle> *_pena
 }
 
 void Role_Attacker::freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::Quadrant quadrant){
-    float freeBallXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.375), freeBallYabs = (getWorldMap()->getLocations()->fieldMaxY() - 0.25f), freeBallOffset = 0.2f;
+    float freeBallXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.375);
+    float freeBallYabs = (getWorldMap()->getLocations()->fieldMaxY() - 0.25f);
+    float freeBallOffset = 0.2f;
 
     if(quadrant == VSSRef::QUADRANT_1){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
@@ -462,7 +456,8 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::
 }
 
 void Role_Attacker:: goalKick(quint8 _teamPriority ,QPair<Position, Angle> *_penaltyPlacement){
-    float defenseXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.55f), defenseYabs = 0.0f;
+    float defenseXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.55f);
+    flaot defenseYabs = 0.0f;
     float nearTheMiddleXabs = (getWorldMap()->getLocations()->fieldMaxX()/2 - 0.15f);
 
     if(_teamPriority == 1){

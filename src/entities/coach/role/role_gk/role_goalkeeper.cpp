@@ -21,6 +21,8 @@
 
 #include "role_goalkeeper.h"
 
+#define GKFACTOR 0.2f
+
 Role_Goalkeeper::Role_Goalkeeper() {
     _gkOverlap = false;
     _isOverlapTimerInit = false;
@@ -47,31 +49,28 @@ void Role_Goalkeeper::run() {
 
     // Ball projection
     Position ballPos = getWorldMap()->getBall().getPosition();
-    float velMod = ballVelocity.abs();
 
     Position ballDirection, ballProj;
     if(ballVelocity.abs() > 0) {
-        ballDirection = Position(true, ballVelocity.vx()/velMod, ballVelocity.vy()/velMod);
+        ballDirection = Position(true, ballVelocity.vx()/ballVelocity.abs(), ballVelocity.vy()/ballVelocity.abs());
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    float factor = 0.2f * velMod;
-    factor = std::min(factor, 0.5f);
+    float factor = std::min(GKFACTOR * ballVelocity.abs(), 0.5f);
     ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
     ballPosition = ballProj;
 
     // Spin minimal distance from ball
     float distSpin = 0.09f;
-    float ballVelo = ballVelocity.abs();
     // max vx = 2.8  min vx = 0
     float maxPlus = 0.16f;
-    distSpin += maxPlus*(ballVelo/2.8f);
+    distSpin += maxPlus*(ballVelocity.abs()/2.8f);
 
     Position vetAux = Position(false,0,0);
     if(ballDirection.x() != 0.0f){
-        float distxBG = player()->position().x() - ballPos.x();
-        if(distxBG != 0.0f){
-            float coefM = distxBG/ballDirection.x();
+        float distxBallGK = player()->position().x() - ballPos.x();
+        if(distxBallGK != 0.0f){
+            float coefM = distxBallGK/ballDirection.x();
             float interY = ballPos.y() + (coefM*ballDirection.y());
             vetAux.setPosition(true,player()->position().x(),interY);
         }

@@ -65,7 +65,8 @@ void Role_Defender::run() {
 //        _bhv_moveTo->setTargetPosition(standardPosition);
 //        setBehavior(BHV_MOVETO);
 //    }
-//    else if (player()->getPlayerDistanceTo(ballPosition) < 0.20f && ballVelocity.abs() < player()->isLookingTo(ballPosition, 1.0f)) {
+//    else if (player()->getPlayerDistanceTo(ballPosition) < 0.20f
+//               && ballVelocity.abs() < player()->isLookingTo(ballPosition, 1.0f)) {
 //        // Clear the ball if it is close enough and if it is in a good angle to deslocate
 //        _bhv_moveTo->setTargetPosition(ballPosition);
 //        //_bhv_moveTo->setMinimalVelocity(1.0);
@@ -90,9 +91,11 @@ void Role_Defender::run() {
 
 
 
-QPair<Position, Angle> Role_Defender::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+QPair<Position, Angle> Role_Defender::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam,
+                                                           VSSRef::Quadrant atQuadrant) {
     // Standard position will be at our penalty mark
-    Position standardPosition = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(), getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+    Position standardPosition = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                   getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
     Angle standardAngle = Angle(true, M_PI / 2.0);
 
     bool isForOurTeam = (forTeam == static_cast<VSSRef::Color>(getConstants()->teamColor()));
@@ -138,11 +141,13 @@ QPair<Position, Angle> Role_Defender::getPlacementPosition(VSSRef::Foul foul, VS
         // In free ball, pos at their penalty mark (if free ball occurs at their field side)
         // Otherwise, pos at standard position (barrier)
         case VSSRef::Foul::FREE_BALL: {
-            if((atQuadrant == VSSRef::Quadrant::QUADRANT_1 || atQuadrant == VSSRef::Quadrant::QUADRANT_4) && getConstants()->teamSide().isLeft()) {
+            if((atQuadrant == VSSRef::Quadrant::QUADRANT_1 || atQuadrant == VSSRef::Quadrant::QUADRANT_4)
+                    && getConstants()->teamSide().isLeft()) {
                 standardPosition = getWorldMap()->getLocations()->theirPenaltyMark();
                 standardAngle = Angle(true, 0.0);
             }
-            else if((atQuadrant == VSSRef::Quadrant::QUADRANT_2 || atQuadrant == VSSRef::Quadrant::QUADRANT_3) && !getConstants()->teamSide().isLeft()) {
+            else if(((atQuadrant == VSSRef::Quadrant::QUADRANT_2) || (atQuadrant == VSSRef::Quadrant::QUADRANT_3))
+                    && !getConstants()->teamSide().isLeft()) {
                 standardPosition = getWorldMap()->getLocations()->theirPenaltyMark();
                 standardAngle = Angle(true, 0.0);
             }

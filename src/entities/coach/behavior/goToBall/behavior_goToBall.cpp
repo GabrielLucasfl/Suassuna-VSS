@@ -22,6 +22,8 @@
 #include "behavior_goToBall.h"
 #include <src/utils/utils.h>
 
+#define BALLFACTOR 0.2f
+
 Behavior_GoToBall::Behavior_GoToBall() {
     // Default value
     _offsetBehindBall = 0.0;
@@ -59,11 +61,10 @@ void Behavior_GoToBall::run() {
     } else {
         _targetPosition = Utils::threePoints(ballPos, _referencePosition, _offsetBehindBall, _angle);
         if(getWorldMap()->getLocations()->isOutsideField(_targetPosition, 0.95f) && isBehindBallXcoord(player()->position())){
-            _targetPosition.setInvalid();
-        }
-        if(_targetPosition.isInvalid()) { // check if is inside field
+            //check if is inside field
             _targetPosition = ballPos;
         }
+
     }
     _skill_goTo->setTargetPosition(_targetPosition);
     _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);
@@ -79,16 +80,19 @@ void Behavior_GoToBall::run() {
 bool Behavior_GoToBall::isBehindBallXcoord(Position pos) {
     Position posBall = getWorldMap()->getBall().getPosition();
     float robotRadius = 0.035f;
+    float ballRadius = 0.0215;
     bool isBehindObjX;
+    //ensure that the object is behind ball considering the radius from each other
     if(getWorldMap()->getLocations()->ourSide().isLeft()) {
-        isBehindObjX = pos.x() < (posBall.x() - robotRadius);
+        isBehindObjX = pos.x() < (posBall.x() - robotRadius - ballRadius);
     }else {
-        isBehindObjX = pos.x() > (posBall.x() + robotRadius);
+        isBehindObjX = pos.x() > (posBall.x() + robotRadius + ballRadius);
     }
     return isBehindObjX;
 }
 
-void Behavior_GoToBall::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
+void Behavior_GoToBall::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea,
+                                      bool avoidTheirGoalArea) {
     _avoidBall = avoidBall;
     _avoidTeammates = avoidTeammates;
     _avoidOpponents = avoidOpponents;
@@ -100,16 +104,15 @@ Position Behavior_GoToBall::getBallProjection() {
     // Ball projection
     Position ballPos = getWorldMap()->getBall().getPosition();
     Velocity ballVel = getWorldMap()->getBall().getVelocity();
-    float velMod = ballVel.abs();
 
     Position ballDirection, ballProj;
     if(ballVel.abs() > 0) {
-        ballDirection = Position(true, ballVel.vx()/velMod, ballVel.vy()/velMod);
+        ballDirection = Position(true, ballVel.vx()/ballVel.abs(), ballVel.vy()/ballVel.abs());
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    float factor = 0.2f * velMod;
-    factor = std::min(factor, 0.5f);
+
+    float factor = std::min(BALLFACTOR * ballVel.abs(), 0.5f);
     ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
     return ballProj;
 }

@@ -74,7 +74,8 @@ void Behavior_MoveTo::run() {
     }
 }
 
-void Behavior_MoveTo::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
+void Behavior_MoveTo::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea,
+                                    bool avoidTheirGoalArea) {
     _avoidBall = avoidBall;
     _avoidTeammates = avoidTeammates;
     _avoidOpponents = avoidOpponents;

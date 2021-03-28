@@ -110,7 +110,6 @@ void Role_Supporter::run() {
         Position leftPost = getWorldMap()->getLocations()->ourGoalLeftPost();
         Position rightPost = getWorldMap()->getLocations()->ourGoalRightPost();
         intervalos = FreeAngles::getFreeAngles(positionBall,leftPost,rightPost,obstacles,false);
-        //intervalos = FreeAngles::getFreeAngles(positionBall,player()->getWorldMap()->getLocations()->ourGoalRightPost(),player()->getWorldMap()->getLocations()->ourGoalLeftPost(),obstacles,false);
     }
 
     float largestAngle=0;
@@ -143,8 +142,6 @@ void Role_Supporter::run() {
     _timer.stop();
     double tempo = _timer.getSeconds();
     if(tempo >= 1.0){
-        //printf("O intervalo escolhido foi: %f \t %f\n e a maior abertura eh %f\n",dbAngI, dbAngF, largestMid);
-        //printf("Tam lista %d \n", obstacles.size());
         _timer.start();
     }
     Position desiredPosition = player()->position();
@@ -154,18 +151,23 @@ void Role_Supporter::run() {
         }
         if(_canAvoidBall && !isBehindBallXcoord(player()->position())) {
             Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
-            _bhv_goToBall->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
+            _bhv_goToBall->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea,
+                                         _avoidTheirGoalArea);
             if(getWorldMap()->getLocations()->ourSide().isLeft()) {
                if(ballVelocity.vy() > 0) {
-                   _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMaxX(), getWorldMap()->getLocations()->fieldMaxY()));
+                   _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMaxX(),
+                                                                getWorldMap()->getLocations()->fieldMaxY()));
                }else {
-                   _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMaxX(), getWorldMap()->getLocations()->fieldMinY()));
+                   _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMaxX(),
+                                                                getWorldMap()->getLocations()->fieldMinY()));
                }
             }else {
                 if(ballVelocity.vy() > 0) {
-                    _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMinX(), getWorldMap()->getLocations()->fieldMaxY()));
+                    _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMinX(),
+                                                                 getWorldMap()->getLocations()->fieldMaxY()));
                 }else {
-                    _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMinX(), getWorldMap()->getLocations()->fieldMinY()));
+                    _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMinX(),
+                                                                 getWorldMap()->getLocations()->fieldMinY()));
                 }
             }
             _bhv_goToBall->setAngle(2.44f);
@@ -193,12 +195,15 @@ void Role_Supporter::run() {
             for(int i = 0; i < ourPlayers.size(); i++) {
                 if(ourPlayers[i] != player()->playerId()) {
                     Position allyPos = getWorldMap()->getPlayer(getConstants()->teamColor(), ourPlayers[i]).getPosition();
-                    if(!isBehindBallXcoord(allyPos) || Utils::distance(allyPos, getWorldMap()->getBall().getPosition()) > Utils::distance(player()->position(), getWorldMap()->getBall().getPosition())) {
+                    if(!isBehindBallXcoord(allyPos)
+                            || Utils::distance(allyPos, getWorldMap()->getBall().getPosition())
+                            > Utils::distance(player()->position(), getWorldMap()->getBall().getPosition())) {
                         _pushBall = true;
                     }
                 }
             }
-            if(inRangeToPush(positionBall) && Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.3f) {
+            if(inRangeToPush(positionBall)
+                    && Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.3f) {
                 _pushBall = true;
             }
             _bhv_moveTo->enableRotation(false);
@@ -213,16 +218,14 @@ void Role_Supporter::run() {
 
             // Ball projection
             Position ballPos = getWorldMap()->getBall().getPosition();
-            float velMod = ballVelocity.abs();
 
             Position ballDirection, ballProj;
             if(ballVelocity.abs() > 0) {
-                ballDirection = Position(true, ballVelocity.vx()/velMod, ballVelocity.vy()/velMod);
+                ballDirection = Position(true, ballVelocity.vx()/ballVelocity.abs(), ballVelocity.vy()/ballVelocity.abs());
             } else {
                 ballDirection = Position(true, 0, 0);
             }
-            float factor = 0.2f * velMod;
-            factor = std::min(factor, 0.5f);
+            float factor = std::min(0.2f * ballVelocity.abs(), 0.5f);
             ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
             ballPosition = ballProj;
             if(!isBehindBallXcoord(player()->position())) {
@@ -232,7 +235,8 @@ void Role_Supporter::run() {
             _bhv_moveTo->enableRotation(false);
             _bhv_moveTo->setTargetPosition(ballProj);
             // If has already accelerated: don't stop
-            if(!_accelerate || !isBehindBallXcoord(player()->position()) || Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.2f) {
+            if(!_accelerate || !isBehindBallXcoord(player()->position())
+                    || Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.2f) {
                 _bhv_moveTo->setBaseSpeed(30);
                 _accelerate = false;
             }
@@ -318,11 +322,12 @@ bool Role_Supporter::hasAllyInTheirArea() {
 bool Role_Supporter::isBehindBallXcoord(Position pos) {
     Position posBall = getWorldMap()->getBall().getPosition();
     float robotRadius = 0.035f;
+    float ballRadius = 0.0215f;
     bool isBehindObjX;
     if(getWorldMap()->getLocations()->ourSide().isLeft()) {
-        isBehindObjX = pos.x() < (posBall.x() - robotRadius);
+        isBehindObjX = pos.x() < (posBall.x() - robotRadius - ballRadius);
     }else {
-        isBehindObjX = pos.x() > (posBall.x() + robotRadius);
+        isBehindObjX = pos.x() > (posBall.x() + robotRadius + ballRadius);
     }
     return isBehindObjX;
 }
@@ -366,9 +371,11 @@ float Role_Supporter::calc_x_barrier(){
     return (x_barrier*posx_control);
 }
 
-QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam,
+                                                            VSSRef::Quadrant atQuadrant) {
     // Standard position will be at our penalty mark
-    Position standardPosition = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(), getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+    Position standardPosition = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                   getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
     Angle standardAngle = Angle(true, M_PI / 2.0);
 
     bool isForOurTeam = (forTeam == static_cast<VSSRef::Color>(getConstants()->teamColor()));
@@ -414,11 +421,15 @@ QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, V
         // In free ball, pos at their penalty mark (if free ball occurs at their field side)
         // Otherwise, pos at standard position (barrier)
         case VSSRef::Foul::FREE_BALL: {
-            if((atQuadrant == VSSRef::Quadrant::QUADRANT_1 || atQuadrant == VSSRef::Quadrant::QUADRANT_4) && getConstants()->teamSide().isLeft()) {
+            if((atQuadrant == VSSRef::Quadrant::QUADRANT_1 || atQuadrant == VSSRef::Quadrant::QUADRANT_4)
+                    && getConstants()->teamSide().isLeft()) {
+
                 standardPosition = getWorldMap()->getLocations()->theirPenaltyMark();
                 standardAngle = Angle(true, 0.0);
             }
-            else if((atQuadrant == VSSRef::Quadrant::QUADRANT_2 || atQuadrant == VSSRef::Quadrant::QUADRANT_3) && !getConstants()->teamSide().isLeft()) {
+            else if((atQuadrant == VSSRef::Quadrant::QUADRANT_2 || atQuadrant == VSSRef::Quadrant::QUADRANT_3)
+                    && !getConstants()->teamSide().isLeft()) {
+
                 standardPosition = getWorldMap()->getLocations()->theirPenaltyMark();
                 standardAngle = Angle(true, 0.0);
             }

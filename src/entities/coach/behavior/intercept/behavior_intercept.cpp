@@ -87,7 +87,8 @@ Position Behavior_Intercept::getOrthogonalProjection() {
     Position playerVector(true, player()->position().x() - _objectPos.x(), player()->position().y() - _objectPos.y());
 
     // Taking the numeric proportion from orthogonal projection formula
-    float numericProportion = (playerVector.x() * _objectVel.vx() + playerVector.y() * _objectVel.vy()) / powf(_objectVel.abs(), 2);
+    float numericProportion = (playerVector.x() * _objectVel.vx() + playerVector.y()
+                               * _objectVel.vy()) / powf(_objectVel.abs(), 2);
 
     // Taking the orthogonal projection position
     float projection_x = _objectPos.x() + numericProportion * _objectVel.vx();
