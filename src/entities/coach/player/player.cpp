@@ -24,7 +24,8 @@
 #include <src/entities/coach/role/role.h>
 #include <src/entities/coach/player/navigation/navigation.h>
 
-Player::Player(quint8 playerId, Constants *constants, Referee *referee ,WorldMap *worldMap, NavigationAlgorithm *navAlg) : Entity(ENT_PLAYER) {
+Player::Player(quint8 playerId, Constants *constants, Referee *referee ,WorldMap *worldMap,
+               NavigationAlgorithm *navAlg) : Entity(ENT_PLAYER) {
     _playerId = playerId;
     _constants = constants;
     _worldMap = worldMap;
@@ -183,42 +184,44 @@ float Player::getAngularError() {
     return 0.02f; // ~= 1.15 deg
 }
 
-std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destination, const Angle &positionToLook, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea, bool avoidTheirGoalArea) {
+std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destination, const Angle &positionToLook,
+                                                       bool avoidTeammates, bool avoidOpponents, bool avoidBall,
+                                                       bool avoidOurGoalArea, bool avoidTheirGoalArea) {
 
-    _nav->setGoal(destination, positionToLook, avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
-    Angle direction = _nav->getDirection();
-    float distance = _nav->getDistance();
+    _nav->setGoal(destination, positionToLook, avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea,
+                  avoidTheirGoalArea);
 
-    std::pair<Angle,float> movement = std::make_pair(direction, distance);
+    std::pair<Angle,float> movement = std::make_pair(_nav->getDirection(), _nav->getDistance());
     //movement.first.setValue(movement.first.value() - orientation().value());
     return movement;
 }
 
-void Player::goTo(Position &targetPosition, float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
+void Player::goTo(Position &targetPosition, float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates,
+                  bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
+
     targetPosition = limitPosInsideField(targetPosition);
     Position destination = projectPosOutsideGoalArea(targetPosition, avoidOurGoalArea, avoidTheirGoalArea);
     destination = limitPosInsideField(destination);
 
     // Take angle to target
     float angleToTarget;
-    float baseSpeed = desiredBaseSpeed;
-    float linearError = desiredLinearError;
     // If there isn't a valid target position: move forward
     if(destination.isInvalid()) {
         angleToTarget = orientation().value();
     }
     // If there is a valid target position: move towards it
     else {
-        std::pair<Angle,float> movement = getNavDirectionDistance(destination, orientation(), avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
+        std::pair<Angle,float> movement = getNavDirectionDistance(destination, orientation(), avoidTeammates, avoidOpponents,
+                                                                  avoidBall, avoidOurGoalArea, avoidTheirGoalArea);
         angleToTarget = movement.first.value();
-        if(getPlayerDistanceTo(destination) <= linearError) {
+        if(getPlayerDistanceTo(destination) <= desiredLinearError) {
             idle();
             return;
         }
     }
 
     // Take wheels speed
-    std::pair<float, float> wheelsSpeed = getWheelsSpeed(angleToTarget, baseSpeed);
+    std::pair<float, float> wheelsSpeed = getWheelsSpeed(angleToTarget, desiredBaseSpeed);
 
     // Send wheels speed to actuator
     emit setWheelsSpeed(playerId(), wheelsSpeed.first, wheelsSpeed.second);
@@ -226,7 +229,6 @@ void Player::goTo(Position &targetPosition, float desiredBaseSpeed, float desire
 
 void Player::rotateTo(Position &targetPosition) {
     std::pair<float,float> speed = getWheelsSpeed(Utils::getAngle(position(), targetPosition), 0);
-    //std::cout << "LEFT: " << speed.first << "\nRIGHT: " << speed.second << std::endl;
 
     emit setWheelsSpeed(playerId(), speed.first, speed.second);
 }
@@ -245,7 +247,8 @@ void Player::idle() {
 
 void Player::initialization() {
     QString teamColorName = getConstants()->teamColorName().toUpper();
-    std::cout << Text::cyan("[PLAYER " + teamColorName.toStdString() + ":" + std::to_string(playerId()) + "] ", true) + Text::bold("Thread started.") + '\n';
+    std::cout << Text::cyan("[PLAYER " + teamColorName.toStdString() + ":" + std::to_string(playerId()) + "] ", true)
+                 + Text::bold("Thread started.") + '\n';
 }
 
 void Player::loop() {
@@ -268,7 +271,8 @@ void Player::loop() {
 
 void Player::finalization() {
     QString teamColorName = getConstants()->teamColorName().toUpper();
-    std::cout << Text::cyan("[PLAYER " + teamColorName.toStdString() + ":" + std::to_string(playerId()) + "] ", true) + Text::bold("Thread ended.") + '\n';
+    std::cout << Text::cyan("[PLAYER " + teamColorName.toStdString() + ":" + std::to_string(playerId()) + "] ", true)
+                 + Text::bold("Thread ended.") + '\n';
 }
 
 Constants* Player::getConstants() {
@@ -409,7 +413,8 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
                 float verticalDist = abs(targetPosition.y() - bottomCorner.y());
 
                 if (horizontalDist <= verticalDist) {
-                    float directionX = 0.01 * ((bottomCorner.x() - targetPosition.x())/abs(bottomCorner.x() - targetPosition.x()));
+                    float directionX = 0.01 * ((bottomCorner.x() - targetPosition.x())/abs(bottomCorner.x()
+                                                                                           - targetPosition.x()));
                     return Position(true, bottomCorner.x() + _displacement * directionX, targetPosition.y());
                 } else {
                     return Position(true, targetPosition.x(), bottomCorner.y() - _displacement * 0.01);
@@ -455,7 +460,8 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
                 float verticalDist = abs(targetPosition.y() - bottomCorner.y());
 
                 if (horizontalDist <= verticalDist) {
-                    float directionX = 0.01 * (bottomCorner.x() - targetPosition.x())/abs(bottomCorner.x() - targetPosition.x());
+                    float directionX = 0.01 * (bottomCorner.x() - targetPosition.x())/abs(bottomCorner.x()
+                                                                                          - targetPosition.x());
                     return Position(true, bottomCorner.x() + _displacement * directionX, targetPosition.y());
                 } else {
                     return Position(true, targetPosition.x(), bottomCorner.y() - _displacement * 0.01);
@@ -473,7 +479,6 @@ Position Player::limitPosInsideField(Position dest) {
     float maxY = getWorldMap()->getLocations()->fieldMaxY();
     Position s1;
     Position s2;
-    Position res;
     float offset = 0.07f;
 
     // Check if intersect areas
