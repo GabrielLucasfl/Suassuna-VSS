@@ -21,6 +21,7 @@
 
 #include "role_supporter.h"
 
+#define SUPFACTOR 0.2f
 
 Role_Supporter::Role_Supporter(){
     _avoidTeammates = false;
@@ -225,7 +226,7 @@ void Role_Supporter::run() {
             } else {
                 ballDirection = Position(true, 0, 0);
             }
-            float factor = std::min(0.2f * ballVelocity.abs(), 0.5f);
+            float factor = std::min(SUPFACTOR * ballVelocity.abs(), 0.5f);
             ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
             ballPosition = ballProj;
             if(!isBehindBallXcoord(player()->position())) {

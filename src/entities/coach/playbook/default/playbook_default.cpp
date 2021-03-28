@@ -180,11 +180,12 @@ bool Playbook_Default::isDefenderSituation() {
 bool Playbook_Default::isBehindBallXcoord(Position pos) {
     Position posBall = getWorldMap()->getBall().getPosition();
     float robotRadius = 0.08f;
+    float ballRadius = 0.0215f;
     bool isBehindObjX;
     if(getWorldMap()->getLocations()->ourSide().isLeft()) {
-        isBehindObjX = pos.x() < (posBall.x() + robotRadius);
+        isBehindObjX = pos.x() < (posBall.x() + robotRadius + ballRadius);
     }else {
-        isBehindObjX = pos.x() > (posBall.x() - robotRadius);
+        isBehindObjX = pos.x() > (posBall.x() - robotRadius - ballRadius);
     }
     return isBehindObjX;
 }
