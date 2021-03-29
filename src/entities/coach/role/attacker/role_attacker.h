@@ -68,7 +68,7 @@ private:
     bool _avoidBall;
     bool _avoidOurGoalArea;
     bool _avoidTheirGoalArea;
-    float _offsetAngleRange;
+    float _offsetRange;
     bool _charge;
     bool _gameInterrupted;
 

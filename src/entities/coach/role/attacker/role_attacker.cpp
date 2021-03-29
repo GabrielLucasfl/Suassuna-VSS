@@ -457,7 +457,7 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::
 
 void Role_Attacker:: goalKick(quint8 _teamPriority ,QPair<Position, Angle> *_penaltyPlacement){
     float defenseXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.55f);
-    flaot defenseYabs = 0.0f;
+    float defenseYabs = 0.0f;
     float nearTheMiddleXabs = (getWorldMap()->getLocations()->fieldMaxX()/2 - 0.15f);
 
     if(_teamPriority == 1){
