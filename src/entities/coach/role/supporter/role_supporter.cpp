@@ -413,7 +413,7 @@ QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, V
         case VSSRef::Foul::GOAL_KICK: {
             if(!isForOurTeam) {
                 standardPosition = Utils::threePoints(getWorldMap()->getLocations()->theirPenaltyMark(),
-                                                      getWorldMap()->getLocations()->theirGoalLeftMidPost(),
+                                                      getWorldMap()->getLocations()->theirAreaLeftPost(),
                                                       0.1f, M_PI);
                 standardAngle = Angle(true, 0.0);
             }

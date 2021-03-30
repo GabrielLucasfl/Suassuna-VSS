@@ -73,8 +73,6 @@ public:
     Position ourGoalRightPost();
     Position ourGoalLeftPost();
     Position ourPenaltyMark();
-    Position ourGoalRightMidPost();
-    Position ourGoalLeftMidPost();
     Position ourAreaLeftPost();
     Position ourAreaRightPost();
     Position ourAreaLeftCorner();
@@ -87,8 +85,6 @@ public:
     Position theirGoalRightPost();
     Position theirGoalLeftPost();
     Position theirPenaltyMark();
-    Position theirGoalRightMidPost();
-    Position theirGoalLeftMidPost();
     Position theirAreaLeftPost();
     Position theirAreaRightPost();
     Position theirAreaLeftCorner();
@@ -136,10 +132,6 @@ private:
     Position _rightGoalRightPost;
     Position _leftGoalLeftPost;
     Position _leftGoalRightPost;
-    Position _rightGoalRightMidPost;
-    Position _rightGoalLeftMidPost;
-    Position _leftGoalRightMidPost;
-    Position _leftGoalLeftMidPost;
     Position _leftAreaLeftPost;
     Position _leftAreaRightPost;
     Position _rightAreaLeftPost;

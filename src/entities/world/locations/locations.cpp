@@ -49,16 +49,12 @@ Locations::Locations(FieldSide ourSide, Field *field, Constants *constants) {
     _rightGoalRightPost = Position(true, fieldX, goalY);
     _leftGoalLeftPost = Position(true, -fieldX, goalY);
     _leftGoalRightPost = Position(true, -fieldX, -goalY);
-    _rightGoalRightMidPost = Position(true, fieldX, -defenseAreaLength/2.0f);
-    _rightGoalLeftMidPost = Position(true, fieldX, defenseAreaLength/2.0f);
-    _leftGoalRightMidPost = Position(true, -fieldX, defenseAreaLength/2.0f);
-    _leftGoalLeftMidPost = Position(true, -fieldX, -defenseAreaLength/2.0f);
 
     // Defense areas
-    _leftAreaLeftPost = Position(true, -fieldX, -0.35f);
-    _leftAreaRightPost = Position(true, -fieldX, 0.35f);
-    _rightAreaLeftPost = Position(true, fieldX, 0.35f);
-    _rightAreaRightPost = Position(true, fieldX, -0.35f);
+    _leftAreaLeftPost = Position(true, -fieldX, defenseAreaLength/2.0f);
+    _leftAreaRightPost = Position(true, -fieldX, -defenseAreaLength/2.0f);
+    _rightAreaLeftPost = Position(true, fieldX, -defenseAreaLength/2.0f);
+    _rightAreaRightPost = Position(true, fieldX, defenseAreaLength/2.0f);
     _leftAreaLeftCorner = Position(true, _leftAreaLeftPost.x() + 0.15f, _leftAreaLeftPost.y());
     _leftAreaRightCorner = Position(true, _leftAreaRightPost.x() + 0.15f, _leftAreaRightPost.y());
     _rightAreaLeftCorner = Position(true, _rightAreaLeftPost.x() - 0.15f, _rightAreaLeftPost.y());
@@ -391,54 +387,6 @@ bool Locations::_isOutsideField(const Position &pos, const float maxX, const flo
     return false;
 }
 
-Position Locations::ourGoalRightMidPost() {
-    Position ourGoalRightMidPost;
-    _mutex.lockForRead();
-    if(ourSide().isRight()) {
-        ourGoalRightMidPost = _rightGoalRightMidPost;
-    }else {
-        ourGoalRightMidPost = _leftGoalRightMidPost;
-    }
-    _mutex.unlock();
-    return ourGoalRightMidPost;
-}
-
-Position Locations::ourGoalLeftMidPost() {
-    Position ourGoalLeftMidPost;
-    _mutex.lockForRead();
-    if(ourSide().isRight()) {
-        ourGoalLeftMidPost = _rightGoalLeftMidPost;
-    }else {
-        ourGoalLeftMidPost = _leftGoalLeftMidPost;
-    }
-    _mutex.unlock();
-    return ourGoalLeftMidPost;
-}
-
-Position Locations::theirGoalRightMidPost() {
-    Position theirGoalRightMidPost;
-    _mutex.lockForRead();
-    if(theirSide().isRight()) {
-        theirGoalRightMidPost = _rightGoalRightMidPost;
-    }else {
-        theirGoalRightMidPost = _leftGoalRightMidPost;
-    }
-    _mutex.unlock();
-    return theirGoalRightMidPost;
-}
-
-Position Locations::theirGoalLeftMidPost() {
-    Position theirGoalLeftMidPost;
-    _mutex.lockForRead();
-    if(theirSide().isRight()) {
-        theirGoalLeftMidPost = _rightGoalLeftMidPost;
-    }else {
-        theirGoalLeftMidPost = _leftGoalLeftMidPost;
-    }
-    _mutex.unlock();
-    return theirGoalLeftMidPost;
-}
-
 Position Locations::ourAreaLeftPost() {
     Position ourAreaLeftPost;
     _mutex.lockForRead();
@@ -574,14 +522,14 @@ void Locations::updateGeometryData(fira_message::Field geometryData) {
     _fieldBottomRightCorner = Position(true, (field.length()/2.0)*MM2METER, (-field.width()/2.0)*MM2METER);
     _rightPenaltyMark = Position(true, (field.length()/2.0 - areaRadius)*MM2METER, 0.0);
     _leftPenaltyMark = Position(true, (-field.length()/2.0 + areaRadius)*MM2METER, 0.0);
-    _leftGoalLeftPost = Position(true, (-field.length()/2.0)*MM2METER, (-field.goal_width()/2.0)*MM2METER);
-    _leftGoalRightPost = Position(true, (-field.length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
-    _rightGoalLeftPost = Position(true, (field.length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
-    _rightGoalRightPost = Position(true, (field.length()/2.0)*MM2METER, (-field.goal_width()/2.0)*MM2METER);
-    _rightGoalRightMidPost = Position(true, (field.length()/2.0)*MM2METER, (-areaLength/2.0f)*MM2METER);
-    _rightGoalLeftMidPost = Position(true, (field.length()/2.0)*MM2METER, (areaLength/2.0f)*MM2METER);
-    _leftGoalRightMidPost = Position(true, (-field.length()/2.0)*MM2METER, (areaLength/2.0f)*MM2METER);
-    _leftGoalLeftMidPost = Position(true, (-field.length()/2.0)*MM2METER, (-areaLength/2.0f)*MM2METER);
+    _leftGoalLeftPost = Position(true, (-field.length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
+    _leftGoalRightPost = Position(true, (-field.length()/2.0)*MM2METER, (-field.goal_width()/2.0)*MM2METER);
+    _rightGoalLeftPost = Position(true, (field.length()/2.0)*MM2METER, (-field.goal_width()/2.0)*MM2METER);
+    _rightGoalRightPost = Position(true, (field.length()/2.0)*MM2METER, (field.goal_width()/2.0)*MM2METER);
+    _rightAreaRightPost = Position(true, (field.length()/2.0)*MM2METER, (areaLength/2.0f)*MM2METER);
+    _rightAreaLeftPost = Position(true, (field.length()/2.0)*MM2METER, (-areaLength/2.0f)*MM2METER);
+    _leftAreaRightPost = Position(true, (-field.length()/2.0)*MM2METER, (-areaLength/2.0f)*MM2METER);
+    _leftAreaLeftPost = Position(true, (-field.length()/2.0)*MM2METER, (areaLength/2.0f)*MM2METER);
     _fieldCenterRadius = centerRadius*MM2METER;
     _goalLength = areaLength*MM2METER;
     _goalWidth = areaWidth*MM2METER;
