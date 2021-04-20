@@ -44,37 +44,24 @@ void Role_Goalkeeper::configure() {
 
 void Role_Goalkeeper::run() {    
     // Fixed variables
-    Position ballPosition;
     Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
-
-    // Ball projection
     Position ballPos = getWorldMap()->getBall().getPosition();
 
-    Position ballDirection, ballProj;
+    Position ballDirection;
     if(ballVelocity.abs() > 0) {
         ballDirection = Position(true, ballVelocity.vx()/ballVelocity.abs(), ballVelocity.vy()/ballVelocity.abs());
     } else {
         ballDirection = Position(true, 0, 0);
     }
     float factor = std::min(GKFACTOR * ballVelocity.abs(), 0.5f);
-    ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
-    ballPosition = ballProj;
+    Position ballProjection = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
 
     // Spin minimal distance from ball
     float distSpin = 0.09f;
     // max vx = 2.8  min vx = 0
     float maxPlus = 0.16f;
     distSpin += maxPlus*(ballVelocity.abs()/2.8f);
-
-    Position vetAux = Position(false,0,0);
-    if(ballDirection.x() != 0.0f){
-        float distxBallGK = player()->position().x() - ballPos.x();
-        if(distxBallGK != 0.0f){
-            float coefM = distxBallGK/ballDirection.x();
-            float interY = ballPos.y() + (coefM*ballDirection.y());
-            vetAux.setPosition(true,player()->position().x(),interY);
-        }
-    }
+    // 0.09 + 0.16 * (ballVelocity / 2.8)
 
     // Taking the position where the GK wait for
     Position standardPosition;
@@ -89,7 +76,7 @@ void Role_Goalkeeper::run() {
     Position lookingPosition(true, standardPosition.x(), 2.0f);
     _bhv_moveTo->enableRotation(false);
     _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
-    _bhv_moveTo->setSpin(false);
+    _bhv_moveTo->enableSpin(false);
 
     if (_gkOverlap) {
         if(!_isOverlapTimerInit) {
@@ -117,30 +104,18 @@ void Role_Goalkeeper::run() {
         }
     } else {
         if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
-                || getWorldMap()->getLocations()->isInsideTheirField(ballPosition)) {
+                || getWorldMap()->getLocations()->isInsideTheirField(ballProjection)) {
             // Get a break at the standard position if the ball is far away or if the player is outside our goal area
             _bhv_moveTo->setTargetPosition(standardPosition);
             setBehavior(BHV_MOVETO);
         }
-        else if (getWorldMap()->getLocations()->isInsideOurArea(ballPosition)) {
-            // Clear the ball if it is stationed at our goal area (or almost stationed)
-            bool podespin;
-            if(vetAux.isInvalid()){
-                bool podespin = false;
-            }else{
-                podespin = (abs(player()->position().y() - vetAux.y()) < 0.03f);
-            }
-
-            if(!podespin){
-                podespin = (Utils::distance(player()->position(), ballPos) < 0.1f);
-            }
-
-            if(Utils::distance(player()->position(), ballPosition) > 0.8f*distSpin) {
-                _bhv_moveTo->setTargetPosition(ballPosition);
+        else if (getWorldMap()->getLocations()->isInsideOurArea(ballProjection)) {
+            if(Utils::distance(player()->position(), ballProjection) > 0.8f*distSpin) {
+                _bhv_moveTo->setTargetPosition(ballProjection);
                 setBehavior(BHV_MOVETO);
             }else {
                 _bhv_moveTo->setSpinOrientation(spinOrientarion());
-                _bhv_moveTo->setSpin(true);
+                _bhv_moveTo->enableSpin(true);
                 setBehavior(BHV_MOVETO);
             }
         }else if((getWorldMap()->getLocations()->ourSide().isLeft()? ballVelocity.vx() > 0 : ballVelocity.vx() < 0)
@@ -155,44 +130,35 @@ void Role_Goalkeeper::run() {
             setBehavior(BHV_MOVETO);
         }
         else {
-            if (ballPosition.x() > 0.6f && getWorldMap()->getLocations()->ourSide().isRight()) {
-                if (ballPosition.y() > 0.35f) {
+            if ((ballProjection.x() > 0.6f && getWorldMap()->getLocations()->ourSide().isRight()) ||
+                    (ballProjection.x() < -0.6f && getWorldMap()->getLocations()->ourSide().isLeft())) {
+                if (ballProjection.y() > 0.35f) {
                     _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), 0.3f));
                     setBehavior(BHV_MOVETO);
                 }
-                else if (ballPosition.y() < -0.35f) {
+                else if (ballProjection.y() < -0.35f) {
                     _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), -0.3f));
                     setBehavior(BHV_MOVETO);
                 }
             }
-            else if (ballPosition.x() < -0.6f && getWorldMap()->getLocations()->ourSide().isLeft()) {
-                if (ballPosition.y() > 0.35f) {
-                    _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), 0.3f));
-                    setBehavior(BHV_MOVETO);
-                }
-                else if (ballPosition.y() < -0.35f) {
-                    _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), -0.3f));
-                    setBehavior(BHV_MOVETO);
-                }
-            } else if(Utils::distance(ballPos, getWorldMap()->getLocations()->ourGoal()) < 0.38){
+            else if(Utils::distance(ballPos, getWorldMap()->getLocations()->ourGoal()) < 0.38){
                 float _limity = ballPos.y();
-                Utils::limitValue(&_limity,-0.2,0.2);
+                Utils::limitValue(&_limity, -0.2f, 0.2f);
                 _bhv_moveTo->setTargetPosition(Position(true, standardPosition.x(), _limity));
                 setBehavior(BHV_MOVETO);
-              }
-              else{
+            } else {
                 // Intercept the ball movement in order to prevent a goal
 
                 Position firstLimitationPoint(true, standardPosition.x(), 0.2f);
                 Position secondLimitationPoint(true, standardPosition.x(), -0.2f);
                 float factorRangeGK = 0.7f*0.2f*(1 - (abs(ballPos.y())/getWorldMap()->getLocations()->fieldMaxY()));
-                if(ballPos.y() > 0.0f){
+                if (ballPos.y() > 0.0f) {
                     secondLimitationPoint.setPosition(true, standardPosition.x(), -factorRangeGK);
-                }else{
+                } else {
                     firstLimitationPoint.setPosition(true, standardPosition.x(), factorRangeGK);
                 }
                 _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
-                _bhv_intercept->setObjectPosition(ballPosition);
+                _bhv_intercept->setObjectPosition(ballProjection);
                 _bhv_intercept->setObjectVelocity(ballVelocity);
                 _bhv_intercept->setBaseSpeed(getConstants()->playerBaseSpeed());
                 setBehavior(BHV_INTERCEPT);

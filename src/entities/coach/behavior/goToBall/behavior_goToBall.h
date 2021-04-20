@@ -44,8 +44,6 @@ public:
     Position getBallProjection();
 
 private:
-    bool isBehindBallXcoord(Position pos);
-
     // Behavior inherited methods
     void configure();
     void run();

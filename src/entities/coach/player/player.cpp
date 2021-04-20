@@ -40,17 +40,6 @@ QString Player::name() {
     return QString("PLAYER %1").arg(getConstants()->teamColorName());
 }
 
-WorldMap* Player::getWorldMap() {
-    if(_worldMap == nullptr) {
-        std::cout << Text::red("[ERROR] ", true) << Text::bold("WorldMap with nullptr value at Player") + '\n';
-    }
-    else {
-        return _worldMap;
-    }
-
-    return nullptr;
-}
-
 quint8 Player::playerId() {
     return _playerId;
 }
@@ -65,19 +54,8 @@ Angle Player::orientation() {
     return playerAngle;
 }
 
-void Player::setRole(Role *role) {
-    _mutexRole.lock();
-
-    // Set old role player to nullptr
-    if(_playerRole != nullptr) _playerRole->setPlayer(nullptr);
-
-    // Set new role
-    _playerRole = role;
-
-    // Assign player to this role
-    if(_playerRole != nullptr) _playerRole->setPlayer(this);
-
-    _mutexRole.unlock();
+float Player::getPlayerDistanceTo(Position &targetPosition) {
+    return sqrt(pow(position().x() - targetPosition.x(), 2) + pow(position().y() - targetPosition.y(), 2));
 }
 
 float Player::getPlayerRotateAngleTo(Position &targetPosition) {
@@ -99,21 +77,21 @@ std::pair<float, float> Player::getWheelsSpeed(float angleToObject, float baseSp
 
     // Take base data
     float angleRobot = orientation().value();
-    float error = smallestAngleDiff(angleRobot, angleToObject);
+    float error = getSmallestAngleDiff(angleRobot, angleToObject);
 
     // Check if robot front can be reversed to reach target
     bool reversed = false;
     if(fabs(error) > M_PI/2.0 + M_PI/20.0) {
         // Mark as reversed and update robot ori
         reversed = true;
-        angleRobot = to180Range(angleRobot + M_PI);
+        angleRobot = Utils::to180Range(angleRobot + static_cast<float>(M_PI));
 
         // Calculates the error and reverses the front of the robot
-        error = smallestAngleDiff(angleRobot, angleToObject);
+        error = getSmallestAngleDiff(angleRobot, angleToObject);
     }
 
     // PID
-    float motorSpeed = (Kp*error) + (Kd * (error - _lastError));// + 0.2 * sumErr;
+    float motorSpeed = ((Kp*error) + (Kd * (error - _lastError)));// + 0.2 * sumErr;
     _lastError = error;
 
     // Normalize
@@ -145,21 +123,11 @@ std::pair<float, float> Player::getWheelsSpeed(float angleToObject, float baseSp
             rightMotorSpeed = -baseSpeed - motorSpeed;
         }
     }
-
     return std::make_pair(leftMotorSpeed, rightMotorSpeed);
 }
 
-float Player::to180Range(float angle) {
-    angle = fmod(angle, 2 * M_PI);
-    if (angle < -M_PI) {
-        angle = angle + 2 * M_PI;
-    } else if (angle > M_PI) {
-        angle = angle - 2 * M_PI;
-    }
-    return angle;
-}
-
-float Player::smallestAngleDiff(float target, float source) {
+float Player::getSmallestAngleDiff(float target, float source) {
+    // Gets the smallest angle between the target and one of the "fronts" of the robot
     double diff;
     diff = fmod(target + 2*M_PI, 2 * M_PI) - fmod(source + 2*M_PI, 2 * M_PI);
 
@@ -168,12 +136,7 @@ float Player::smallestAngleDiff(float target, float source) {
     } else if (diff < -M_PI) {
         diff = diff + 2 * M_PI;
     }
-
     return diff;
-}
-
-float Player::getPlayerDistanceTo(Position &targetPosition) {
-    return sqrt(pow(position().x() - targetPosition.x(), 2) + pow(position().y() - targetPosition.y(), 2));
 }
 
 float Player::getLinearError() {
@@ -184,16 +147,53 @@ float Player::getAngularError() {
     return 0.02f; // ~= 1.15 deg
 }
 
-std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destination, const Angle &positionToLook,
-                                                       bool avoidTeammates, bool avoidOpponents, bool avoidBall,
-                                                       bool avoidOurGoalArea, bool avoidTheirGoalArea) {
+bool Player::isLookingTo(Position &pos, float error) {
+    // Taking the reference angle
+    float referenceAngle = atan2(pos.y() - position().y(), pos.x() - position().x());
 
-    _nav->setGoal(destination, positionToLook, avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea,
-                  avoidTheirGoalArea);
+    // Analysing condition
+    float angleDifference = abs(orientation().value() - referenceAngle);
+    if (angleDifference > abs(static_cast<float>(M_PI) - angleDifference)) {
+        angleDifference = abs(static_cast<float>(M_PI) - angleDifference);
+    }
+    if (angleDifference < error) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
-    std::pair<Angle,float> movement = std::make_pair(_nav->getDirection(), _nav->getDistance());
-    //movement.first.setValue(movement.first.value() - orientation().value());
-    return movement;
+bool Player::isBehindBallXCoord(Position pos) {
+    // Inspects if the player object of interest in between the ball and the player's goal, comparing the X coordinate
+    Position posBall = getWorldMap()->getBall().getPosition();
+    float robotRadius = 0.035f;
+    float ballRadius = 0.0215f;
+    bool isBehindObjX;
+    if(getWorldMap()->getLocations()->ourSide().isLeft()) {
+        isBehindObjX = pos.x() < (posBall.x() - robotRadius - ballRadius);
+    } else {
+        isBehindObjX = pos.x() > (posBall.x() + robotRadius + ballRadius);
+    }
+    return isBehindObjX;
+}
+
+void Player::setRole(Role *role) {
+    _mutexRole.lock();
+
+    // Set old role player to nullptr
+    if(_playerRole != nullptr) _playerRole->setPlayer(nullptr);
+
+    // Set new role
+    _playerRole = role;
+
+    // Assign player to this role
+    if(_playerRole != nullptr) _playerRole->setPlayer(this);
+
+    _mutexRole.unlock();
+}
+
+QLinkedList<Position> Player::getPath() const {
+    return _nav->getPath();
 }
 
 void Player::goTo(Position &targetPosition, float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates,
@@ -243,89 +243,6 @@ void Player::spin(bool isClockWise) {
 
 void Player::idle() {
     emit setWheelsSpeed(playerId(), 0.0, 0.0);
-}
-
-void Player::initialization() {
-    QString teamColorName = getConstants()->teamColorName().toUpper();
-    std::cout << Text::cyan("[PLAYER " + teamColorName.toStdString() + ":" + std::to_string(playerId()) + "] ", true)
-                 + Text::bold("Thread started.") + '\n';
-}
-
-void Player::loop() {
-    if(position().isInvalid()) {
-        setRole(nullptr);
-        idle();
-    }
-    else {
-        _mutexRole.lock();
-        if(_playerRole != nullptr) {
-            if(!_playerRole->isInitialized()) {
-                _playerRole->initialize(getConstants(), getReferee(), getWorldMap());
-            }
-            _playerRole->setPlayer(this);
-            _playerRole->runRole();
-        }
-        _mutexRole.unlock();
-    }
-}
-
-void Player::finalization() {
-    QString teamColorName = getConstants()->teamColorName().toUpper();
-    std::cout << Text::cyan("[PLAYER " + teamColorName.toStdString() + ":" + std::to_string(playerId()) + "] ", true)
-                 + Text::bold("Thread ended.") + '\n';
-}
-
-Constants* Player::getConstants() {
-    if(_constants == nullptr) {
-        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Player") + '\n';
-    }
-    else {
-        return _constants;
-    }
-
-    return nullptr;
-}
-
-Referee* Player::getReferee() {
-    if(_referee == nullptr) {
-        std::cout << Text::red("[ERROR] ", true) << Text::bold("Referee with nullptr value at Player") + '\n';
-    }
-    else {
-        return _referee;
-    }
-
-    return nullptr;
-}
-
-void Player::receiveFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
-    _mutexRole.lock();
-
-    if(_playerRole != nullptr) {
-        QPair<Position, Angle> placementPosition = _playerRole->getPlacementPosition(foul, forTeam, atQuadrant);
-        emit sendPlacement(this->playerId(), placementPosition.first, placementPosition.second);
-    }
-
-    _mutexRole.unlock();
-}
-
-QLinkedList<Position> Player::getPath() const {
-    return _nav->getPath();
-}
-
-bool Player::isLookingTo(Position &pos, float error) {
-    // Taking the reference angle
-    float referenceAngle = atan2(pos.y() - position().y(), pos.x() - position().x());
-
-    // Analysing condition
-    float angleDifference = abs(orientation().value() - referenceAngle);
-    if (angleDifference > abs(M_PI - angleDifference)) {
-        angleDifference = abs(M_PI - angleDifference);
-    }
-    if (angleDifference < error) {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOurArea, bool avoidTheirArea) {
@@ -517,4 +434,90 @@ Position Player::limitPosInsideField(Position dest) {
         dest.setPosition(true, proj.x() - offset, proj.y());
     }
     return dest;
+}
+
+void Player::initialization() {
+    QString teamColorName = getConstants()->teamColorName().toUpper();
+    std::cout << Text::cyan("[PLAYER " + teamColorName.toStdString() + ":" + std::to_string(playerId()) + "] ", true)
+                 + Text::bold("Thread started.") + '\n';
+}
+
+void Player::loop() {
+    if(position().isInvalid()) {
+        setRole(nullptr);
+        idle();
+    }
+    else {
+        _mutexRole.lock();
+        if(_playerRole != nullptr) {
+            if(!_playerRole->isInitialized()) {
+                _playerRole->initialize(getConstants(), getReferee(), getWorldMap());
+            }
+            _playerRole->setPlayer(this);
+            _playerRole->runRole();
+        }
+        _mutexRole.unlock();
+    }
+}
+
+void Player::finalization() {
+    QString teamColorName = getConstants()->teamColorName().toUpper();
+    std::cout << Text::cyan("[PLAYER " + teamColorName.toStdString() + ":" + std::to_string(playerId()) + "] ", true)
+                 + Text::bold("Thread ended.") + '\n';
+}
+
+Constants* Player::getConstants() {
+    if(_constants == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Player") + '\n';
+    }
+    else {
+        return _constants;
+    }
+
+    return nullptr;
+}
+
+WorldMap* Player::getWorldMap() {
+    if(_worldMap == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("WorldMap with nullptr value at Player") + '\n';
+    }
+    else {
+        return _worldMap;
+    }
+
+    return nullptr;
+}
+
+Referee* Player::getReferee() {
+    if(_referee == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Referee with nullptr value at Player") + '\n';
+    }
+    else {
+        return _referee;
+    }
+
+    return nullptr;
+}
+
+std::pair<Angle,float> Player::getNavDirectionDistance(const Position &destination, const Angle &positionToLook,
+                                                       bool avoidTeammates, bool avoidOpponents, bool avoidBall,
+                                                       bool avoidOurGoalArea, bool avoidTheirGoalArea) {
+
+    _nav->setGoal(destination, positionToLook, avoidTeammates, avoidOpponents, avoidBall, avoidOurGoalArea,
+                  avoidTheirGoalArea);
+
+    std::pair<Angle,float> movement = std::make_pair(_nav->getDirection(), _nav->getDistance());
+    //movement.first.setValue(movement.first.value() - orientation().value());
+    return movement;
+}
+
+void Player::receiveFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant) {
+    _mutexRole.lock();
+
+    if(_playerRole != nullptr) {
+        QPair<Position, Angle> placementPosition = _playerRole->getPlacementPosition(foul, forTeam, atQuadrant);
+        emit sendPlacement(this->playerId(), placementPosition.first, placementPosition.second);
+    }
+
+    _mutexRole.unlock();
 }

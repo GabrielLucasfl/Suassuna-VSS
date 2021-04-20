@@ -29,15 +29,96 @@ float Utils::distance(const Position &a, const Position &b) {
     return sqrt(pow(a.x() - b.x() ,2) + pow(a.y() - b.y(), 2));
 }
 
+float Utils::scalarProduct(const Position &A, const Position &B) {
+    return (A.x() * B.x() + A.y() * B.y());
+}
+
+float Utils::distanceToLine(const Position &s1, const Position &s2, const Position &point) {
+    const Position projectedPoint = Utils::projectPointAtLine(s1, s2, point);
+    const float distance = Utils::distance(point, projectedPoint);
+
+    return (distance <= 0.001f) ? 0 : distance;
+}
+
+float Utils::distanceToSegment(const Position &s1, const Position &s2, const Position &point) {
+    const Position projectedPoint = Utils::projectPointAtLine(s1, s2, point);
+    if(Utils::isPointAtSegment(s1, s2, projectedPoint)) {
+        return distanceToLine(s1, s2, point);
+    } else {
+        const float d1 = Utils::distance(point, s1);
+        const float d2 = Utils::distance(point, s2);
+        return (d1 <= d2)? d1 : d2;
+    }
+}
+
+float Utils::getAngle(const Position &a, const Position &b)	{
+    return atan2(b.y()-a.y(), b.x()-a.x());
+}
+
+float Utils::angleDiff(const float A, const float B) {
+    float diff = fabs(B - A);
+    if(diff > static_cast<float>(M_PI))
+        diff = 2*static_cast<float>(M_PI) - diff;
+    return diff;
+}
+
+float Utils::to180Range(float angle) {
+    angle = fmod(angle, 2 * M_PI);
+    if (angle < -M_PI) {
+        angle = angle + 2 * M_PI;
+    } else if (angle > M_PI) {
+        angle = angle - 2 * M_PI;
+    }
+    return angle;
+}
+
+void Utils::angleLimitZeroTwoPi(float *angle) {
+    while(*angle < 0)
+        *angle += 2.0*M_PI;
+    while(*angle > 2.0*M_PI)
+        *angle -= 2.0*M_PI;
+}
+
+Position Utils::rotatePoint(Position point, float angle){
+    float xNew = point.x() * cos(angle) - point.y() * sin(angle);
+    float yNew = point.x() * sin(angle) - point.y() * cos(angle);
+
+    return Position(true, xNew, yNew);
+}
+
+Position Utils::threePoints(const Position &near, const Position &far, float distance, float beta) {
+    Angle alpha(true, atan2(far.y()-near.y(), far.x()-near.x()));
+    Angle gama(true, alpha.value()+beta);
+    Position p(true, near.x()+distance*cos(gama.value()), near.y()+distance*sin(gama.value()));
+    return p;
+}
+
+Position Utils::projectPointAtLine(const Position &s1, const Position &s2, const Position &point) {
+    const Position a(true, point.x() - s1.x(), point.y() - s1.y());
+    const Position b(true, s2.x() - s1.x(), s2.y() - s1.y());
+    const float bModule = sqrt(pow(b.x(), 2) + pow(b.y(), 2));
+    const Position bUnitary(true, b.x() / bModule, b.y() / bModule);
+    const float scalar = Utils::scalarProduct(a, bUnitary);
+
+    return Position(true, s1.x() + scalar * bUnitary.x(), s1.y() + scalar * bUnitary.y());
+}
+
+Position Utils::projectPointAtSegment(const Position &s1, const Position &s2, const Position &point) {
+    const Position projectedPoint = Utils::projectPointAtLine(s1, s2, point);
+    if(Utils::isPointAtSegment(s1, s2, projectedPoint)) {
+        return projectedPoint;
+    } else {
+        const float d1 = Utils::distance(projectedPoint, s1);
+        const float d2 = Utils::distance(projectedPoint, s2);
+        return (d1 <= d2) ? s1 : s2;
+    }
+}
+
 bool Utils::isPointAtLine(const Position &s1, const Position &s2, const Position &point) {
     const Position projectedPoint = Utils::projectPointAtLine(s1, s2, point);
     const float dist = Utils::distance(point, projectedPoint);
 
     return (dist <= 0.001f);
-}
-
-float Utils::scalarProduct(const Position &A, const Position &B) {
-    return (A.x() * B.x() + A.y() * B.y());
 }
 
 bool Utils::isPointAtSegment(const Position &s1, const Position &s2, const Position &point) {
@@ -65,83 +146,11 @@ bool Utils::isPointAtSegment(const Position &s1, const Position &s2, const Posit
     }
 }
 
-Position Utils::projectPointAtLine(const Position &s1, const Position &s2, const Position &point) {
-    const Position a(true, point.x() - s1.x(), point.y() - s1.y());
-    const Position b(true, s2.x() - s1.x(), s2.y() - s1.y());
-    const float bModule = sqrt(pow(b.x(), 2) + pow(b.y(), 2));
-    const Position bUnitary(true, b.x() / bModule, b.y() / bModule);
-    const float scalar = Utils::scalarProduct(a, bUnitary);
-
-    return Position(true, s1.x() + scalar * bUnitary.x(), s1.y() + scalar * bUnitary.y());
-}
-
-Position Utils::projectPointAtSegment(const Position &s1, const Position &s2, const Position &point) {
-    const Position projectedPoint = Utils::projectPointAtLine(s1, s2, point);
-    if(Utils::isPointAtSegment(s1, s2, projectedPoint)) {
-        return projectedPoint;
-    } else {
-        const float d1 = Utils::distance(projectedPoint, s1);
-        const float d2 = Utils::distance(projectedPoint, s2);
-        return (d1 <= d2) ? s1 : s2;
-    }
-}
-
-void Utils::angleLimitZeroTwoPi(float *angle) {
-    while(*angle < 0)
-        *angle += 2.0*M_PI;
-    while(*angle > 2.0*M_PI)
-        *angle -= 2.0*M_PI;
-}
-
-float Utils::distanceToLine(const Position &s1, const Position &s2, const Position &point) {
-    const Position projectedPoint = Utils::projectPointAtLine(s1, s2, point);
-    const float distance = Utils::distance(point, projectedPoint);
-
-    return (distance <= 0.001f) ? 0 : distance;
-}
-
-float Utils::distanceToSegment(const Position &s1, const Position &s2, const Position &point) {
-    const Position projectedPoint = Utils::projectPointAtLine(s1, s2, point);
-    if(Utils::isPointAtSegment(s1, s2, projectedPoint)) {
-        return distanceToLine(s1, s2, point);
-    } else {
-        const float d1 = Utils::distance(point, s1);
-        const float d2 = Utils::distance(point, s2);
-        return (d1 <= d2)? d1 : d2;
-    }
-}
-
-Position Utils::rotatePoint(Position point, float angle){
-    float xNew = point.x() * cos(angle) - point.y() * sin(angle);
-    float yNew = point.x() * sin(angle) - point.y() * cos(angle);
-
-    return Position(true, xNew, yNew);
-}
-
-void Utils::setConstants(Constants *constants){
-    _constants = constants;
-}
-
-Constants* Utils::getConstants() {
-    if(_constants == nullptr) {
-        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Utils") + '\n';
-    }
-    else {
-        return _constants;
-    }
-
-    return nullptr;
-}
-
-float Utils::getAngle(const Position &a, const Position &b)	{
-    return atan2(b.y()-a.y(), b.x()-a.x());
-}
-
-Position Utils::threePoints(const Position &near, const Position &far, float distance, float beta) {
-    Angle alpha(true, atan2(far.y()-near.y(), far.x()-near.x()));
-    Angle gama(true, alpha.value()+beta);
-    Position p(true, near.x()+distance*cos(gama.value()), near.y()+distance*sin(gama.value()));
-    return p;
+void Utils::limitValue(float *value, float minValue, float maxValue) {
+    if(*value > maxValue)
+        *value = maxValue;
+    else if(*value < minValue)
+        *value = minValue;
 }
 
 Position Utils::segmentsIntersect(Position sA1, Position sA2, Position sB1, Position sB2) {
@@ -178,20 +187,6 @@ Position Utils::segmentsIntersect(Position sA1, Position sA2, Position sB1, Posi
     }
 }
 
-float Utils::angleDiff(const float A, const float B) {
-    float diff = fabs(B - A);
-    if(diff > static_cast<float>(M_PI))
-        diff = 2*static_cast<float>(M_PI) - diff;
-    return diff;
-}
-
-void Utils::limitValue(float *value, float minValue, float maxValue) {
-    if(*value > maxValue)
-        *value = maxValue;
-    else if(*value < minValue)
-        *value = minValue;
-}
-
 Position Utils::hasInterceptionSegments(const Position &s1, const Position &s2, const Position &s3, const Position &s4){
     float denominador = (s4.y()-s3.y())*(s2.x() - s1.x()) - (s4.x() - s3.x())*(s2.y()-s1.y());
 
@@ -214,4 +209,19 @@ Position Utils::hasInterceptionSegments(const Position &s1, const Position &s2, 
     }else{ //Os segmentos sao paralelos
         return Position(false, 0.0f,0.0f);
     }
+}
+
+void Utils::setConstants(Constants *constants){
+    _constants = constants;
+}
+
+Constants* Utils::getConstants() {
+    if(_constants == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Utils") + '\n';
+    }
+    else {
+        return _constants;
+    }
+
+    return nullptr;
 }

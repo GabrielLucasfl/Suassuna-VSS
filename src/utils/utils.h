@@ -29,23 +29,35 @@
 
 class Utils {
 public:
-    static float scalarProduct(const Position &A, const Position &B);
+    // Distance related
     static float distance(const Position &a, const Position &b);
-    static bool isPointAtLine(const Position &s1, const Position &s2, const Position &point);
-    static bool isPointAtSegment(const Position &s1, const Position &s2, const Position &point);
-    static Position projectPointAtLine(const Position &s1, const Position &s2, const Position &point);
-    static Position projectPointAtSegment(const Position &s1, const Position &s2, const Position &point);
+    static float scalarProduct(const Position &A, const Position &B);
     static float distanceToLine(const Position &s1, const Position &s2, const Position &point);
     static float distanceToSegment(const Position &s1, const Position &s2, const Position &point);
-    static Position rotatePoint(Position point, float angle);
-    static void setConstants(Constants *constants);
+
+    // Angle related
     static float getAngle(const Position &a, const Position &b);
-    static Position threePoints(const Position &near, const Position &far, float distance, float beta);
-    static Position segmentsIntersect(Position sA1, Position sA2, Position sB1, Position sB2);
     static float angleDiff(const float A, const float B);
+    static float to180Range(float angle);
     static void angleLimitZeroTwoPi(float *angle);
+    static Position rotatePoint(Position point, float angle);
+
+    // Projection related
+    static Position threePoints(const Position &near, const Position &far, float distance, float beta);
+    static Position projectPointAtLine(const Position &s1, const Position &s2, const Position &point);
+    static Position projectPointAtSegment(const Position &s1, const Position &s2, const Position &point);
+
+    // Checkers
+    static bool isPointAtLine(const Position &s1, const Position &s2, const Position &point);
+    static bool isPointAtSegment(const Position &s1, const Position &s2, const Position &point);
+
+    // Others
     static void limitValue(float *value, float minValue, float maxValue);
+    static Position segmentsIntersect(Position sA1, Position sA2, Position sB1, Position sB2);
     static Position hasInterceptionSegments(const Position &s1, const Position &s2, const Position &s3, const Position &s4);
+
+    static void setConstants(Constants *constants);
+
 private:
     static Constants *_constants;
     static Constants* getConstants();

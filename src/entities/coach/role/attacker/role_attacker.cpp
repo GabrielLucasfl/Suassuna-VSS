@@ -137,7 +137,7 @@ void Role_Attacker::run() {
 
             //transitions
             _interuption.stop();
-            if((Utils::distance(player()->position(), ballProj) >= 0.3f || !isBehindBallXcoord(player()->position()))
+            if((Utils::distance(player()->position(), ballProj) >= 0.3f || !player()->isBehindBallXCoord(player()->position()))
                                 && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
@@ -155,7 +155,7 @@ void Role_Attacker::run() {
             _bhv_moveTo->setTargetPosition(Position(true, moveX, moveY));
             setBehavior(MOVETO);
 
-            if((abs(ballPos.y()) > 0.4f) || isBehindBallXcoord(player()->position())) {
+            if((abs(ballPos.y()) > 0.4f) || player()->isBehindBallXCoord(player()->position())) {
                 _state = GOTOBALL;
             }
             break;
@@ -176,19 +176,6 @@ bool Role_Attacker::hasAllyInTheirArea() {
         }
     }
     return false;
-}
-
-bool Role_Attacker::isBehindBallXcoord(Position pos) {
-    Position posBall = getWorldMap()->getBall().getPosition();
-    float robotRadius = 0.035f;
-    float ballRadius = 0.0215f;
-    bool isBehindObjX;
-    if(getWorldMap()->getLocations()->ourSide().isLeft()) {
-        isBehindObjX = pos.x() < (posBall.x() - robotRadius - ballRadius);
-    }else {
-        isBehindObjX = pos.x() > (posBall.x() + robotRadius + ballRadius);
-    }
-    return isBehindObjX;
 }
 
 bool Role_Attacker::inRangeToPush(Position ballPos) {

@@ -32,7 +32,6 @@ public:
     QString name();
 
     // Auxiliar
-    bool isBehindBallXcoord(Position pos);
     bool inRangeToPush(Position ballPos);
     float normAngle(float angleRadians);
 private:

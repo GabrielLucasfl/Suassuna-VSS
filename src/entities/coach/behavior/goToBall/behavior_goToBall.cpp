@@ -60,7 +60,8 @@ void Behavior_GoToBall::run() {
         _targetPosition = ballPos;
     } else {
         _targetPosition = Utils::threePoints(ballPos, _referencePosition, _offsetBehindBall, _angle);
-        if(getWorldMap()->getLocations()->isOutsideField(_targetPosition, 0.95f) && isBehindBallXcoord(player()->position())){
+        if(getWorldMap()->getLocations()->isOutsideField(_targetPosition, 0.95f)
+                && player()->isBehindBallXCoord(player()->position())){
             //check if is inside field
             _targetPosition = ballPos;
         }
@@ -75,20 +76,6 @@ void Behavior_GoToBall::run() {
     _skill_goTo->setAvoidTheirGoalArea(_avoidTheirGoalArea);
     _skill_goTo->setLinearError(_desiredLinearError);
     setSkill(SKILL_GOTO);
-}
-
-bool Behavior_GoToBall::isBehindBallXcoord(Position pos) {
-    Position posBall = getWorldMap()->getBall().getPosition();
-    float robotRadius = 0.035f;
-    float ballRadius = 0.0215;
-    bool isBehindObjX;
-    //ensure that the object is behind ball considering the radius from each other
-    if(getWorldMap()->getLocations()->ourSide().isLeft()) {
-        isBehindObjX = pos.x() < (posBall.x() - robotRadius - ballRadius);
-    }else {
-        isBehindObjX = pos.x() > (posBall.x() + robotRadius + ballRadius);
-    }
-    return isBehindObjX;
 }
 
 void Behavior_GoToBall::setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea,

@@ -44,23 +44,24 @@ public:
     Angle orientation();
     float getPlayerDistanceTo(Position &targetPosition);
     float getPlayerRotateAngleTo(Position &targetPosition);
-    float getVxToTarget(Position targetPosition);
-    float getRotateSpeed(float angleRobotToTarget);
 
     // Utils
     std::pair<float, float> getWheelsSpeed(float angleToObject, float baseSpeed);
-    float to180Range(float angle);
-    float smallestAngleDiff(float target, float source);
-
-    // Player checkers
-    bool isLookingTo(Position &pos, float error);
+    float getSmallestAngleDiff(float target, float source);
 
     // Player error
     float getLinearError();
     float getAngularError();
 
+    // Player checkers
+    bool isLookingTo(Position &pos, float error);
+    bool isBehindBallXCoord (Position playerPosition);
+
     // Role management
     void setRole(Role* role);
+
+    // Path Planning
+    QLinkedList<Position> getPath() const;
 
     // Skills
     void goTo(Position &targetPosition, float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea);
@@ -68,9 +69,8 @@ public:
     void spin(bool isClockWise);
     void idle();
 
-    // Path planning
-    QLinkedList<Position> getPath() const;
-    std::pair<Angle,float> getNavDirectionDistance(const Position &destination, const Angle &positionToLook, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea, bool avoidTheirGoalArea);
+    // Repositioners
+    Position projectPosOutsideGoalArea(Position targetPosition, bool avoidOurArea, bool avoidTheirArea);
     Position limitPosInsideField(Position dest);
 
 private:
@@ -92,17 +92,17 @@ private:
     Referee *_referee;
     Referee* getReferee();
 
+    // Path Planning
+    Navigation *_nav;
+    std::pair<Angle,float> getNavDirectionDistance(const Position &destination, const Angle &positionToLook, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea, bool avoidTheirGoalArea);
+    float _displacement;
+
     // Player internal
     quint8 _playerId;
 
     // Role management
     Role *_playerRole;
     QMutex _mutexRole;
-
-    // Path Planning
-    Navigation *_nav;
-    Position projectPosOutsideGoalArea(Position targetPosition, bool avoidOurArea, bool avoidTheirArea);
-    float _displacement;
 
 signals:
     void setWheelsSpeed(quint8 playerId, float wheelLeft, float wheelRight);

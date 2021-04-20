@@ -52,15 +52,15 @@ private:
     Behavior_Barrier *_bhv_barrier;
     Behavior_GoToBall *_bhv_goToBall;
 
-    // Behaiors util functions
+    // Behaviors util functions
+    float getLargestFreeAngle();
+    bool inRangeToPush(Position ballPos);
     bool isBall_ourfield();
     float calcBarrier_Xcomponent();
     void limit_Ypos(float * posy);
     float calc_x_advanced();
     float calc_x_barrier();
-    bool isBehindBallXcoord(Position pos);
     bool hasAllyInTheirArea();
-    bool inRangeToPush(Position ballPos);
 
     // Avoid Flags
     bool _avoidTeammates;

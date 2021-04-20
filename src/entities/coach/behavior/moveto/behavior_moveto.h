@@ -37,8 +37,9 @@ public:
     void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
     void enableRotation(bool isRotationEnabled) { _isRotationEnabled = isRotationEnabled; }
     void setLinearError(float desiredLinearError) { _desiredLinearError = desiredLinearError; }
-    void setSpin(bool set) { _spin = set; }
+    void enableSpin(bool spin) { _spin = spin; }
     void setSpinOrientation(bool clockwise) { _spinClock = clockwise; }
+
 private:
     // Behavior inherited methods
     void configure();
