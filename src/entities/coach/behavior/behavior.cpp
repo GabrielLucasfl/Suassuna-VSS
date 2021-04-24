@@ -59,6 +59,14 @@ void Behavior::setPlayer(Player *player) {
     _player = player;
 }
 
+QString Behavior::actualSkillName() {
+    _skillMutex.lock();
+    QString skillName = (_actualSkill == nullptr) ? "NONE" : _actualSkill->name();
+    _skillMutex.unlock();
+
+    return skillName;
+}
+
 void Behavior::runBehavior() {
     // Check if behavior have at least one skill
     if(_skillList.size() == 0) {
@@ -77,9 +85,11 @@ void Behavior::addSkill(int id, Skill *skill) {
     }
 
     // If is the first skill added, set it as actualSkill
+    _skillMutex.lock();
     if(_actualSkill == nullptr) {
         _actualSkill = skill;
     }
+    _skillMutex.unlock();
 
     _skillList.insert(id, skill);
 }
@@ -90,7 +100,9 @@ void Behavior::setSkill(int id) {
         return ;
     }
 
+    _skillMutex.lock();
     _actualSkill = _skillList.value(id);
+    _skillMutex.unlock();
 
     // Check if initialized
     if(!_actualSkill->isInitialized()) {

@@ -44,6 +44,9 @@ public:
     void initialize(Constants *constants, Referee *referee, WorldMap *worldMap);
     void setPlayer(Player *player);
 
+    // Actual Behavior name
+    QString actualBehaviorName();
+
     // Method to run in playbook
     void runRole();
 
@@ -89,6 +92,7 @@ private:
     // Behavior list
     QMap<int, Behavior*> _behaviorList;
     Behavior *_actualBehavior;
+    QMutex _behaviorMutex;
 
     // Initialize control
     bool _initialized;

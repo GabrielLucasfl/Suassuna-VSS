@@ -41,6 +41,7 @@ public:
     void addPlaybook(int id, Playbook *playbook);
     void setPlaybook(int id);
     void resetPlaybook(Playbook *playbook);
+    Playbook* actualPlaybook();
 
     // Run
     void runCoordinator();
@@ -69,6 +70,7 @@ private:
     QMap<int, Playbook*> _playbookList;
     Playbook *_actualPlaybook;
     int _actualPlaybookId;
+    QMutex _playbookMutex;
 
     // Players management
     int _actualQtPlayers;

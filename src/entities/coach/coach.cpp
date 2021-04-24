@@ -43,6 +43,10 @@ void Coach::setCoordinator(Coordinator *coordinator) {
     _coordinator = coordinator;
 }
 
+Coordinator* Coach::getCoordinator() {
+    return _coordinator;
+}
+
 void Coach::initialization() {
     std::cout << Text::cyan("[COACH] ", true) + Text::bold("Thread started.") + '\n';
 }

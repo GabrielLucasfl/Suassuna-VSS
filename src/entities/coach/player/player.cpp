@@ -177,6 +177,22 @@ bool Player::isBehindBallXCoord(Position pos) {
     return isBehindObjX;
 }
 
+QString Player::roleName() {
+    _mutexRole.lock();
+    QString roleName = (_playerRole == nullptr) ? "No Role" : _playerRole->name();
+    _mutexRole.unlock();
+
+    return roleName;
+}
+
+QString Player::behaviorName() {
+    _mutexRole.lock();
+    QString behaviorName = (_playerRole == nullptr) ? "No Behavior" : _playerRole->actualBehaviorName();
+    _mutexRole.unlock();
+
+    return behaviorName;
+}
+
 void Player::setRole(Role *role) {
     _mutexRole.lock();
 

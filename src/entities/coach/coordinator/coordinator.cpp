@@ -102,10 +102,12 @@ void Coordinator::addPlaybook(int id, Playbook *playbook) {
     // Insert playbook
     _playbookList.insert(id, playbook);
 
+    _playbookMutex.lock();
     // If actual playbook is nullptr, set it as actual playbook
     if(_actualPlaybook == nullptr) {
         _actualPlaybook = playbook;
     }
+    _playbookMutex.unlock();
 }
 
 void Coordinator::setPlaybook(int id) {
@@ -129,8 +131,10 @@ void Coordinator::setPlaybook(int id) {
     }
 
     // Set actual playbook and id
+    _playbookMutex.lock();
     _actualPlaybookId = id;
     _actualPlaybook = _playbookList.value(id);
+    _playbookMutex.unlock();
 
     // Reset new playbook
     resetPlaybook(_actualPlaybook);
@@ -142,6 +146,14 @@ void Coordinator::setPlaybook(int id) {
 void Coordinator::resetPlaybook(Playbook *playbook) {
     // Reset playbook
     playbook->resetPlaybook();
+}
+
+Playbook* Coordinator::actualPlaybook() {
+    _playbookMutex.lock();
+    Playbook* actualPlaybook = _actualPlaybook;
+    _playbookMutex.unlock();
+
+    return actualPlaybook;
 }
 
 void Coordinator::runCoordinator() {

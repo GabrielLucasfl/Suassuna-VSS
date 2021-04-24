@@ -22,6 +22,7 @@
 #ifndef PLAYBOOK_H
 #define PLAYBOOK_H
 
+#include <QMutex>
 #include <src/constants/constants.h>
 #include <src/entities/world/worldmap.h>
 #include <src/entities/coach/basecoach.h>
@@ -87,6 +88,7 @@ private:
     QList<Role*> _rolesList;
     QList<Role*> _oldRolesList;
     int _lastNumPlayers;
+    QMutex _playersMutex;
 
     // Initialize and configure control
     bool _initialized;

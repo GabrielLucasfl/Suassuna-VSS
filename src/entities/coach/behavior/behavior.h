@@ -22,6 +22,7 @@
 #ifndef BEHAVIOR_H
 #define BEHAVIOR_H
 
+#include <QMutex>
 #include <src/entities/coach/basecoach.h>
 #include <src/constants/constants.h>
 
@@ -38,6 +39,9 @@ public:
     bool isInitialized();
     void initialize(Constants *constants, WorldMap *worldMap);
     void setPlayer(Player *player);
+
+    // Actual Skill name
+    QString actualSkillName();
 
     // Method to run in role
     void runBehavior();
@@ -69,6 +73,7 @@ private:
     // Skills list
     QMap<int, Skill*> _skillList;
     Skill *_actualSkill;
+    QMutex _skillMutex;
 
     // Initialize control
     bool _initialized;

@@ -135,10 +135,12 @@ void Playbook::addPlayer(quint8 id) {
         return ;
     }
 
+    _playersMutex.lock();
     // Add player id to this playbook
     if(!_players.contains(id)) {
         _players.push_back(id);
     }
+    _playersMutex.unlock();
 }
 
 void Playbook::addPlayers(const QList<quint8> &ids) {
@@ -156,15 +158,25 @@ void Playbook::addPlayers(const QList<quint8> &ids) {
 }
 
 void Playbook::clearPlayers() {
+    _playersMutex.lock();
     _players.clear();
+    _playersMutex.unlock();
 }
 
 int Playbook::numPlayers() {
-    return _players.size();
+    _playersMutex.lock();
+    int size = _players.size();
+    _playersMutex.unlock();
+
+    return size;
 }
 
 QList<quint8> Playbook::getPlayers() {
-    return _players;
+    _playersMutex.lock();
+    QList<quint8> players = _players;
+    _playersMutex.unlock();
+
+    return players;
 }
 
 void Playbook::updatePlayersRoles() {
@@ -204,7 +216,11 @@ void Playbook::clearOldRoles() {
 }
 
 bool Playbook::hasPlayer(quint8 id) {
-    return _players.contains(id);
+    _playersMutex.lock();
+    bool containsPlayer = _players.contains(id);
+    _playersMutex.unlock();
+
+    return containsPlayer;
 }
 
 void Playbook::setPlayerRole(quint8 id, Role *role) {
@@ -229,7 +245,7 @@ void Playbook::setPlayerRole(quint8 id, Role *role) {
     // Check if old player still has the role
     if(_assignmentTable.values().contains(role)) {
         quint8 oldID = _assignmentTable.key(role);
-        if(_players.contains(oldID)) {
+        if(hasPlayer(oldID)) {
             _assignmentTable.insert(oldID, nullptr);
         }
     }

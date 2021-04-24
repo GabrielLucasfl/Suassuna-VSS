@@ -36,6 +36,7 @@ public:
 
     // Coordinator management
     void setCoordinator(Coordinator *coordinator);
+    Coordinator* getCoordinator();
 
 private:
     // Entity inherited methods

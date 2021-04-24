@@ -58,6 +58,8 @@ public:
     bool isBehindBallXCoord (Position playerPosition);
 
     // Role management
+    QString roleName();
+    QString behaviorName();
     void setRole(Role* role);
 
     // Path Planning

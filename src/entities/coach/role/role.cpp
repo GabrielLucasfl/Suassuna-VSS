@@ -74,6 +74,14 @@ void Role::setPlayer(Player *player) {
     _playerMutex.unlock();
 }
 
+QString Role::actualBehaviorName() {
+    _behaviorMutex.lock();
+    QString behaviorName = (_actualBehavior == nullptr) ? "NONE" : _actualBehavior->name();
+    _behaviorMutex.unlock();
+
+    return behaviorName;
+}
+
 void Role::runRole() {
     // Check if behavior have at least one skill
     if(_behaviorList.size() == 0) {
@@ -155,9 +163,11 @@ void Role::addBehavior(int id, Behavior *behavior) {
     }
 
     // If is the first skill added, set it as actualSkill
+    _behaviorMutex.lock();
     if(_actualBehavior == nullptr) {
         _actualBehavior = behavior;
     }
+    _behaviorMutex.unlock();
 
     _behaviorList.insert(id, behavior);
 }
@@ -190,7 +200,9 @@ void Role::setBehavior(int id) {
         return ;
     }
 
+    _behaviorMutex.lock();
     _actualBehavior = _behaviorList.value(id);
+    _behaviorMutex.unlock();
 }
 
 Player* Role::player() {
