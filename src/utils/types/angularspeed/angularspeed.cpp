@@ -58,6 +58,45 @@ AngularSpeed& AngularSpeed::operator =(const float theValue) {
     return(*this);
 }
 
+bool AngularSpeed::operator==(AngularSpeed other) const {
+    return (value() == other.value());
+}
+
+bool AngularSpeed::operator<=(AngularSpeed other) const {
+    return (value() <= other.value());
+}
+
+bool AngularSpeed::operator>=(AngularSpeed other) const {
+    return (value() >= other.value());
+}
+
+bool AngularSpeed::operator<(AngularSpeed other) const {
+    return (value() < other.value());
+}
+
+bool AngularSpeed::operator>(AngularSpeed other) const {
+    return (value() > other.value());
+}
+
+bool AngularSpeed::operator==(float val) const {
+    return (value() == val);
+}
+
+bool AngularSpeed::operator<=(float val) const {
+    return (value() <= val);
+}
+
+bool AngularSpeed::operator>=(float val) const {
+    return (value() >= val);
+}
+
+bool AngularSpeed::operator<(float val) const {
+    return (value() < val);
+}
+
+bool AngularSpeed::operator>(float val) const {
+    return (value() > val);
+}
 
 // Set/get functions
 float AngularSpeed::value() const {

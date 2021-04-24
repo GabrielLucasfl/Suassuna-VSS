@@ -54,3 +54,7 @@ float Position::x() const {
 float Position::y() const {
     return(_y);
 }
+
+bool Position::operator==(Position other) const {
+    return (x() == other.x() && y() == other.y());
+}

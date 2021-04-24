@@ -60,6 +60,19 @@ public:
     void setValue(float value);
     float value() const;
 
+// Overloaded operators
+public:
+    bool operator==(Angle other) const;
+    bool operator<=(Angle other) const;
+    bool operator>=(Angle other) const;
+    bool operator<(Angle other) const;
+    bool operator>(Angle other) const;
+    bool operator==(float val) const;
+    bool operator<=(float val) const;
+    bool operator>=(float val) const;
+    bool operator<(float val) const;
+    bool operator>(float val) const;
+
 public:
     bool isValid() const;
     void setInvalid();

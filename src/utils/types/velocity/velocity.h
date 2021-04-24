@@ -41,6 +41,18 @@ public:
     float abs() const;
     float arg() const;
 
+    // Overloaded operators
+    bool operator==(Velocity other) const;
+    bool operator<=(Velocity other) const;
+    bool operator>=(Velocity other) const;
+    bool operator<(Velocity other) const;
+    bool operator>(Velocity other) const;
+    bool operator==(float val) const;
+    bool operator<=(float val) const;
+    bool operator>=(float val) const;
+    bool operator<(float val) const;
+    bool operator>(float val) const;
+
 private:
     // Params
     bool _isValid;

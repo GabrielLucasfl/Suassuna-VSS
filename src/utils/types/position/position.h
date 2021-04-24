@@ -37,6 +37,9 @@ public:
     float x() const;
     float y() const;
 
+    // Overloaded operators
+    bool operator==(Position other) const;
+
 private:
     // Params
     bool _isValid;

@@ -76,6 +76,45 @@ void  Angle::setValue(float theValue) {
     _unknown = false;
 }
 
+bool Angle::operator==(Angle other) const {
+    return (value() == other.value());
+}
+
+bool Angle::operator<=(Angle other) const {
+    return (value() <= other.value());
+}
+
+bool Angle::operator>=(Angle other) const {
+    return (value() >= other.value());
+}
+
+bool Angle::operator<(Angle other) const {
+    return (value() < other.value());
+}
+
+bool Angle::operator>(Angle other) const {
+    return (value() > other.value());
+}
+
+bool Angle::operator==(float val) const {
+    return (value() == val);
+}
+
+bool Angle::operator<=(float val) const {
+    return (value() <= val);
+}
+
+bool Angle::operator>=(float val) const {
+    return (value() >= val);
+}
+
+bool Angle::operator<(float val) const {
+    return (value() < val);
+}
+
+bool Angle::operator>(float val) const {
+    return (value() > val);
+}
 
 // Info functions
 bool Angle::isValid()   const { return(_valid);   }

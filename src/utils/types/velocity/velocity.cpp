@@ -63,3 +63,42 @@ float Velocity::arg() const {
     return atan2(_vy, _vx);
 }
 
+bool Velocity::operator==(Velocity other) const {
+    return (abs() == other.abs());
+}
+
+bool Velocity::operator<=(Velocity other) const {
+    return (abs() <= other.abs());
+}
+
+bool Velocity::operator>=(Velocity other) const {
+    return (abs() >= other.abs());
+}
+
+bool Velocity::operator<(Velocity other) const {
+    return (abs() < other.abs());
+}
+
+bool Velocity::operator>(Velocity other) const {
+    return (abs() > other.abs());
+}
+
+bool Velocity::operator==(float val) const {
+    return (abs() == val);
+}
+
+bool Velocity::operator<=(float val) const {
+    return (abs() <= val);
+}
+
+bool Velocity::operator>=(float val) const {
+    return (abs() >= val);
+}
+
+bool Velocity::operator<(float val) const {
+    return (abs() < val);
+}
+
+bool Velocity::operator>(float val) const {
+    return (abs() > val);
+}

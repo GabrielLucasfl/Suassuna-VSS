@@ -40,6 +40,18 @@ public:
     AngularSpeed& operator =(const AngularSpeed& other);
     AngularSpeed& operator =(const float value);
 
+    // Overloaded operators
+    bool operator==(AngularSpeed other) const;
+    bool operator<=(AngularSpeed other) const;
+    bool operator>=(AngularSpeed other) const;
+    bool operator<(AngularSpeed other) const;
+    bool operator>(AngularSpeed other) const;
+    bool operator==(float val) const;
+    bool operator<=(float val) const;
+    bool operator>=(float val) const;
+    bool operator<(float val) const;
+    bool operator>(float val) const;
+
     void setValue(float value);
     float value() const;
     bool isUnknown() const;
