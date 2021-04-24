@@ -88,7 +88,11 @@ SOURCES += \
     src/entities/world/world.cpp \
     src/entities/world/worldmap.cpp \
     src/exithandler.cpp \
+    src/gui/fieldview/fieldobjects/fieldobjects.cpp \
+    src/gui/fieldview/fieldview.cpp \
+    src/gui/fieldview/gltext/gltext.cpp \
     src/gui/gui.cpp \
+    src/gui/robotframe/robotframe.cpp \
     src/suassuna.cpp \
     src/utils/freeangles/freeangles.cpp \
     src/utils/freeangles/obstacle.cpp \
@@ -166,7 +170,11 @@ HEADERS += \
     src/entities/world/world.h \
     src/entities/world/worldmap.h \
     src/exithandler.h \
+    src/gui/fieldview/fieldobjects/fieldobjects.h \
+    src/gui/fieldview/fieldview.h \
+    src/gui/fieldview/gltext/gltext.h \
     src/gui/gui.h \
+    src/gui/robotframe/robotframe.h \
     src/suassuna.h \
     src/utils/freeangles/freeangles.h \
     src/utils/freeangles/obstacle.h \
@@ -197,3 +205,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 FORMS += \
     src/gui/gui.ui
+
+RESOURCES += \
+    resources.qrc

@@ -49,7 +49,7 @@ void Entity::run(){
             msleep(rest);
         }
         else {
-            std::cout << Text::red(QString("[%1] ").arg(name()).toStdString(), true) + Text::bold("Timer overextended for " + std::to_string(-rest) + " seconds.") + '\n';
+            std::cout << Text::red(QString("[%1] ").arg(name()).toStdString(), true) + Text::bold("Timer overextended for " + std::to_string(-rest) + " milliseconds.") + '\n';
         }
     }
 

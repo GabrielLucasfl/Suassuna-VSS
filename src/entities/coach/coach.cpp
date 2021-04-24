@@ -65,6 +65,8 @@ void Coach::loop() {
 
     // Run coordinator
     _coordinator->runCoordinator();
+
+    emit updateTree();
 }
 
 void Coach::finalization() {

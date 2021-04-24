@@ -28,6 +28,7 @@
 
 class Coach : public Entity
 {
+    Q_OBJECT
 public:
     Coach(Constants *constants, Referee *referee, WorldMap *worldMap);
     ~Coach();
@@ -58,6 +59,9 @@ private:
     // Referee
     Referee *_referee;
     Referee* getReferee();
+
+signals:
+    void updateTree();
 };
 
 #endif // COACH_H

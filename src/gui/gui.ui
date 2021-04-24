@@ -6,151 +6,232 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1089</width>
+    <width>1112</width>
     <height>524</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Suassuna-VSS</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../resources.qrc">
+    <normaloff>:/resources/gui/armorial.ico</normaloff>:/resources/gui/armorial.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QOpenGLWidget" name="openGLWidget">
+   <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>2</y>
-      <width>600</width>
-      <height>520</height>
+      <y>0</y>
+      <width>1121</width>
+      <height>531</height>
      </rect>
     </property>
-   </widget>
-   <widget class="QFrame" name="frame">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>5</y>
-      <width>230</width>
-      <height>80</height>
-     </rect>
+    <property name="tabPosition">
+     <enum>QTabWidget::West</enum>
     </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
+    <property name="currentIndex">
+     <number>0</number>
     </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
-   <widget class="QFrame" name="frame_2">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>90</y>
-      <width>230</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
-   <widget class="QFrame" name="frame_3">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>175</y>
-      <width>230</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
-   <widget class="QFrame" name="frame_4">
-    <property name="geometry">
-     <rect>
-      <x>850</x>
-      <y>5</y>
-      <width>230</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
-   <widget class="QFrame" name="frame_5">
-    <property name="geometry">
-     <rect>
-      <x>850</x>
-      <y>90</y>
-      <width>230</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
-   <widget class="QFrame" name="frame_6">
-    <property name="geometry">
-     <rect>
-      <x>850</x>
-      <y>175</y>
-      <width>230</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
-   <widget class="QTreeWidget" name="treeWidget">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>260</y>
-      <width>470</width>
-      <height>260</height>
-     </rect>
-    </property>
-    <attribute name="headerVisible">
-     <bool>true</bool>
-    </attribute>
-    <attribute name="headerCascadingSectionResizes">
-     <bool>false</bool>
-    </attribute>
-    <attribute name="headerDefaultSectionSize">
-     <number>235</number>
-    </attribute>
-    <column>
-     <property name="text">
-      <string>1</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>2</string>
-     </property>
-    </column>
+    <widget class="QWidget" name="tab">
+     <attribute name="icon">
+      <iconset resource="../../resources.qrc">
+       <normaloff>:/resources/gui/field.png</normaloff>:/resources/gui/field.png</iconset>
+     </attribute>
+     <attribute name="title">
+      <string>Game</string>
+     </attribute>
+     <widget class="RobotFrame" name="robotframe_0">
+      <property name="geometry">
+       <rect>
+        <x>610</x>
+        <y>5</y>
+        <width>230</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+     <widget class="RobotFrame" name="robotframe_2">
+      <property name="geometry">
+       <rect>
+        <x>610</x>
+        <y>175</y>
+        <width>230</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+     <widget class="RobotFrame" name="robotframe_4">
+      <property name="geometry">
+       <rect>
+        <x>850</x>
+        <y>90</y>
+        <width>230</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+     <widget class="RobotFrame" name="robotframe_3">
+      <property name="geometry">
+       <rect>
+        <x>850</x>
+        <y>5</y>
+        <width>230</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+     <widget class="RobotFrame" name="robotframe_1">
+      <property name="geometry">
+       <rect>
+        <x>610</x>
+        <y>90</y>
+        <width>230</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+     <widget class="RobotFrame" name="robotframe_5">
+      <property name="geometry">
+       <rect>
+        <x>850</x>
+        <y>175</y>
+        <width>230</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+     <widget class="FieldView" name="fieldView">
+      <property name="geometry">
+       <rect>
+        <x>1</x>
+        <y>0</y>
+        <width>600</width>
+        <height>520</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTreeWidget" name="treeWidget">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>260</y>
+        <width>470</width>
+        <height>260</height>
+       </rect>
+      </property>
+      <property name="uniformRowHeights">
+       <bool>false</bool>
+      </property>
+      <property name="itemsExpandable">
+       <bool>true</bool>
+      </property>
+      <property name="expandsOnDoubleClick">
+       <bool>true</bool>
+      </property>
+      <attribute name="headerVisible">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="headerCascadingSectionResizes">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="headerDefaultSectionSize">
+       <number>235</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>Coach Tree</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string/>
+       </property>
+      </column>
+     </widget>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>610</x>
+        <y>10</y>
+        <width>471</width>
+        <height>241</height>
+       </rect>
+      </property>
+     </widget>
+     <zorder>fieldView</zorder>
+     <zorder>treeWidget</zorder>
+     <zorder>widget</zorder>
+     <zorder>robotframe_0</zorder>
+     <zorder>robotframe_2</zorder>
+     <zorder>robotframe_4</zorder>
+     <zorder>robotframe_3</zorder>
+     <zorder>robotframe_1</zorder>
+     <zorder>robotframe_5</zorder>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="icon">
+      <iconset resource="../../resources.qrc">
+       <normaloff>:/resources/gui/config.png</normaloff>:/resources/gui/config.png</iconset>
+     </attribute>
+     <attribute name="title">
+      <string>Configurations</string>
+     </attribute>
+    </widget>
    </widget>
   </widget>
  </widget>
- <resources/>
+ <customwidgets>
+  <customwidget>
+   <class>RobotFrame</class>
+   <extends>QFrame</extends>
+   <header location="global">src/gui/robotframe/robotframe.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FieldView</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">src/gui/fieldview/fieldview.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

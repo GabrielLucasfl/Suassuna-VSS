@@ -190,6 +190,8 @@ void Vision::loop() {
         }
 
         delete[] buffer;
+
+        emit updateVision();
     }
 }
 

@@ -1,0 +1,47 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/gui/referee/command.png</file>
+        <file>resources/gui/referee/redcard.png</file>
+        <file>resources/gui/referee/time.png</file>
+        <file>resources/gui/referee/timeout.png</file>
+        <file>resources/gui/referee/yellowcard.png</file>
+        <file>resources/gui/robotframe/battery.png</file>
+        <file>resources/gui/robotframe/chute.png</file>
+        <file>resources/gui/robotframe/connectednot.png</file>
+        <file>resources/gui/robotframe/connectedok.png</file>
+        <file>resources/gui/robotframe/dribblingnot.png</file>
+        <file>resources/gui/robotframe/dribblingok.png</file>
+        <file>resources/gui/robotframe/infranot.png</file>
+        <file>resources/gui/robotframe/infraok.png</file>
+        <file>resources/gui/roles/role_attacker.png</file>
+        <file>resources/gui/roles/role_barrier.png</file>
+        <file>resources/gui/roles/role_goalkeeper.png</file>
+        <file>resources/gui/roles/role_midfielder.png</file>
+        <file>resources/gui/roles/role_supporter.png</file>
+        <file>resources/gui/ag.png</file>
+        <file>resources/gui/armorial.ico</file>
+        <file>resources/gui/config.png</file>
+        <file>resources/gui/def.png</file>
+        <file>resources/gui/eq.png</file>
+        <file>resources/gui/field.png</file>
+        <file>resources/gui/none.png</file>
+        <file>resources/gui/strategy.png</file>
+        <file>resources/gui/vision.png</file>
+        <file>resources/robots/blue/b0.png</file>
+        <file>resources/robots/blue/b1.png</file>
+        <file>resources/robots/blue/b2.png</file>
+        <file>resources/robots/blue/b3.png</file>
+        <file>resources/robots/blue/b4.png</file>
+        <file>resources/robots/blue/b5.png</file>
+        <file>resources/robots/blue/b6.png</file>
+        <file>resources/robots/blue/b7.png</file>
+        <file>resources/robots/yellow/y0.png</file>
+        <file>resources/robots/yellow/y1.png</file>
+        <file>resources/robots/yellow/y2.png</file>
+        <file>resources/robots/yellow/y3.png</file>
+        <file>resources/robots/yellow/y4.png</file>
+        <file>resources/robots/yellow/y5.png</file>
+        <file>resources/robots/yellow/y6.png</file>
+        <file>resources/robots/yellow/y7.png</file>
+    </qresource>
+</RCC>

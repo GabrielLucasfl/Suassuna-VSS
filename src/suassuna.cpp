@@ -89,7 +89,15 @@ void Suassuna::start(bool startGUI) {
 
     // Starting GUI
     if(startGUI) {
-        _gui = new GUI();
+        // Create pointer
+        _gui = new GUI(getConstants(), getWorldMap(), getCoach(), getReferee());
+
+        // Connect with objects
+        QObject::connect(getVision(), SIGNAL(updateVision()), _gui, SLOT(updateFrames()));
+        QObject::connect(getVision(), SIGNAL(updateVision()), _gui, SLOT(updateField()));
+        QObject::connect(getCoach(), SIGNAL(updateTree()), _gui, SLOT(updateTree()));
+
+        // Show
         _gui->show();
     }
     else {

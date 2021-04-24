@@ -70,6 +70,7 @@ private:
     void clearControls();
 
 signals:
+    void updateVision();
     void sendPlayer(Colors::Color teamColor, quint8 playerId, Object playerObject);
     void sendBall(Object ballObject);
     void sendGeometryData(fira_message::Field geometData);

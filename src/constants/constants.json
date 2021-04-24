@@ -14,7 +14,7 @@
 	"Team":{
 		"teamColor": "yellow",
 		"teamSide": "right",
-		"qtPlayers": 3,
+		"qtPlayers": 6,
 		"Player":{
 			"playerPID": [20.0, 0.0, 2.5],
 			"playerBaseSpeed": 30.0,
