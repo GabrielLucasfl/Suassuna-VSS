@@ -34,6 +34,9 @@ Suassuna::Suassuna(Constants *constants) {
     // Creating world
     _world = new World(getConstants());
 
+    // Set gui nullptr
+    _gui = nullptr;
+
     // Register meta types
     qRegisterMetaType<Object>("Object");
     qRegisterMetaType<Position>("Position");
@@ -44,7 +47,7 @@ Suassuna::Suassuna(Constants *constants) {
     qRegisterMetaType<VSSRef::Quadrant>("VSSRef::Quadrant");
 }
 
-void Suassuna::start() {
+void Suassuna::start(bool startGUI) {
     // Creating World Map (set here the map that u desire)
     _worldMap = new WorldMap(getConstants(), getConstants()->teamSide(), new Field_VSSB());
 
@@ -84,6 +87,15 @@ void Suassuna::start() {
     // Setting coordinator to coach
     _coach->setCoordinator(new Coordinator_VSS());
 
+    // Starting GUI
+    if(startGUI) {
+        _gui = new GUI();
+        _gui->show();
+    }
+    else {
+        _gui = nullptr;
+    }
+
     // Starting world
     _world->start();
 
@@ -98,6 +110,12 @@ void Suassuna::stop() {
 
     // Deleting world (it also delete all other entities added to it)
     delete _world;
+
+    // Closing and deleting GUI
+    if(_gui != nullptr) {
+        _gui->close();
+        delete _gui;
+    }
 
     // Delete worldmap
     delete _worldMap;

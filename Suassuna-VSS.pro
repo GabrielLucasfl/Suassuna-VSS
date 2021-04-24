@@ -21,7 +21,7 @@ UI_DIR = tmp/moc
 RCC_DIR = tmp/rc
 
 # Project libs
-LIBS *= -lprotobuf -lQt5Core
+LIBS *= -lprotobuf -lQt5Core -lGLU
 
 # Compiling .proto files
 system(echo "Compiling protobuf files" && cd include/proto && protoc --cpp_out=../ *.proto && cd ../..)
@@ -31,7 +31,9 @@ system(echo "Compiling protobuf files" && cd include/proto && protoc --cpp_out=.
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += APP_NAME=\\\"$$TARGET\\\"
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+DEFINES += PROJECT_PATH=\\\"$${PWD}\\\"
 
 # Project source files
 SOURCES += \
@@ -86,6 +88,7 @@ SOURCES += \
     src/entities/world/world.cpp \
     src/entities/world/worldmap.cpp \
     src/exithandler.cpp \
+    src/gui/gui.cpp \
     src/suassuna.cpp \
     src/utils/freeangles/freeangles.cpp \
     src/utils/freeangles/obstacle.cpp \
@@ -163,6 +166,7 @@ HEADERS += \
     src/entities/world/world.h \
     src/entities/world/worldmap.h \
     src/exithandler.h \
+    src/gui/gui.h \
     src/suassuna.h \
     src/utils/freeangles/freeangles.h \
     src/utils/freeangles/obstacle.h \
@@ -190,3 +194,6 @@ HEADERS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+FORMS += \
+    src/gui/gui.ui

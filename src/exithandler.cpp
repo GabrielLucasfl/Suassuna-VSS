@@ -26,7 +26,7 @@
 #include <signal.h>
 #include <src/utils/text/text.h>
 
-QCoreApplication* ExitHandler::_app = NULL;
+QCoreApplication* ExitHandler::_app = nullptr;
 int ExitHandler::_counter = 0;
 
 ExitHandler::ExitHandler() {
@@ -50,7 +50,6 @@ void ExitHandler::run(int s) {
     ExitHandler::_counter++;
     switch(ExitHandler::_counter) {
         case 1: {
-            // Close application
             ExitHandler::_app->exit();
         }
         break;

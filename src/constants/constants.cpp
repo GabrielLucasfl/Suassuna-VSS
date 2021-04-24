@@ -161,6 +161,23 @@ quint16 Constants::visionPort() {
     return _visionPort;
 }
 
+void Constants::setManualVisionNetwork(QString visionNetwork) {
+    QStringList arguments = visionNetwork.split(":");
+
+    // Check if has sufficient arguments
+    if(arguments.size() < 2) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("Error while parsing manual vision network data.") + '\n';
+        return;
+    }
+
+    // Parse data
+    _visionAddress = arguments.at(0);
+    _visionPort = arguments.at(1).toInt();
+
+    // Debug
+    std::cout << Text::blue("[MANUAL] ", true) + Text::bold("Parsed vision network: " + visionAddress().toStdString() + ":" + std::to_string(visionPort())) + '\n';
+}
+
 int Constants::lossFilterTime() {
     return _lossFilterTime;
 }
@@ -197,6 +214,23 @@ quint16 Constants::replacerPort() {
     return _replacerPort;
 }
 
+void Constants::setManualRefereeNetwork(QString refereeNetwork) {
+    QStringList arguments = refereeNetwork.split(":");
+
+    // Check if has sufficient arguments
+    if(arguments.size() < 2) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("Error while parsing manual referee network data.") + '\n';
+        return;
+    }
+
+    // Parse data
+    _refereeAddress = arguments.at(0);
+    _refereePort = arguments.at(1).toInt();
+
+    // Debug
+    std::cout << Text::blue("[MANUAL] ", true) + Text::bold("Parsed referee network: " + refereeAddress().toStdString() + ":" + std::to_string(refereePort())) + '\n';
+}
+
 QString Constants::teamColorName() {
     return _teamColorName;
 }
@@ -206,7 +240,11 @@ Colors::Color Constants::teamColor() {
 }
 
 FieldSide Constants::teamSide() {
-    return _teamSide;
+    _sideMutex.lock();
+    FieldSide teamSide = _teamSide;
+    _sideMutex.unlock();
+
+    return teamSide;
 }
 
 int Constants::qtPlayers() {
@@ -231,4 +269,35 @@ float Constants::timeToConsiderStuck() {
 
 float Constants::timeToWaitStuckMovement() {
     return _timeToWaitStuckMovement;
+}
+
+void Constants::swapTeamSide() {
+    _sideMutex.lock();
+    _teamSide = FieldSide(_teamSide.oppositeSide());
+    _sideMutex.unlock();
+}
+
+void Constants::setManualTeamColor(QString teamColorName) {
+    if(teamColorName.toLower() == "blue" || teamColorName.toLower() == "yellow") {
+        _teamColorName = teamColorName;
+        std::cout << Text::blue("[MANUAL] ", true) + Text::bold("Parsed manual teamColor: " + teamColorName.toLower().toStdString()) + '\n';
+    }
+    else {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("Failed to parse manual team color.") + '\n';
+    }
+}
+
+void Constants::setManualTeamSide(QString teamSide) {
+    if(teamSide.toLower() == "left" || teamSide.toLower() == "right") {
+        if(teamSide.toLower() == "left") {
+            _teamSide = FieldSide(Sides::LEFT);
+        }
+        else {
+            _teamSide = FieldSide(Sides::RIGHT);
+        }
+        std::cout << Text::blue("[MANUAL] ", true) + Text::bold("Parsed manual teamSide: " + teamSide.toLower().toStdString()) + '\n';
+    }
+    else {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("Failed to parse manual team side.") + '\n';
+    }
 }

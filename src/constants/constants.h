@@ -22,6 +22,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <QMutex>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QVariantMap>
@@ -42,6 +43,7 @@ public:
     // Vision
     QString visionAddress();
     quint16 visionPort();
+    void setManualVisionNetwork(QString visionNetwork);
     int lossFilterTime();
     int noiseFilterTime();
     bool useGeometryFromCamera();
@@ -55,6 +57,7 @@ public:
     quint16 refereePort();
     QString replacerAddress();
     quint16 replacerPort();
+    void setManualRefereeNetwork(QString refereeNetwork);
 
     // Team
     QString teamColorName();
@@ -66,6 +69,10 @@ public:
     float distToConsiderStuck();
     float timeToConsiderStuck();
     float timeToWaitStuckMovement();
+    void swapTeamSide();
+    void setManualTeamColor(QString teamColorName);
+    void setManualTeamSide(QString teamSide);
+    QMutex _sideMutex;
 
 protected:
     QVariantMap documentMap() { return _documentMap; }

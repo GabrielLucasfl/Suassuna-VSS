@@ -25,6 +25,9 @@ Actuator::Actuator(Constants *constants) : Entity(ENT_ACTUATOR) {
     // Set constants
     _constants = constants;
 
+    // Set data as nullptr
+    _robotsData = nullptr;
+
     // Init data
     initData();
 }

@@ -29,6 +29,7 @@
 #include <src/entities/world/worldmap.h>
 #include <src/entities/referee/referee.h>
 #include <src/constants/constants.h>
+#include <src/gui/gui.h>
 
 class Suassuna
 {
@@ -36,7 +37,7 @@ public:
     Suassuna(Constants *constants);
 
     // Internal management
-    void start();
+    void start(bool startGUI);
     void stop();
 
 private:
@@ -63,6 +64,9 @@ private:
     // Coach
     Coach *_coach;
     Coach* getCoach();
+
+    // GUI
+    GUI *_gui;
 
     // World Map
     WorldMap *_worldMap;
