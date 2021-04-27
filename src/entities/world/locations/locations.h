@@ -151,7 +151,7 @@ private:
     bool _isOutsideField(const Position &pos, const float maxX, const float maxY);
 
     // Mutex for data management
-    QReadWriteLock _mutex;
+    QMutex _mutex;
 };
 
 #endif // LOCATIONS_H

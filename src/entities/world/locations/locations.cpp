@@ -112,7 +112,7 @@ FieldSide Locations::theirSide() {
 }
 
 QList<Wall> Locations::getWalls() {
-    _mutex.lockForRead();
+    _mutex.lock();
     QList<Wall> walls = _walls;
     _mutex.unlock();
 
@@ -120,95 +120,119 @@ QList<Wall> Locations::getWalls() {
 }
 
 Position Locations::fieldCenter() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position fieldCenter = _fieldCenter;
     _mutex.unlock();
 
     return fieldCenter;
 }
 
-float Locations::fieldMinX()  {
-    _mutex.lockForRead();
-    float fMinX = -fabs(ourFieldTopCorner().x());
+float Locations::fieldMinX()  {    
+    float fieldTopCornerX = ourFieldTopCorner().x();
+
+    _mutex.lock();
+    float fMinX = -fabs(fieldTopCornerX);
     _mutex.unlock();
 
     return fMinX;
 }
 
 float Locations::fieldMaxX()  {
-    _mutex.lockForRead();
-    float fMaxX = fabs(ourFieldTopCorner().x());
+    float fieldTopCornerX = ourFieldTopCorner().x();
+
+    _mutex.lock();
+    float fMaxX = fabs(fieldTopCornerX);
     _mutex.unlock();
 
     return fMaxX;
 }
 
 float Locations::fieldMinY()  {
-    _mutex.lockForRead();
-    float fMinY = -fabs(ourFieldTopCorner().y());
+    float fieldTopCornerY = ourFieldTopCorner().y();
+
+    _mutex.lock();
+    float fMinY = -fabs(fieldTopCornerY);
     _mutex.unlock();
 
     return fMinY;
 }
 
 float Locations::fieldMaxY()  {
-    _mutex.lockForRead();
-    float fMaxY = fabs(ourFieldTopCorner().y());
+    float fieldTopCornerY = ourFieldTopCorner().y();
+
+    _mutex.lock();
+    float fMaxY = fabs(fieldTopCornerY);
     _mutex.unlock();
 
     return fMaxY;
 }
 
 float Locations::fieldLength()  {
-    _mutex.lockForRead();
-    float fLength = 2*fieldMaxX();
+    float fieldMX = fieldMaxX();
+
+    _mutex.lock();
+    float fLength = 2*fieldMX;
     _mutex.unlock();
 
     return fLength;
 }
 
 float Locations::fieldWidth()  {
-    _mutex.lockForRead();
-    float fWidth = 2*fieldMaxY();
+    float fieldMY = fieldMaxY();
+
+    _mutex.lock();
+    float fWidth = 2*fieldMY;
     _mutex.unlock();
 
     return fWidth;
 }
 
 Position Locations::fieldRightTopCorner() {
-    _mutex.lockForRead();
-    Position fRightTopCorner = Position(true, this->fieldMaxX(), this->fieldMaxY());
+    float fieldMX = fieldMaxX();
+    float fieldMY = fieldMaxY();
+
+    _mutex.lock();
+    Position fRightTopCorner = Position(true, fieldMX, fieldMY);
     _mutex.unlock();
 
     return fRightTopCorner;
 }
 
 Position Locations::fieldRightBottomCorner() {
-    _mutex.lockForRead();
-    Position fRightBottomCorner = Position(true, this->fieldMaxX(), this->fieldMinY());
+    float fieldMX = fieldMaxX();
+    float fieldMY = fieldMaxY();
+
+    _mutex.lock();
+    Position fRightBottomCorner = Position(true, fieldMX, fieldMY);
     _mutex.unlock();
 
     return fRightBottomCorner;
 }
 
 Position Locations::fieldLeftTopCorner() {
-    _mutex.lockForRead();
-    Position fLeftTopCorner = Position(true, this->fieldMinX(), this->fieldMaxY());
+    float fieldMX = fieldMaxX();
+    float fieldMY = fieldMaxY();
+
+    _mutex.lock();
+    Position fLeftTopCorner = Position(true, fieldMX, fieldMY);
     _mutex.unlock();
 
     return fLeftTopCorner;
 }
 
 Position Locations::fieldLeftBottomCorner() {
-    _mutex.lockForRead();
-    Position fLeftBottomCorner = Position(true, this->fieldMinX(), this->fieldMinY());
+    float fieldMX = fieldMaxX();
+    float fieldMY = fieldMaxY();
+
+    _mutex.lock();
+    Position fLeftBottomCorner = Position(true, fieldMX, fieldMY);
     _mutex.unlock();
 
     return fLeftBottomCorner;
 }
 
 Position Locations::ourFieldTopCorner() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position ourFTopCorner = (ourSide().isRight() ? _fieldTopRightCorner : _fieldTopLeftCorner);
     _mutex.unlock();
 
@@ -216,7 +240,7 @@ Position Locations::ourFieldTopCorner() {
 }
 
 Position Locations::ourFieldBottomCorner() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position ourFBottomCorner = (ourSide().isRight() ? _fieldBottomRightCorner : _fieldBottomLeftCorner);
     _mutex.unlock();
 
@@ -224,7 +248,7 @@ Position Locations::ourFieldBottomCorner() {
 }
 
 Position Locations::ourGoal() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position ourG = Position(true, (ourSide().isRight() ? _rightGoalLeftPost : _leftGoalLeftPost).x(), 0.0);
     _mutex.unlock();
 
@@ -232,7 +256,7 @@ Position Locations::ourGoal() {
 }
 
 Position Locations::ourGoalRightPost() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position ourGRightPost = (ourSide().isRight() ? _rightGoalRightPost : _leftGoalRightPost);
     _mutex.unlock();
 
@@ -240,7 +264,7 @@ Position Locations::ourGoalRightPost() {
 }
 
 Position Locations::ourGoalLeftPost() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position ourGLeftPost = (ourSide().isRight() ? _rightGoalLeftPost : _leftGoalLeftPost);
     _mutex.unlock();
 
@@ -248,7 +272,7 @@ Position Locations::ourGoalLeftPost() {
 }
 
 Position Locations::ourPenaltyMark() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position ourPMark = (ourSide().isRight() ? _rightPenaltyMark : _leftPenaltyMark);
     _mutex.unlock();
 
@@ -256,7 +280,7 @@ Position Locations::ourPenaltyMark() {
 }
 
 Position Locations::theirFieldTopCorner() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position theirFTopCorner = theirSide().isRight() ? _fieldTopRightCorner : _fieldTopLeftCorner;
     _mutex.unlock();
 
@@ -264,7 +288,7 @@ Position Locations::theirFieldTopCorner() {
 }
 
 Position Locations::theirFieldBottomCorner() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position theirFBottomCorner = (theirSide().isRight() ? _fieldBottomRightCorner : _fieldBottomLeftCorner);
     _mutex.unlock();
 
@@ -272,7 +296,7 @@ Position Locations::theirFieldBottomCorner() {
 }
 
 Position Locations::theirGoal() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position theirG =Position(true, (theirSide().isRight() ? _rightGoalLeftPost : _leftGoalLeftPost).x(), 0.0);
     _mutex.unlock();
 
@@ -280,7 +304,7 @@ Position Locations::theirGoal() {
 }
 
 Position Locations::theirGoalRightPost() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position theirGRightPost =(theirSide().isRight() ? _rightGoalRightPost : _leftGoalRightPost);
     _mutex.unlock();
 
@@ -288,7 +312,7 @@ Position Locations::theirGoalRightPost() {
 }
 
 Position Locations::theirGoalLeftPost() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position theirGLeftPost = (theirSide().isRight() ? _rightGoalLeftPost : _leftGoalLeftPost);
     _mutex.unlock();
 
@@ -296,7 +320,7 @@ Position Locations::theirGoalLeftPost() {
 }
 
 Position Locations::theirPenaltyMark() {
-    _mutex.lockForRead();
+    _mutex.lock();
     Position theirPMark = (theirSide().isRight() ? _rightPenaltyMark : _leftPenaltyMark);
     _mutex.unlock();
 
@@ -304,7 +328,7 @@ Position Locations::theirPenaltyMark() {
 }
 
 float Locations::fieldCenterRadius() {
-    _mutex.lockForRead();
+    _mutex.lock();
     float fCenterRadius = _fieldCenterRadius;
     _mutex.unlock();
 
@@ -312,7 +336,7 @@ float Locations::fieldCenterRadius() {
 }
 
 float Locations::fieldDefenseLength() {
-    _mutex.lockForRead();
+    _mutex.lock();
     float fDefenseLength = _goalLength;
     _mutex.unlock();
 
@@ -320,7 +344,7 @@ float Locations::fieldDefenseLength() {
 }
 
 float Locations::fieldDefenseWidth() {
-    _mutex.lockForRead();
+    _mutex.lock();
     float fDefenseWidth = _goalWidth;
     _mutex.unlock();
 
@@ -328,7 +352,7 @@ float Locations::fieldDefenseWidth() {
 }
 
 float Locations::fieldGoalDepth() {
-    _mutex.lockForRead();
+    _mutex.lock();
     float fGoalDepth = _goalDepth;
     _mutex.unlock();
 
@@ -389,7 +413,7 @@ bool Locations::_isOutsideField(const Position &pos, const float maxX, const flo
 
 Position Locations::ourAreaLeftPost() {
     Position ourAreaLeftPost;
-    _mutex.lockForRead();
+    _mutex.lock();
     if(theirSide().isRight()) {
         ourAreaLeftPost = _leftAreaLeftPost;
     }else {
@@ -401,7 +425,7 @@ Position Locations::ourAreaLeftPost() {
 
 Position Locations::ourAreaRightPost() {
     Position ourAreaRightPost;
-    _mutex.lockForRead();
+    _mutex.lock();
     if(theirSide().isRight()) {
         ourAreaRightPost = _leftAreaRightPost;
     }else {
@@ -413,7 +437,7 @@ Position Locations::ourAreaRightPost() {
 
 Position Locations::theirAreaRightPost() {
     Position theirAreaRightPost;
-    _mutex.lockForRead();
+    _mutex.lock();
     if(theirSide().isRight()) {
         theirAreaRightPost = _rightAreaRightPost;
     }else {
@@ -425,7 +449,7 @@ Position Locations::theirAreaRightPost() {
 
 Position Locations::theirAreaLeftPost() {
     Position theirAreaLeftPost;
-    _mutex.lockForRead();
+    _mutex.lock();
     if(theirSide().isRight()) {
         theirAreaLeftPost = _rightAreaLeftPost;
     }else {
@@ -437,7 +461,7 @@ Position Locations::theirAreaLeftPost() {
 
 Position Locations::ourAreaLeftCorner() {
     Position ourAreaLeftCorner;
-    _mutex.lockForRead();
+    _mutex.lock();
     if(theirSide().isRight()) {
         ourAreaLeftCorner = _leftAreaLeftCorner;
     }else {
@@ -449,7 +473,7 @@ Position Locations::ourAreaLeftCorner() {
 
 Position Locations::ourAreaRightCorner() {
     Position ourAreaRightCorner;
-    _mutex.lockForRead();
+    _mutex.lock();
     if(theirSide().isRight()) {
         ourAreaRightCorner = _leftAreaRightCorner;
     }else {
@@ -461,7 +485,7 @@ Position Locations::ourAreaRightCorner() {
 
 Position Locations::theirAreaRightCorner() {
     Position theirAreaRightCorner;
-    _mutex.lockForRead();
+    _mutex.lock();
     if(theirSide().isRight()) {
         theirAreaRightCorner = _rightAreaRightCorner;
     }else {
@@ -473,7 +497,7 @@ Position Locations::theirAreaRightCorner() {
 
 Position Locations::theirAreaLeftCorner() {
     Position theirAreaLeftCorner;
-    _mutex.lockForRead();
+    _mutex.lock();
     if(theirSide().isRight()) {
         theirAreaLeftCorner = _rightAreaLeftCorner;
     }else {
@@ -485,7 +509,7 @@ Position Locations::theirAreaLeftCorner() {
 
 float Locations::defenseAreaWidth() {
     float width;
-    _mutex.lockForRead();
+    _mutex.lock();
     width = _defenseAreaWidth;
     _mutex.unlock();
     return width;
@@ -493,14 +517,14 @@ float Locations::defenseAreaWidth() {
 
 float Locations::defenseAreaLength() {
     float length;
-    _mutex.lockForRead();
+    _mutex.lock();
     length = _defenseAreaLength;
     _mutex.unlock();
     return length;
 }
 
 void Locations::updateGeometryData(fira_message::Field geometryData) {
-    _mutex.lockForWrite();
+    _mutex.lock();
 
     _lastData = geometryData;
 
