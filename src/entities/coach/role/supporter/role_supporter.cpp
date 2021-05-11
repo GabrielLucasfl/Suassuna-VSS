@@ -62,12 +62,12 @@ void Role_Supporter::configure() {
 void Role_Supporter::run() {
     if(player()->isBehindBallXCoord(player()->position())) {
         _avoidBall = true;
-    }else {
+    } else {
         _avoidBall = false;
     }
     if(hasAllyInTheirArea()) {
         _avoidTheirGoalArea = true;
-    }else {
+    } else {
         _avoidTheirGoalArea = false;
     }
     _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
@@ -90,15 +90,15 @@ void Role_Supporter::run() {
                if(ballVelocity.vy() > 0) {
                    _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMaxX(),
                                                                 getWorldMap()->getLocations()->fieldMaxY()));
-               }else {
+               } else {
                    _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMaxX(),
                                                                 getWorldMap()->getLocations()->fieldMinY()));
                }
-            }else {
+            } else {
                 if(ballVelocity.vy() > 0) {
                     _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMinX(),
                                                                  getWorldMap()->getLocations()->fieldMaxY()));
-                }else {
+                } else {
                     _bhv_goToBall->setReferencePosition(Position(true, getWorldMap()->getLocations()->fieldMinX(),
                                                                  getWorldMap()->getLocations()->fieldMinY()));
                 }
@@ -106,11 +106,11 @@ void Role_Supporter::run() {
             _bhv_goToBall->setAngle(2.44f);
             _bhv_goToBall->setOffsetBehindBall(0.3f);
             setBehavior(BHV_GOTOBALL);
-        }else {
+        } else {
             _canAvoidBall = false;
             setBehavior(BHV_BARRIER);
         }
-    }else{
+    } else {
         _canAvoidBall = true;
         if(!_pushBall) {
             // Advanced Support
@@ -120,7 +120,7 @@ void Role_Supporter::run() {
             if(_nofreeAngles){
                 posy_advanced = ballPosition.y();
                 desiredPosition.setPosition(1,posx_advanced,posy_advanced);
-            }else{
+            } else {
                 posy_advanced = ballPosition.y() + (moduloVet * sin(largestMid));
                 desiredPosition.setPosition(1,posx_advanced,posy_advanced);
             }
@@ -144,7 +144,7 @@ void Role_Supporter::run() {
             _bhv_moveTo->setTargetPosition(desiredPosition);
             //_bhv_moveTo->setMinimalVelocity(_minVelocity);
             setBehavior(BHV_MOVETO);
-        }else {
+        } else {
             // Fixed variables
             Position ballPosition;
             Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
@@ -212,7 +212,7 @@ float Role_Supporter::getLargestFreeAngle() {
         Position leftPost = getWorldMap()->getLocations()->ourGoalLeftPost();
         Position rightPost = getWorldMap()->getLocations()->ourGoalRightPost();
         intervalos = FreeAngles::getFreeAngles(ballPosition,leftPost,rightPost,obstacles,false);
-    }else{
+    } else {
         Position leftPost = getWorldMap()->getLocations()->ourGoalLeftPost();
         Position rightPost = getWorldMap()->getLocations()->ourGoalRightPost();
         intervalos = FreeAngles::getFreeAngles(ballPosition,leftPost,rightPost,obstacles,false);
@@ -225,7 +225,7 @@ float Role_Supporter::getLargestFreeAngle() {
     if(intervalos.size()==0) {
         _nofreeAngles = true;
         largestMid = 0.0f;
-    }else {
+    } else {
         _nofreeAngles = false;
         for(int i=0; i<intervalos.size(); i++) {
             float angI = intervalos.at(i).angInitial();
@@ -254,23 +254,23 @@ bool Role_Supporter::inRangeToPush(Position ballPos) {
     firstPost = getWorldMap()->getLocations()->theirGoalRightPost();
     if(firstPost.y() < 0) {
         firstPost.setPosition(true, firstPost.x(), firstPost.y() - offsetY);
-    }else {
+    } else {
         firstPost.setPosition(true, firstPost.x(), firstPost.y() + offsetY);
     }
     if(firstPost.x() < 0) {
         firstPost.setPosition(true, firstPost.x() - offsetX, firstPost.y());
-    }else {
+    } else {
         firstPost.setPosition(true, firstPost.x() + offsetX, firstPost.y());
     }
     secondPost = getWorldMap()->getLocations()->theirGoalLeftPost();
     if(secondPost.y() < 0) {
         secondPost.setPosition(true, secondPost.x(), secondPost.y() - offsetY);
-    }else {
+    } else {
         secondPost.setPosition(true, secondPost.x(), secondPost.y() + offsetY);
     }
     if(secondPost.x() < 0) {
         secondPost.setPosition(true, secondPost.x() - offsetX, secondPost.y());
-    }else {
+    } else {
         secondPost.setPosition(true, secondPost.x() + offsetX, secondPost.y());
     }
 
@@ -319,7 +319,7 @@ bool Role_Supporter::isBall_ourfield(){
     Position position_ball = getWorldMap()->getBall().getPosition();
     if(getConstants()->teamSide().isRight()){
         return (position_ball.x() > 0.0f);
-    }else{
+    } else {
         return (position_ball.x() < 0.0f);
     }
 }
@@ -328,7 +328,7 @@ bool Role_Supporter::isBall_ourfield(){
 float Role_Supporter::calcBarrier_Xcomponent(){
     if(getConstants()->teamSide().isRight()){
         return getWorldMap()->getLocations()->ourGoal().x() - _posXbarrier;
-    }else{
+    } else {
         return getWorldMap()->getLocations()->ourGoal().x() + _posXbarrier;
     }
 }
@@ -398,7 +398,7 @@ QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, V
         case VSSRef::Foul::GOAL_KICK: {
             if(!isForOurTeam) {
                 standardPosition = Utils::threePoints(getWorldMap()->getLocations()->theirPenaltyMark(),
-                                                      getWorldMap()->getLocations()->theirAreaLeftPost(),
+                                                      getWorldMap()->getLocations()->theirAreaLeftBackCorner(),
                                                       0.1f, M_PI);
                 standardAngle = Angle(true, 0.0);
             }

@@ -73,10 +73,10 @@ public:
     Position ourGoalRightPost();
     Position ourGoalLeftPost();
     Position ourPenaltyMark();
-    Position ourAreaLeftPost();
-    Position ourAreaRightPost();
-    Position ourAreaLeftCorner();
-    Position ourAreaRightCorner();
+    Position ourAreaLeftBackCorner();
+    Position ourAreaRightBackCorner();
+    Position ourAreaLeftFrontCorner();
+    Position ourAreaRightFrontCorner();
 
     // Their
     Position theirFieldTopCorner();
@@ -85,10 +85,10 @@ public:
     Position theirGoalRightPost();
     Position theirGoalLeftPost();
     Position theirPenaltyMark();
-    Position theirAreaLeftPost();
-    Position theirAreaRightPost();
-    Position theirAreaLeftCorner();
-    Position theirAreaRightCorner();
+    Position theirAreaLeftBackCorner();
+    Position theirAreaRightBackCorner();
+    Position theirAreaLeftFrontCorner();
+    Position theirAreaRightFrontCorner();
 
     // Auxiliar functions
     bool isInsideOurField(const Position &pos);
@@ -132,20 +132,20 @@ private:
     Position _rightGoalRightPost;
     Position _leftGoalLeftPost;
     Position _leftGoalRightPost;
-    Position _leftAreaLeftPost;
-    Position _leftAreaRightPost;
-    Position _rightAreaLeftPost;
-    Position _rightAreaRightPost;
-    Position _leftAreaLeftCorner;
-    Position _leftAreaRightCorner;
-    Position _rightAreaLeftCorner;
-    Position _rightAreaRightCorner;
+    Position _leftAreaLeftBackCorner;
+    Position _leftAreaRightBackCorner;
+    Position _leftAreaLeftFrontCorner;
+    Position _leftAreaRightFrontCorner;
+    Position _rightAreaLeftBackCorner;
+    Position _rightAreaRightBackCorner;
+    Position _rightAreaLeftFrontCorner;
+    Position _rightAreaRightFrontCorner;
+    float _defenseAreaWidth;
+    float _defenseAreaLength;
     float _fieldCenterRadius;
     float _goalLength;
     float _goalWidth;
     float _goalDepth;
-    float _defenseAreaLength;
-    float _defenseAreaWidth;
 
     // Internal
     bool _isOutsideField(const Position &pos, const float maxX, const float maxY);

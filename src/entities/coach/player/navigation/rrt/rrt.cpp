@@ -59,13 +59,13 @@ void RRT::addGoalArea(const Position &pos) {
     //add area as 3 circular obstacles
     float areaLength = loc()->defenseAreaLength();
     float radius = areaLength/6;
-    float centersX = abs(loc()->ourAreaLeftCorner().x()) + radius;
+    float centersX = abs(loc()->ourAreaLeftFrontCorner().x()) + radius;
     Position c1, c2, c3;
     // Corners of areas
     float areaWidth = loc()->defenseAreaWidth();
     float minorRadius = areaWidth/4.0f;
-    float cornerX = abs(loc()->ourAreaLeftCorner().x()) + minorRadius;
-    float cornerY = abs(loc()->ourAreaLeftCorner().y()) - minorRadius;
+    float cornerX = abs(loc()->ourAreaLeftFrontCorner().x()) + minorRadius;
+    float cornerY = abs(loc()->ourAreaLeftFrontCorner().y()) - minorRadius;
     Position cCorner1, cCorner2;
     if(pos.x() > 0) {
         c1 = Position(true, centersX, 2*radius);

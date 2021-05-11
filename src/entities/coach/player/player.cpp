@@ -278,12 +278,12 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
         theirSideIsLeft = false;
 
         //Check Position
-        if (targetPosition.y() >= getWorldMap()->getLocations()->ourAreaLeftCorner().y()
-            && targetPosition.y() <= getWorldMap()->getLocations()->ourAreaRightCorner().y()) {
-            if (targetPosition.x() <= getWorldMap()->getLocations()->ourAreaLeftCorner().x()) {
+        if (targetPosition.y() >= getWorldMap()->getLocations()->ourAreaLeftFrontCorner().y()
+            && targetPosition.y() <= getWorldMap()->getLocations()->ourAreaRightFrontCorner().y()) {
+            if (targetPosition.x() <= getWorldMap()->getLocations()->ourAreaLeftFrontCorner().x()) {
                 isInsideOurArea = true;
             }
-            if (targetPosition.x() >= getWorldMap()->getLocations()->theirAreaLeftCorner().x()) {
+            if (targetPosition.x() >= getWorldMap()->getLocations()->theirAreaLeftFrontCorner().x()) {
                 isInsideTheirArea = true;
             }
         }
@@ -293,12 +293,12 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
         theirSideIsLeft = true;
 
         //Check Position
-        if (targetPosition.y() >= getWorldMap()->getLocations()->ourAreaRightCorner().y()
-            && targetPosition.y() <= getWorldMap()->getLocations()->ourAreaLeftCorner().y()) {
-            if (targetPosition.x() >= getWorldMap()->getLocations()->ourAreaLeftCorner().x()) {
+        if (targetPosition.y() >= getWorldMap()->getLocations()->ourAreaRightFrontCorner().y()
+            && targetPosition.y() <= getWorldMap()->getLocations()->ourAreaLeftFrontCorner().y()) {
+            if (targetPosition.x() >= getWorldMap()->getLocations()->ourAreaLeftFrontCorner().x()) {
                 isInsideOurArea = true;
             }
-            if (targetPosition.x() <= getWorldMap()->getLocations()->theirAreaLeftCorner().x()) {
+            if (targetPosition.x() <= getWorldMap()->getLocations()->theirAreaLeftFrontCorner().x()) {
                 isInsideTheirArea = true;
             }
         }
@@ -316,10 +316,10 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
             if (targetPosition.y() >= 0.0f) {
                 Position topCorner;
                 if (ourSideIsLeft) {
-                    topCorner = getWorldMap()->getLocations()->ourAreaRightCorner();
+                    topCorner = getWorldMap()->getLocations()->ourAreaRightFrontCorner();
                 }
                 else {
-                    topCorner = getWorldMap()->getLocations()->ourAreaLeftCorner();
+                    topCorner = getWorldMap()->getLocations()->ourAreaLeftFrontCorner();
                 }
                 // Compare Distances
                 float horizontalDist = abs(targetPosition.x() - topCorner.x());
@@ -335,10 +335,10 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
             } else {
                 Position bottomCorner;
                 if (ourSideIsLeft) {
-                    bottomCorner = getWorldMap()->getLocations()->ourAreaLeftCorner();
+                    bottomCorner = getWorldMap()->getLocations()->ourAreaLeftFrontCorner();
                 }
                 else {
-                    bottomCorner = getWorldMap()->getLocations()->ourAreaRightCorner();
+                    bottomCorner = getWorldMap()->getLocations()->ourAreaRightFrontCorner();
                 }
 
                 // Compare Distances
@@ -362,10 +362,10 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
             if (targetPosition.y() >= 0.0f) {
                 Position topCorner;
                 if (theirSideIsLeft) {
-                    topCorner = getWorldMap()->getLocations()->theirAreaRightCorner();
+                    topCorner = getWorldMap()->getLocations()->theirAreaRightFrontCorner();
                 }
                 else {
-                    topCorner = getWorldMap()->getLocations()->theirAreaLeftCorner();
+                    topCorner = getWorldMap()->getLocations()->theirAreaLeftFrontCorner();
                 }
 
                 // Compare Distances
@@ -382,10 +382,10 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
             } else {
                 Position bottomCorner;
                 if (theirSideIsLeft) {
-                    bottomCorner = getWorldMap()->getLocations()->theirAreaLeftCorner();
+                    bottomCorner = getWorldMap()->getLocations()->theirAreaLeftFrontCorner();
                 }
                 else {
-                    bottomCorner = getWorldMap()->getLocations()->theirAreaRightCorner();
+                    bottomCorner = getWorldMap()->getLocations()->theirAreaRightFrontCorner();
                 }
 
                 // Compare Distances
