@@ -25,11 +25,13 @@ Playbook_Default::Playbook_Default() {
     _rl_default = nullptr;
     _rl_gk = nullptr;
     _rl_df = nullptr;
+    //_rl_tmp = nullptr;
     _rl_sup = nullptr;
     _rl_atk = nullptr;
 
     _switchedPlayers = true;
     _atkStuck = false;
+    _defenderState = true;
 }
 
 QString Playbook_Default::name() {
@@ -40,7 +42,7 @@ void Playbook_Default::configure(int numPlayers) {
     // For each player, register an role and call usesRole() to register it in the table
     _rl_default = new Role_Default();
     _rl_gk = new Role_Goalkeeper();
-    _rl_df = new Role_Defender();
+    _rl_df = new Role_TMP_DEF();
     _rl_sup = new Role_Supporter();
     _rl_atk = new Role_Attacker();
 
@@ -59,16 +61,17 @@ void Playbook_Default::run(int numPlayers) {
         _first = false;
     }
     _switchPlayersTimer.stop();
-    if(_switchPlayersTimer.getSeconds() > 2.0) {
+    if(_switchPlayersTimer.getSeconds() > 2) {
         _switchedPlayers = false;
-        //switchPlayersIDs();
+        switchPlayersIDs();
+        thirdPlayerState();
     }
 
     // Setting roles
     setPlayerRole(_goalkeeperID, _rl_gk);
     setPlayerRole(_attackerID, _rl_atk);
-    if (isDefenderSituation()) {
-        setPlayerRole(_lastID, _rl_sup);
+    if (_defenderState) {
+        setPlayerRole(_lastID, _rl_df);
     } else {
         setPlayerRole(_lastID, _rl_sup);
     }
@@ -150,31 +153,50 @@ void Playbook_Default::selectInitialIDs() {
     _attackerID = players[2];
 }
 
-bool Playbook_Default::isDefenderSituation() {
-    Colors::Color enemyColor;
-    if (getConstants()->teamColor() == Colors::BLUE) {
-        enemyColor = Colors::YELLOW;
-    } else {
-        enemyColor = Colors::BLUE;
-    }
-    bool result = false;
+void Playbook_Default::thirdPlayerState() {
+//    Colors::Color enemyColor;
+//    if (getConstants()->teamColor() == Colors::BLUE) {
+//        enemyColor = Colors::YELLOW;
+//    } else {
+//        enemyColor = Colors::BLUE;
+//    }
+//    bool result = false;
 
-    // Defining Defender situation
-    QList<quint8> enemyPlayers = getWorldMap()->getAvailablePlayers(enemyColor);
-    for (int i = 0; i < enemyPlayers.size(); i++) {
-        Position enemyPlayerPosition = getWorldMap()->getPlayer(enemyColor, enemyPlayers[i]).getPosition();
-        float enemyAngleToOurGoal = Utils::getAngle(getWorldMap()->getLocations()->ourGoal(), enemyPlayerPosition);
-        float enemyAngleToBall = Utils::getAngle(getWorldMap()->getBall().getPosition(), enemyPlayerPosition);
-        float enemyOrientation = getWorldMap()->getPlayer(enemyColor, enemyPlayers[i]).getOrientation().value();
-        float enemyBalDistance = Utils::distance(enemyPlayerPosition, getWorldMap()->getLocations()->ourGoal());
-        if ((enemyBalDistance < 0.07f && abs(enemyAngleToBall - enemyAngleToOurGoal) < static_cast<float>(M_PI) / 6)
-                && abs(enemyAngleToOurGoal - enemyOrientation) < static_cast<float>(M_PI) / 12) {
-            result = true;
-        } else {
-            result = false;
+//    // Defining Defender situation
+//    QList<quint8> enemyPlayers = getWorldMap()->getAvailablePlayers(enemyColor);
+//    for (int i = 0; i < enemyPlayers.size(); i++) {
+//        Position enemyPlayerPosition = getWorldMap()->getPlayer(enemyColor, enemyPlayers[i]).getPosition();
+//        float enemyAngleToOurGoal = Utils::getAngle(getWorldMap()->getLocations()->ourGoal(), enemyPlayerPosition);
+//        float enemyAngleToBall = Utils::getAngle(getWorldMap()->getBall().getPosition(), enemyPlayerPosition);
+//        float enemyOrientation = getWorldMap()->getPlayer(enemyColor, enemyPlayers[i]).getOrientation().value();
+//        float enemyBalDistance = Utils::distance(enemyPlayerPosition, getWorldMap()->getLocations()->ourGoal());
+//        if ((enemyBalDistance < 0.07f && abs(enemyAngleToBall - enemyAngleToOurGoal) < static_cast<float>(M_PI) / 6)
+//                && abs(enemyAngleToOurGoal - enemyOrientation) < static_cast<float>(M_PI) / 12) {
+//            result = true;
+//        } else {
+//            result = false;
+//        }
+//    }
+//    return result;
+
+    Position selfPosition = getWorldMap()->getPlayer(getConstants()->teamColor(), _lastID).getPosition();
+    if (_defenderState) {
+        if ((((getWorldMap()->getLocations()->ourSide().isRight() && getWorldMap()->getBall().getVelocity().vx() < 0.0f)
+                || (getWorldMap()->getLocations()->ourSide().isLeft() && getWorldMap()->getBall().getVelocity().vx() > 0.0f))
+                && getWorldMap()->getLocations()->isInsideOurField(getWorldMap()->getBall().getPosition()))
+                || (getWorldMap()->getLocations()->isInsideTheirField(selfPosition) && _switchedPlayers)) {
+            _defenderState = false;
+        }
+    } else {
+        Position atkPosition = getWorldMap()->getPlayer(getConstants()->teamColor(), _attackerID).getPosition();
+        if (_atkStuck || (((Utils::distance(atkPosition, getWorldMap()->getBall().getPosition()) > 0.3f
+                && isBehindBallXcoord(atkPosition)) || !isBehindBallXcoord(atkPosition))
+                && ((getWorldMap()->getLocations()->ourSide().isRight() && getWorldMap()->getBall().getVelocity().vx() > 0.0f)
+                || (getWorldMap()->getLocations()->ourSide().isLeft() && getWorldMap()->getBall().getVelocity().vx() < 0.0f)))
+                || (getWorldMap()->getLocations()->isInsideOurField(selfPosition) && _switchedPlayers)) {
+            _defenderState = true;
         }
     }
-    return result;
 }
 
 bool Playbook_Default::isBehindBallXcoord(Position pos) {

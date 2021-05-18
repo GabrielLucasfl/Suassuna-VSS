@@ -39,20 +39,22 @@ private:
     // Role pointer vector
     Role_Default *_rl_default;
     Role_Goalkeeper *_rl_gk;
-    Role_Defender *_rl_df;
+    Role_TMP_DEF *_rl_df;
+    //Role_TMP_DEF *_rl_tmp;
     Role_Supporter *_rl_sup;
     Role_Attacker *_rl_atk;
 
     // Internal functions
     void switchPlayersIDs();
     void selectInitialIDs();
-    bool isDefenderSituation();
+    void thirdPlayerState();
     bool isBehindBallXcoord(Position pos);
 
     // Parameters
     quint8 _attackerID;
     quint8 _goalkeeperID;
     quint8 _lastID;
+    bool _defenderState;
 
     // Initial
     bool _first = true;
