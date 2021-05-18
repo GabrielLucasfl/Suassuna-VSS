@@ -7,221 +7,263 @@
 #include <src/entities/world/world.h>
 #include <src/entities/coach/coordinator/coordinator.h>
 
-QList<Obstacle> FreeAngles::getObstacles(const Position watcher, float distanceRadius, QList<Object> players){
-    if(players.isEmpty()){
-        //std::cout << "[FREEANGLES] Sem times";
+#include "freeangles.h"
+
+WorldMap* FreeAngles::_worldMap = nullptr;
+
+void FreeAngles::setWorldMap(WorldMap *worldMap) {
+    FreeAngles::_worldMap = worldMap;
+}
+
+WorldMap* FreeAngles::getWorldMap() {
+    if(_worldMap == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("WorldMap with nullptr value at FreeAngles") + '\n';
+    }
+    else {
+        return _worldMap;
+    }
+
+    return nullptr;
+}
+
+QList<Obstacle> FreeAngles::getObstacles(const Position &watcher, float distanceRadius) {
+    // Check nullptr
+    if(getWorldMap() == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("FreeAngles::getObstacles(args) WorldMap with nullptr.") + '\n';
         return QList<Obstacle>();
     }
 
+    // Create list of obstacles
     QList<Obstacle> obstacles;
-    QList<Object>::const_iterator it;
 
-    for(it = players.constBegin(); it!= players.constEnd(); it++){
+    for(int i = Colors::Color::YELLOW; i <= Colors::Color::BLUE; i++) {
+        // Take list of available objets in the field
+        QList<Object> objects = getWorldMap()->getAvailableObjects(Colors::Color(i));
+        QList<Object>::iterator it;
 
-        Object player = *it;
-        Position posPlayer = player.getPosition();
+        for(it = objects.begin(); it != objects.end(); it++) {
+            // Take object data
+            Object object = (*it);
+            const Position objectPosition = (*it).getPosition();
 
-        // Player == watcher?
-        if(watcher.x() == posPlayer.x() && watcher.y() == posPlayer.y())
-            continue;
+            // Check if watcher == objectPosition
+            if(!watcher.isInvalid() && watcher == objectPosition) {
+                continue;
+            }
 
-        //verificar o raio
-        float distPos = Utils::distance(watcher, posPlayer);
-        if(distPos > distanceRadius) continue;
+            // Check radius
+            if(!watcher.isInvalid()) {
+                float distToPos = Utils::distance(watcher, objectPosition);
+                if(distToPos > distanceRadius) {
+                    continue;
+                }
+            }
 
-        // criar um obstaculo com as infos
-        Obstacle obst;
-        Position _posAux = player.getPosition();
-        obst._position = _posAux;
-        obst._radius = 0.054f;      // Distância do vértice do quadrado (robô) ao centro do robô
+            // Update info
+            Obstacle obst;
+            obst = object; // Overloaded operator (take position)
 
-        obstacles.push_back(obst);
+            // Push to list
+            obstacles.push_back(obst);
+        }
     }
-
 
     return obstacles;
 }
 
-QList<FreeAngles::Interval> FreeAngles::getFreeAngles(const Position watcher, const Position initialPos, const Position finalPos, const QList<Obstacle> obstacles, bool returnObstructed) {
+QList<Obstacle> FreeAngles::getObstacles(const Position &watcher) {
+    return FreeAngles::getObstacles(watcher, 1000.0f);
+}
+
+QList<Obstacle> FreeAngles::getObstacles() {
+    return FreeAngles::getObstacles(Position(false, 0.0, 0.0), 1000.0f);
+}
+
+QList<AngleInterval> FreeAngles::getFreeAngles(const Position &watcher, const Position &initialPos, const Position &finalPos, bool returnObstructed) {
+    float minPosAngle = Utils::getAngle(watcher, initialPos);
+    float maxPosAngle = Utils::getAngle(watcher, finalPos);
+    QList<Obstacle> obstacles = getObstacles(watcher);
+    return _getFreeAngles(watcher, minPosAngle, maxPosAngle, obstacles, returnObstructed);
+}
+
+QList<AngleInterval> FreeAngles::getFreeAngles(const Position &watcher, const Position &initialPos, const Position &finalPos, const QList<Obstacle> &obstacles, bool returnObstructed) {
     float minPosAngle = Utils::getAngle(watcher, initialPos);
     float maxPosAngle = Utils::getAngle(watcher, finalPos);
     return _getFreeAngles(watcher, minPosAngle, maxPosAngle, obstacles, returnObstructed);
 }
 
-QList<FreeAngles::Interval> FreeAngles::_getFreeAngles(const Position watcher, float initialPosAngle, float finalPosAngle, const QList<Obstacle> obstacles, bool returnObstructed){
+QList<AngleInterval> FreeAngles::getFreeAngles(const Position &watcher, float initialPosAngle, float finalPosAngle, bool returnObstructed) {
+    QList<Obstacle> obstacles = getObstacles(watcher);
+    return _getFreeAngles(watcher, initialPosAngle, finalPosAngle, obstacles, returnObstructed);
+}
+
+QList<AngleInterval> FreeAngles::getFreeAngles(const Position &watcher, float initialPosAngle, float finalPosAngle, const QList<Obstacle> &obstacles, bool returnObstructed) {
+    return _getFreeAngles(watcher, initialPosAngle, finalPosAngle, obstacles, returnObstructed);
+}
+
+QList<AngleInterval> FreeAngles::_getFreeAngles(const Position &watcher, float initialPosAngle, float finalPosAngle, const QList<Obstacle> &obstacles, bool returnObstructed) {
     QMap<float, quint8> freeAngles;
 
-    //coloca os angulos recebidos entre 0-2*M_PI
-    while(initialPosAngle < 0){
-        initialPosAngle += (2*M_PI);
-    }
-    while(initialPosAngle > (2*M_PI)){
-        initialPosAngle -= (2*M_PI);
-    }
-    while(finalPosAngle < 0){
-        finalPosAngle += (2*M_PI);
-    }
-    while(finalPosAngle > (2*M_PI)){
-        finalPosAngle -= (2*M_PI);
-    }
-//    std::cout << "inital " << initialPosAngle << "\n";
-//    std::cout << "endhue " << finalPosAngle << "\n";
-    //se init == final
-    if(initialPosAngle == finalPosAngle) return QList<Interval>();
+    // Limit angle range (0-360)
+    Utils::angleLimitZeroTwoPi(&initialPosAngle);
+    Utils::angleLimitZeroTwoPi(&finalPosAngle);
 
-    //se Init > final
-    if(initialPosAngle > finalPosAngle){
-        //perguntar a zilde
-        if(finalPosAngle == 0){
-            finalPosAngle = 2*M_PI;
-            freeAngles.insert(initialPosAngle, 0);
-            freeAngles.insert(finalPosAngle, 0);
-        } else {
-            freeAngles.insert(0, 0);
-            freeAngles.insert(finalPosAngle, 0);
-            freeAngles.insert(initialPosAngle, 0);
-            freeAngles.insert(2*M_PI, 0);
-        }
-    //se init < final
-    } else {
+    // Check conditions (init == final, init < final and init > final)
+    if(initialPosAngle == finalPosAngle) {
+        return QList<AngleInterval>();
+    }
+    else if(initialPosAngle < finalPosAngle) {
         freeAngles.insert(initialPosAngle, 0);
         freeAngles.insert(finalPosAngle, 0);
     }
+    else {
+        if(finalPosAngle == 0) {
+            finalPosAngle = 2.0*M_PI;
+            freeAngles.insert(initialPosAngle, 0);
+            freeAngles.insert(finalPosAngle, 0);
+        }
+        else {
+            freeAngles.insert(0, 0);
+            freeAngles.insert(initialPosAngle, 0);
+            freeAngles.insert(finalPosAngle, 0);
+            freeAngles.insert(2.0*M_PI, 0);
+        }
+    }
 
-    //calcula os angulos de obstrução de cada obstaculo
+    // Calc obstacles obstruction angles
     QList<Obstacle> tmpObstacles = calcObstaclesObstruction(watcher, obstacles);
-//    std::cout << "init " << freeAngles.keys().at(0) << "\n";
-//    std::cout << "end " << freeAngles.keys().at(1) << "\n";
-    //para cada obstaculo
-    for(int i = 0; i < tmpObstacles.size(); i++){
-        Obstacle obst = tmpObstacles.at(i);
+    QList<Obstacle>::iterator it;
 
-        //se init > final
-        if(obst.initialAngle() > obst.finalAngle()){
+    // For each obstacle
+    for(it = tmpObstacles.begin(); it != tmpObstacles.end(); it++) {
+        // Take obstacle and its angles
+        Obstacle obst = (*it);
+        Angle obstInitialAngle = obst.initialAngle();
+        Angle obstFinalAngle = obst.finalAngle();
+
+        // Check obstacle angles (I > F)
+        if(obstInitialAngle > obstFinalAngle) {
             Obstacle newObst1 = obst;
-            newObst1._initialAngle = 0;
-            newObst1._finalAngle = obst.finalAngle();
+            newObst1.setInitialAngle(Angle(true, 0.0));
+            newObst1.setFinalAngle(obst.finalAngle());
 
             Obstacle newObst2 = obst;
-            newObst2._initialAngle = obst.initialAngle();
-            newObst2._finalAngle = 2*M_PI;
+            newObst2.setInitialAngle(obst.initialAngle());
+            newObst2.setFinalAngle(Angle(true, 2.0*M_PI));
 
             obst = newObst1;
             tmpObstacles.push_back(newObst2);
         }
 
-        // adiciona a obstrução no Map freeAngles
-        //std::cout << "init " << freeAngles.keys().at(0) << "\n";
-        //std::cout << "end " << freeAngles.keys().at(1) << "\n";
+        // Run in freeAngles to add obstructions
         QMap<float, quint8> tmpFreeAngles(freeAngles);
-        //std::cout << "initi " << tmpFreeAngles.keys().at(0) << "\n";
-        //std::cout << "endi " << tmpFreeAngles.keys().at(1) << "\n";
         int size = tmpFreeAngles.size();
-        if(size%2 == 0){
-            for(int fa = 0; fa < size; fa += 2){
-                const float angI = tmpFreeAngles.keys().at(fa);
-                const float angF = tmpFreeAngles.keys().at(fa + 1);
-                //printf("Valores dos const %f \t %f\n",angI, angF);
-                //obstaculo fora da area de varredura
-                if(obst.initialAngle() < angI && obst.finalAngle() <= angI){
-                    //std::cout << "caso 1 \n";
 
-                //começo do obstaculo fora e final dentro da area de varredura
-                } else if(obst.initialAngle() <= angI && obst.finalAngle() > angI && obst.finalAngle() < angF){
-                    freeAngles.remove(angI);
-                    freeAngles.insert(obst.finalAngle(), 0);
-                //obstaculo 100% dentro da area de varredura
-                } else if(obst.initialAngle() > angI && obst.initialAngle() < angF && obst.finalAngle() <= angF){
-                    freeAngles.insert(obst.initialAngle(), 0);
-                    freeAngles.insert(obst.finalAngle(), 0);
-                //começo do obstaculo dentro e final fora da area de varredura
-                } else if(obst.initialAngle() > angI && obst.initialAngle() < angF && obst.finalAngle() >= angF){
-                    freeAngles.remove(angF);
-                    freeAngles.insert(obst.initialAngle(), 0);
-                //obstaculo fora da area de varredura
-                } else if(obst.initialAngle() >= angF && obst.finalAngle() > angF){
-                    //std::cout << "caso 5\n";
-                //obstaculo obstruindo 100% da area de varredura
-                } else if(obst.initialAngle() <= angI && obst.finalAngle() > angF){
-                    freeAngles.remove(angI);
-                    freeAngles.remove(angF);
+        // Check size
+        if(size % 2 == 0) {
+            for(int fa = 0; fa < size; fa +=2) {
+                const float initAngle = tmpFreeAngles.keys().at(fa);
+                const float finalAngle = tmpFreeAngles.keys().at(fa+1);
+
+                // Check intervals
+                if(obst.initialAngle() < initAngle && obst.finalAngle() <= initAngle) {
+                    // ok
+                }
+                else if(obst.initialAngle() <= initAngle && obst.finalAngle() > initAngle && obst.finalAngle() < finalAngle) {
+                    freeAngles.remove(initAngle);
+                    freeAngles.insert(obst.finalAngle().value(), 0);
+                }
+                else if(obst.initialAngle() > initAngle && obst.initialAngle() < finalAngle && obst.finalAngle() > initAngle && obst.finalAngle() < finalAngle) {
+                    freeAngles.insert(obst.initialAngle().value(), 0);
+                    freeAngles.insert(obst.finalAngle().value(), 0);
+                }
+                else if(obst.initialAngle() > initAngle && obst.initialAngle() < finalAngle && obst.finalAngle() >= finalAngle) {
+                    freeAngles.remove(finalAngle);
+                    freeAngles.insert(obst.initialAngle().value(), 0);
+                }
+                else if(obst.initialAngle() >= finalAngle && obst.finalAngle() > finalAngle) {
+                    // ok
+                }
+                else if(obst.initialAngle() <= initAngle && obst.finalAngle() >= finalAngle) {
+                    freeAngles.remove(initAngle);
+                    freeAngles.remove(finalAngle);
+                }
+                else {
+                    // never reach here
                 }
             }
         }
     }
 
-    /*
-        i == 3
-        i%2 == 1
-        obs =
+    // Construct return
+    QList<AngleInterval> retn;
+    for(int i = 0; i < freeAngles.size(); i++) {
+        int nextI = i+1;
+        if(nextI>=freeAngles.size()) {
+            nextI = 0;
+        }
 
-        i == 4
-        i
-    */
+        // Get info
+        float initAngle = freeAngles.keys().at(i);
+        float finalAngle = freeAngles.keys().at(nextI);
+        bool obstructed = (i % 2) != 0;
 
-    //criando lista para retornar
-    QList<FreeAngles::Interval> retn;
-    for(int i = 0; i < freeAngles.size(); i++){
-        int nextI = i + 1;
-        if(nextI >= freeAngles.size()) nextI = 0;
-
-        float angI = freeAngles.keys().at(i);
-        float angF = freeAngles.keys().at(nextI);
-        bool obstructed = (i%2) != 0;
-
-        if(!obstructed || (obstructed && returnObstructed)){
-            // remove
-            if(angI == 2*M_PI && angF == 0.0)
+        if(!obstructed || (obstructed && returnObstructed)) {
+            // Remove initial==360 && final==0
+            if(initAngle == 2.0*M_PI && finalAngle == 0.0f) {
                 continue;
+            }
 
-            retn.push_back(Interval(angI, angF, obstructed));
+            retn.push_back(AngleInterval(initAngle, finalAngle, obstructed));
         }
     }
 
-    //fazer o merge dos intervalos
-    if(!retn.empty()){
+    // Merge intervals
+    if(!retn.empty()) {
         int size = retn.size();
         int i = 0;
-        for(int c = 0; c < size+1; c++){
-            int nextI = i + 1;
-            if(nextI >= retn.size())
+        for(int c = 0; c < size+1; c++) {
+            int nextI = i+1;
+            if(nextI >= retn.size()) {
                 nextI = 0;
+            }
 
-            //verificar o merge
-            Interval curr = retn.at(i);
-            Interval next = retn.at(nextI);
-            if((curr.angFinal() == next.angInitial() || (curr.angFinal() - 2*M_PI == next.angInitial())) && curr.obstructed() == next.obstructed()){
+            // Check merge
+            AngleInterval curr = retn.at(i);
+            AngleInterval next = retn.at(nextI);
+            if(((curr.finalAngle() == next.initialAngle()) || (next.initialAngle() == (curr.finalAngle().value() - 2.0*M_PI))) && curr.isObstructed() == next.isObstructed()) {
                 retn.removeAt(i);
                 retn.removeAt(nextI);
-                retn.insert(i, Interval(curr.angInitial(), next.angFinal(), curr.obstructed()));
+                retn.insert(i, AngleInterval(curr.initialAngle(), next.finalAngle(), curr.isObstructed()));
             }
 
             i++;
-            if(i >= retn.size())
+            if(i >= retn.size()) {
                 i = 0;
+            }
         }
     }
 
-    //retorna free angles
     return retn;
 }
 
-QList<Obstacle> FreeAngles::calcObstaclesObstruction(const Position &watcher, const QList<Obstacle> &obstacles){
-    //calcular o angulo de obstrução
+QList<Obstacle> FreeAngles::calcObstaclesObstruction(const Position &watcher, const QList<Obstacle> &obstacles) {
+    // Iterate through obstacles and calc obstruction
     QList<Obstacle> retnObstacles;
-    for(int i = 0; i < obstacles.size(); i++){
+    for(int i=0; i<obstacles.size(); i++) {
         Obstacle obst = obstacles.at(i);
 
-        if(watcher.x() == obst._position.x() && watcher.y() == obst.position().y())
+        // Continue if obstacle is the watcher
+        if(watcher == obst.position()) {
             continue;
+        }
 
         obst.calcAnglesFrom(watcher);
         retnObstacles.push_back(obst);
     }
+
     return retnObstacles;
 }
-
-
 
 
 

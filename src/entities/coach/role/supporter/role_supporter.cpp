@@ -188,25 +188,25 @@ float Role_Supporter::getLargestFreeAngle() {
     QList<quint8> playersId2 = getWorldMap()->getAvailablePlayers(Colors::Color::YELLOW);
 
     QList<quint8>::const_iterator it;
-    QList<Object> players;
+    //QList<Object> players;
 
-    // Associating players as obstacles
-    for(int i=0; i<playersId1.size(); i++){
-        Object p = getWorldMap()->getPlayer(Colors::Color::BLUE,playersId1[i]);
-        if (!(player()->position().x() == p.getPosition().x() && player()->position().y() == p.getPosition().y())){
-            players.push_back(p);
-        }
-    }
+//    // Associating players as obstacles
+//    for(int i=0; i<playersId1.size(); i++){
+//        Object p = getWorldMap()->getPlayer(Colors::Color::BLUE,playersId1[i]);
+//        if (!(player()->position().x() == p.getPosition().x() && player()->position().y() == p.getPosition().y())){
+//            players.push_back(p);
+//        }
+//    }
 
-    for(int i=0; i<playersId2.size(); i++){
-        Object p = getWorldMap()->getPlayer(Colors::Color::YELLOW,playersId2[i]);
-        if (!(player()->position().x() == p.getPosition().x() && player()->position().y() == p.getPosition().y())){
-            players.push_back(p);
-        }
-    }
+//    for(int i=0; i<playersId2.size(); i++){
+//        Object p = getWorldMap()->getPlayer(Colors::Color::YELLOW,playersId2[i]);
+//        if (!(player()->position().x() == p.getPosition().x() && player()->position().y() == p.getPosition().y())){
+//            players.push_back(p);
+//        }
+//    }
 
-    QList<Obstacle> obstacles = FreeAngles::getObstacles(ballPosition, 30.0f, players);
-    QList<FreeAngles::Interval> intervalos;
+    QList<Obstacle> obstacles = FreeAngles::getObstacles(ballPosition, 30.0f);
+    QList<AngleInterval> intervalos;
 
     if(getConstants()->teamColor() == Colors::Color::YELLOW){
         Position leftPost = getWorldMap()->getLocations()->ourGoalLeftPost();
@@ -228,8 +228,8 @@ float Role_Supporter::getLargestFreeAngle() {
     }else {
         _nofreeAngles = false;
         for(int i=0; i<intervalos.size(); i++) {
-            float angI = intervalos.at(i).angInitial();
-            float angF = intervalos.at(i).angFinal();
+            float angI = intervalos.at(i).initialAngle().value();
+            float angF = intervalos.at(i).finalAngle().value();
             Utils::angleLimitZeroTwoPi(&angI);
             Utils::angleLimitZeroTwoPi(&angF);
             float dif = angF - angI;

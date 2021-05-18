@@ -94,6 +94,7 @@ SOURCES += \
     src/gui/gui.cpp \
     src/gui/robotframe/robotframe.cpp \
     src/suassuna.cpp \
+    src/utils/freeangles/angleinterval/angleinterval.cpp \
     src/utils/freeangles/freeangles.cpp \
     src/utils/freeangles/obstacle.cpp \
     src/utils/graph/edge.cpp \
@@ -176,6 +177,7 @@ HEADERS += \
     src/gui/gui.h \
     src/gui/robotframe/robotframe.h \
     src/suassuna.h \
+    src/utils/freeangles/angleinterval/angleinterval.h \
     src/utils/freeangles/freeangles.h \
     src/utils/freeangles/obstacle.h \
     src/utils/graph/edge.h \

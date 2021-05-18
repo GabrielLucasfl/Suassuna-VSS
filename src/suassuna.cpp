@@ -51,6 +51,9 @@ void Suassuna::start(bool startGUI) {
     // Creating World Map (set here the map that u desire)
     _worldMap = new WorldMap(getConstants(), getConstants()->teamSide(), new Field_VSSB());
 
+    // Creating FreeAngles
+    FreeAngles::setWorldMap(_worldMap);
+
     // Creating referee
     _referee = new Referee(getConstants(), getWorldMap());
     _world->addEntity(getReferee(), 0);

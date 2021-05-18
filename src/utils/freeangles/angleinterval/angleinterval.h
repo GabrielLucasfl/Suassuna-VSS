@@ -19,44 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
-#ifndef OBSTACLE_H
-#define OBSTACLE_H
+#ifndef ANGLEINTERVAL_H
+#define ANGLEINTERVAL_H
 
-#include <src/utils/types/object/object.h>
+#include <src/utils/types/angle/angle.h>
 
-class Obstacle
+class AngleInterval
 {
 public:
-    Obstacle(float obstacleRadius = 0.09f);
+    AngleInterval();
+    AngleInterval(float initialAngle, float finalAngle, bool isObstructed);
+    AngleInterval(Angle initialAngle, Angle finalAngle, bool isObstructed);
 
     // Getters
-    Position position();
-    Angle initialAngle();
-    Angle finalAngle();
-    float radius();
-
-    // Setters
-    void setPosition(Position position);
-    void setInitialAngle(Angle initialAngle);
-    void setFinalAngle(Angle finalAngle);
-    void setRadius(float radius);
-
-    //
-    void calcAnglesFrom(const Position &watcher, float radiusFactor = 1.0f);
-
-    // Operator overload
-    Obstacle &operator=(Object object);
+    Angle initialAngle() const;
+    Angle finalAngle() const;
+    bool isObstructed() const;
 
 private:
     // Internal
-    Position _obstaclePosition;
     Angle _initialAngle;
     Angle _finalAngle;
-    float _obstacleRadius;
-
-    // Angle control
-    void setInitialAngle(float value);
-    void setFinalAngle(float value);
+    bool _isObstructed;
 };
 
-#endif // OBSTACLE_H
+#endif // ANGLEINTERVAL_H
