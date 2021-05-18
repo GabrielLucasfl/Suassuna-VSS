@@ -184,6 +184,9 @@ void Playbook::updatePlayersRoles() {
     for(it = _assignmentTable.constBegin(); it != _assignmentTable.constEnd(); it++) {
         // Take id and role to be assigned
         quint8 id = it.key();
+        if(!hasPlayer(id)) {
+            return;
+        }
         Role *role = it.value();
 
         // Get player pointer and set its role

@@ -93,7 +93,7 @@ Position Behavior_GoToBall::getBallProjection() {
     Velocity ballVel = getWorldMap()->getBall().getVelocity();
 
     Position ballDirection, ballProj;
-    if(ballVel.abs() > 0) {
+    if(ballVel.abs() > 0.01f) {
         ballDirection = Position(true, ballVel.vx()/ballVel.abs(), ballVel.vy()/ballVel.abs());
     } else {
         ballDirection = Position(true, 0, 0);

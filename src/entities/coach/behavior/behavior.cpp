@@ -37,7 +37,9 @@ Behavior::~Behavior() {
     QList<Skill*>::iterator it;
 
     for(it = skillList.begin(); it != skillList.end(); it++) {
-        delete *it;
+        if((*it) != nullptr){
+            delete *it;
+        }
     }
 
     // Cleaning map

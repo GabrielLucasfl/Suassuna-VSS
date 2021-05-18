@@ -52,7 +52,13 @@ float Utils::distanceToSegment(const Position &s1, const Position &s2, const Pos
 }
 
 float Utils::getAngle(const Position &a, const Position &b)	{
-    return atan2(b.y()-a.y(), b.x()-a.x());
+    float arc = atan2(b.y()-a.y(), b.x()-a.x());
+    if(isnanf(arc)){
+        std::cout << Text::yellow("[WARNING]", true) + Text::bold("Utils::getAngle returned nanf") << std::endl;
+        return 0;
+    }else{
+        return arc;
+    }
 }
 
 float Utils::angleDiff(const float A, const float B) {
@@ -96,8 +102,14 @@ Position Utils::threePoints(const Position &near, const Position &far, float dis
 Position Utils::projectPointAtLine(const Position &s1, const Position &s2, const Position &point) {
     const Position a(true, point.x() - s1.x(), point.y() - s1.y());
     const Position b(true, s2.x() - s1.x(), s2.y() - s1.y());
-    const float bModule = sqrt(pow(b.x(), 2) + pow(b.y(), 2));
-    const Position bUnitary(true, b.x() / bModule, b.y() / bModule);
+    float bModule = sqrt(pow(b.x(), 2) + pow(b.y(), 2));
+    float xCoord = b.x() / bModule;
+    float yCoord = b.y() / bModule;
+    if(isnanf(xCoord) || isnanf(yCoord)) {
+        xCoord = b.x();
+        yCoord = b.y();
+    }
+    const Position bUnitary(true, xCoord, yCoord);
     const float scalar = Utils::scalarProduct(a, bUnitary);
 
     return Position(true, s1.x() + scalar * bUnitary.x(), s1.y() + scalar * bUnitary.y());

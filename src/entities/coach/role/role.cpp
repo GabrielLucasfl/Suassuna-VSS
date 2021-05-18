@@ -38,14 +38,20 @@ Role::~Role() {
     QList<Behavior*>::iterator it;
 
     for(it = behaviorList.begin(); it != behaviorList.end(); it++) {
-        delete *it;
+        if((*it) != nullptr){
+            delete *it;
+        }
     }
+    // Cleaning map
+    _behaviorList.clear();
 
     // Delete behavior stuck
-    delete _bh_stuckAvoid;
+    if(_bh_stuckAvoid != nullptr){
+        delete _bh_stuckAvoid;
 
     // Cleaning map
     _behaviorList.clear();
+    }
 }
 
 bool Role::isInitialized() {

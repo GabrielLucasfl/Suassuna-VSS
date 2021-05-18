@@ -49,6 +49,7 @@ public:
 
     // Utilities
     QList<quint8> getAvailablePlayers(Colors::Color teamColor);
+    QList<Object> getAvailableObjects(Colors::Color teamColor);
 
     // Locations getter
     Locations* getLocations();
@@ -69,8 +70,8 @@ private:
     Locations *_locations;
 
     // Mutexes for read/write control management
-    QReadWriteLock _playerMutex;
-    QReadWriteLock _ballMutex;
+    QMutex _playerMutex;
+    QMutex _ballMutex;
 
 public slots:
     void updatePlayer(Colors::Color teamColor, quint8 playerId, Object playerObject);

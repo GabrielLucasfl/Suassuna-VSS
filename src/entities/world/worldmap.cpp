@@ -63,6 +63,32 @@ WorldMap::~WorldMap() {
     delete _locations;
 }
 
+QList<Object> WorldMap::getAvailableObjects(Colors::Color teamColor) {
+    QList<Object> objectsList;
+    if(!_playerObjects.contains(teamColor)) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("WorldMap::getAvailableObjects(" + std::to_string(teamColor) + "), teamColor " + std::to_string(teamColor) + " does not exists.") + '\n';
+        return objectsList;
+    }
+
+    _playerMutex.lock();
+    // Take team players
+    QMap<quint8, Object> *teamPlayers = _playerObjects.value(teamColor);
+    QMap<quint8, Object>::iterator it;
+
+    for(it = teamPlayers->begin(); it != teamPlayers->end(); it++) {
+        // Take player object
+        Object playerObject = it.value();
+
+        // If position is not invalid (player exists in field) add to the objectsList
+        if(!playerObject.getPosition().isInvalid()) {
+            objectsList.push_back(playerObject);
+        }
+    }
+    _playerMutex.unlock();
+
+    return objectsList;
+}
+
 Constants* WorldMap::getConstants() {
     if(_constants == nullptr) {
         std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at WorldMap") + '\n';
@@ -76,11 +102,12 @@ Constants* WorldMap::getConstants() {
 
 
 Object WorldMap::getPlayer(Colors::Color teamColor, quint8 playerId) {
-    _playerMutex.lockForRead();
+    _playerMutex.lock();
 
     // Check if contains teamColor
     if(!_playerObjects.contains(teamColor)) {
         std::cout << Text::red("[ERROR] ", true) + Text::bold("WorldMap::getPlayer(" + std::to_string(teamColor) + ", quint8), teamColor " + std::to_string(teamColor) + " does not exists.") + '\n';
+        _playerMutex.unlock();
         return Object();
     }
 
@@ -90,6 +117,7 @@ Object WorldMap::getPlayer(Colors::Color teamColor, quint8 playerId) {
     // Check if contains required player
     if(!_teamObjects->contains(playerId)) {
         std::cout << Text::red("[ERROR] ", true) + Text::bold("WorldMap::getPlayer(teamColor, " + std::to_string(playerId) + "), playerId " + std::to_string(playerId) + " does not exists.") + '\n';
+        _playerMutex.unlock();
         return Object();
     }
 
@@ -102,7 +130,7 @@ Object WorldMap::getPlayer(Colors::Color teamColor, quint8 playerId) {
 }
 
 Object WorldMap::getBall() {
-    _ballMutex.lockForRead();
+    _ballMutex.lock();
     Object ballObject = _ballObject;
     _ballMutex.unlock();
 
@@ -124,12 +152,13 @@ Player* WorldMap::getPlayerPointer(quint8 playerId) {
 
 QList<quint8> WorldMap::getAvailablePlayers(Colors::Color teamColor) {
     QList<quint8> playersList;
+
+    _playerMutex.lock();
     if(!_playerObjects.contains(teamColor)) {
         std::cout << Text::red("[ERROR] ", true) + Text::bold("WorldMap::getAvailablePlayers(" + std::to_string(teamColor) + "), teamColor " + std::to_string(teamColor) + " does not exists.") + '\n';
+        _playerMutex.unlock();
         return playersList;
     }
-
-    _playerMutex.lockForRead();
     // Take team players
     QMap<quint8, Object> *teamPlayers = _playerObjects.value(teamColor);
     QMap<quint8, Object>::iterator it;
@@ -150,7 +179,7 @@ QList<quint8> WorldMap::getAvailablePlayers(Colors::Color teamColor) {
 }
 
 void WorldMap::updatePlayer(Colors::Color teamColor, quint8 playerId, Object playerObject) {
-    _playerMutex.lockForWrite();
+    _playerMutex.lock();
 
     // If !contains teamColor, create it
     if(!_playerObjects.contains(teamColor)) {
@@ -173,7 +202,7 @@ void WorldMap::updatePlayer(Colors::Color teamColor, quint8 playerId, Object pla
     _playerMutex.unlock();
 }
 void WorldMap::updateBall(Object ballObject) {
-    _ballMutex.lockForWrite();
+    _ballMutex.lock();
 
     _ballObject = ballObject;
 

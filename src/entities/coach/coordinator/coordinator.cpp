@@ -34,7 +34,9 @@ Coordinator::~Coordinator() {
     QMap<int, Playbook*>::iterator it;
     for(it = _playbookList.begin(); it != _playbookList.end(); it++) {
         Playbook *pb = it.value();
-        delete pb;
+        if(pb != nullptr){
+            delete pb;
+        }
     }
 }
 
