@@ -6,5 +6,6 @@
 #include <src/entities/coach/role/supporter/role_supporter.h>
 #include <src/entities/coach/role/defender/role_defender.h>
 #include <src/entities/coach/role/attacker/role_attacker.h>
+#include <src/entities/coach/role/tmpDef/role_tmp_def.h>
 
 #endif // ROLES_H
