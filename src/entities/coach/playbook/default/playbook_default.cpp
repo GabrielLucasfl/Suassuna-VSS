@@ -30,6 +30,7 @@ Playbook_Default::Playbook_Default() {
 
     _switchedPlayers = true;
     _atkStuck = false;
+    _first = true;
 }
 
 QString Playbook_Default::name() {
@@ -55,6 +56,7 @@ void Playbook_Default::run(int numPlayers) {
     // Defining robot IDs
     if(_first) {
         _switchPlayersTimer.start();
+        _atkStuckTimer.start();
         selectInitialIDs();
         _first = false;
     }
@@ -62,6 +64,7 @@ void Playbook_Default::run(int numPlayers) {
     if(_switchPlayersTimer.getSeconds() > 2.0) {
         _switchedPlayers = false;
         //switchPlayersIDs();
+        switchPlayersIDs();
     }
 
     // Setting roles

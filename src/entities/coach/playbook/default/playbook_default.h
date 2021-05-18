@@ -55,7 +55,7 @@ private:
     quint8 _lastID;
 
     // Initial
-    bool _first = true;
+    bool _first;
 
     // Switch players parameters
     Timer _switchPlayersTimer;
