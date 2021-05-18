@@ -25,7 +25,6 @@
 #include <src/entities/coach/role/role.h>
 #include <src/entities/coach/behavior/behaviors.h>
 #include <src/utils/freeangles/freeangles.h>
-#include <src/utils/timer/timer.h>
 
 class Role_Supporter : public Role
 {
@@ -55,7 +54,6 @@ private:
     // Behaviors util functions
     float getLargestFreeAngle();
     bool inRangeToPush(Position ballPos);
-    bool isBall_ourfield();
     float calcBarrier_Xcomponent();
     void limit_Ypos(float * posy);
     float calc_x_advanced();
@@ -75,13 +73,11 @@ private:
     float _limitYdown;
     bool _nofreeAngles;
     float _minVelocity;
-    Timer _timer;
     bool _pushBall;
     bool _accelerate;
     bool _canAvoidBall;
 
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
-
 };
 
 #endif // Role_Supporter_H
