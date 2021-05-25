@@ -69,6 +69,12 @@ void Role_Attacker::run() {
 
     // Bhv goToBall parameters
     float bhvGoToBallOffset = 0.25f;
+    float ballPlayerDist = Utils::distance(ballProj, player()->position());
+    if(ballPlayerDist > 0.1f) {
+        bhvGoToBallOffset = Utils::distance(ballProj, player()->position()) - 0.05f;
+    }else {
+        bhvGoToBallOffset = 0.09f;
+    }
     Position theirGoal = getWorldMap()->getLocations()->theirGoal();
     Position bhvGoToBallRef;
     if(theirGoal.x() < 0) {
@@ -83,12 +89,12 @@ void Role_Attacker::run() {
         _offsetRange = 0.1f;
         _charge = true;
     } else {
-        _offsetRange = 0.25f;
+        _offsetRange = bhvGoToBallOffset;
         _charge = false;
     }
 
     //check if player is behind ball based on its reference position
-    bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > _offsetRange);
+    bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > 1.1f*_offsetRange);
 
     _avoidTheirGoalArea = hasAllyInTheirArea();
 
