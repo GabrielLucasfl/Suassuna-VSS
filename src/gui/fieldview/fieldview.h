@@ -44,6 +44,12 @@ public:
     void updateDefaultGeometry();
     void setConstantsAndWorldMap(Constants *constants, WorldMap *worldMap);
 
+    // CheckBox enablers
+    void enableSupporterShow(bool enabled) { _supporterShowEnabled = enabled; }
+
+    // CheckBox setters
+    void setSupporterDesiredPosition(Position supporterPosition) { _supporterDesiredPosition = supporterPosition; }
+
 protected:
     void paintGL();
     void mousePressEvent(QMouseEvent* event);
@@ -74,6 +80,12 @@ private:
     void resetView();
     void recomputeProjection();
 
+    // CheckBox enablers
+    bool _supporterShowEnabled;
+
+    // CheckBox Parameters
+    Position _supporterDesiredPosition;
+
     // Mouse events
     bool leftButton;
     bool midButton;
@@ -99,6 +111,9 @@ private:
     void drawFieldLines();
     void drawBall();
     void drawRobots();
+
+    // CheckBox functions
+    void showSupporterPosition(Position supporterPosition);
 
     // Mutex to control graphics
     QMutex _graphicsMutex;

@@ -42,6 +42,7 @@ public:
     quint8 playerId();
     Position position();
     Angle orientation();
+    Position getPlayerDesiredPosition();
     float getPlayerDistanceTo(Position &targetPosition);
     float getPlayerRotateAngleTo(Position &targetPosition);
 
@@ -56,6 +57,9 @@ public:
     // Player checkers
     bool isLookingTo(Position &pos, float error);
     bool isBehindBallXCoord (Position playerPosition);
+
+    // Player setters
+    void setPlayerDesiredPosition(Position desiredPosition) { _desiredPosition = desiredPosition; }
 
     // Role management
     QString roleName();
@@ -81,6 +85,9 @@ private:
     void initialization();
     void loop();
     void finalization();
+
+    // GUI Parameters
+    Position _desiredPosition;
 
     // Constants
     Constants* getConstants();

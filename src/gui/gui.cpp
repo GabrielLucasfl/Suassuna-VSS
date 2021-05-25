@@ -7,6 +7,7 @@
 
 GUI::GUI(Constants *constants, WorldMap *worldMap, Coach *coach, Referee *referee, QWidget *parent) : QMainWindow(parent), ui(new Ui::GUI) {
     // Setting initial vars
+    _supPosition.setPosition(false, 0.0, 0.0);
     _coach = coach;
     _referee = referee;
     _constants = constants;
@@ -196,6 +197,20 @@ void GUI::updateFrames() {
 }
 
 void GUI::updateField() {
+    if (ui->supporterBox->isChecked()) {
+        ui->fieldView->enableSupporterShow(true);
+        Position desiredPosition(false, 0.0, 0.0);
+        for (quint8 i = 0; i < _players.keys().size(); i++) {
+            Player *playerPointer = getWorldMap()->getPlayerPointer(i);
+            if (playerPointer->roleName() == "Role_Supporter") {
+                desiredPosition = playerPointer->getPlayerDesiredPosition();
+            }
+        }
+        ui->fieldView->setSupporterDesiredPosition(desiredPosition);
+    } else {
+        ui->fieldView->enableSupporterShow(false);
+    }
+
     ui->fieldView->redraw();
 }
 

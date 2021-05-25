@@ -54,6 +54,10 @@ Angle Player::orientation() {
     return playerAngle;
 }
 
+Position Player::getPlayerDesiredPosition() {
+    return _desiredPosition;
+}
+
 float Player::getPlayerDistanceTo(Position &targetPosition) {
     return sqrt(pow(position().x() - targetPosition.x(), 2) + pow(position().y() - targetPosition.y(), 2));
 }

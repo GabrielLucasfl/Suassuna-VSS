@@ -29,8 +29,6 @@ Role_Supporter::Role_Supporter(){
     _avoidBall = true;
     _avoidOurGoalArea = true;
     _avoidTheirGoalArea = false;
-    _pushBall = false;
-    _accelerate = false;
     _canAvoidBall = false;
 }
 
@@ -55,7 +53,6 @@ void Role_Supporter::configure() {
     _posXbarrier = 0.2f;
     _limitYup = 0.6f;
     _limitYdown = -0.6f;
-    _minVelocity = 1.0f;
 }
 
 void Role_Supporter::run() {
@@ -83,6 +80,7 @@ void Role_Supporter::run() {
         posy_advanced = ballPosition.y() + (moduloVet * sin(largestMid));
     }
     Position desiredPosition(true, posx_advanced, posy_advanced);
+    player()->setPlayerDesiredPosition(desiredPosition);
 
     _bhv_moveTo->enableRotation(false);
     _bhv_moveTo->setBaseSpeed(33);

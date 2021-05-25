@@ -35,6 +35,12 @@ FieldView::FieldView(QWidget *parent) : QOpenGLWidget(parent) {
     robotIDFont.setWeight(QFont::Bold);
     robotIDFont.setPointSize(80);
     glText = GLText(robotIDFont);
+
+    // CheckBox enablers starters
+    _supporterShowEnabled = false;
+
+    // Checkbox parameters starters
+    _supporterDesiredPosition.setPosition(false, 0.0, 0.0);
 }
 
 void FieldView::setConstantsAndWorldMap(Constants *constants, WorldMap *worldMap) {
@@ -149,6 +155,10 @@ void FieldView::paintGL() {
     drawFieldLines();
     drawBall();
     drawRobots();
+
+    if (_supporterShowEnabled) {
+        showSupporterPosition(_supporterDesiredPosition);
+    }
 
     glPopMatrix();
     _graphicsMutex.unlock();
@@ -393,6 +403,14 @@ void FieldView::drawRobots() {
 
             glPopMatrix();
         }
+    }
+}
+
+void FieldView::showSupporterPosition(Position supporterPosition) {
+    if (!supporterPosition.isInvalid()) {
+        glColor3d(0, 255, 255);
+        drawArc(QVector2D(supporterPosition.x() * 1000.0f, supporterPosition.y() * 1000.0f), -15.0f, 15.0f,
+                static_cast<float>(-M_PI), static_cast<float>(M_PI), 2.5f);
     }
 }
 

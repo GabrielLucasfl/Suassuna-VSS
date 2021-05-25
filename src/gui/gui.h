@@ -28,6 +28,7 @@ private:
     // Tree management
     QHash<quint8, QTreeWidgetItem*> _players;
     QHash<QTreeWidgetItem*, QTreeWidgetItem*> _playerRole;
+    Position _supPosition;
     QPixmap getRobotPixmap(quint8 playerId);
     QPixmap getRolePixmap(QString roleName);
     void treeInitialSetup();

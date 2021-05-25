@@ -72,9 +72,6 @@ private:
     float _limitYup;
     float _limitYdown;
     bool _nofreeAngles;
-    float _minVelocity;
-    bool _pushBall;
-    bool _accelerate;
     bool _canAvoidBall;
 
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
