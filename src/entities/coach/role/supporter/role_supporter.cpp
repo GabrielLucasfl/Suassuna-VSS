@@ -80,7 +80,7 @@ void Role_Supporter::run() {
         posy_advanced = ballPosition.y() + (moduloVet * sin(largestMid));
     }
     Position desiredPosition(true, posx_advanced, posy_advanced);
-    player()->setPlayerDesiredPosition(desiredPosition);
+    player()->setPlayerDesiredPosition(player()->limitPosInsideField(desiredPosition));
 
     _bhv_moveTo->enableRotation(false);
     _bhv_moveTo->setBaseSpeed(33);
