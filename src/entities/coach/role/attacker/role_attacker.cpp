@@ -68,10 +68,10 @@ void Role_Attacker::run() {
     ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
 
     // Bhv goToBall parameters
-    float bhvGoToBallOffset = 0.25f;
+    float bhvGoToBallOffset;
     float ballPlayerDist = Utils::distance(ballProj, player()->position());
-    if(ballPlayerDist > 0.1f) {
-        bhvGoToBallOffset = Utils::distance(ballProj, player()->position()) - 0.05f;
+    if(player()->isBehindBallXCoord(player()->position(), 0.1f)) {
+        bhvGoToBallOffset = std::min(Utils::distance(ballProj, player()->position()) - 0.03f, 0.3f);
     }else {
         bhvGoToBallOffset = 0.09f;
     }
@@ -83,10 +83,11 @@ void Role_Attacker::run() {
         bhvGoToBallRef.setPosition(true, theirGoal.x() + 0.12f, theirGoal.y());
     }
 
+    // to check if player is in range to push
     Colors::Color ourColor = getConstants()->teamColor();
     if(getWorldMap()->getPlayer(ourColor, player()->playerId()).getVelocity().abs() < 0.02f
                                 && getWorldMap()->getBall().getVelocity().abs() < 0.02f) {
-        _offsetRange = 0.1f;
+        _offsetRange = 0.15f;
         _charge = true;
     } else {
         _offsetRange = bhvGoToBallOffset;
@@ -94,7 +95,7 @@ void Role_Attacker::run() {
     }
 
     //check if player is behind ball based on its reference position
-    bool isInRange = inRangeToPush(ballProj) && (Utils::distance(ballProj, player()->position()) > 1.1f*_offsetRange);
+    bool isInRange = inRangeToPush(ballProj) && (ballPlayerDist > 1.1f*_offsetRange);
 
     _avoidTheirGoalArea = hasAllyInTheirArea();
 
@@ -131,11 +132,10 @@ void Role_Attacker::run() {
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
                 player()->setPlayerDesiredPosition(ballProj);
             } else {
-                _bhv_moveTo->setBaseSpeed(50);
+                _bhv_moveTo->setBaseSpeed(35);
                 player()->setPlayerDesiredPosition(ballProj);
             }
-
-            if(Utils::distance(player()->position(), ballPos) < 0.06f && !_push) {
+            if(player()->isLookingTo(theirGoal, 0.3f) && ballPlayerDist < 0.11f && !_push) {
                 _push = true;
             }
             _bhv_moveTo->setLinearError(0.02f);
@@ -143,25 +143,9 @@ void Role_Attacker::run() {
 
             //transitions
             _interuption.stop();
-            if((Utils::distance(player()->position(), ballProj) >= 0.3f || !player()->isBehindBallXCoord(player()->position()))
-                                && _interuption.getSeconds() > 1) {
+            if((ballPlayerDist >= 0.3f && !inRangeToPush(ballProj))
+                && _interuption.getSeconds() > 1) {
                 _push = false;
-                _state = GOTOBALL;
-            }
-            break;
-        }
-        case AVOIDBALL: {
-            _avoidBall = true;
-            _avoidTeammates = true;
-            _avoidOpponents = false;
-            _avoidOurGoalArea = true;
-            _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
-            float moveX = getWorldMap()->getLocations()->ourSide().isLeft()? -0.3f : 0.3f;
-            float moveY = (ballProj.y() > 0)? 0.4f : -0.4f;
-            player()->setPlayerDesiredPosition(Position(true, moveX, moveY));
-            setBehavior(MOVETO);
-
-            if((abs(ballPos.y()) > 0.4f) || player()->isBehindBallXCoord(player()->position())) {
                 _state = GOTOBALL;
             }
             break;
@@ -184,7 +168,7 @@ bool Role_Attacker::hasAllyInTheirArea() {
     return false;
 }
 
-bool Role_Attacker::inRangeToPush(Position ballPos) {
+bool Role_Attacker::inRangeToPush(Position ballPos, float postIncrement) {
     Position firstPost;
     Position secondPost;
     float offsetX = 0.12f;
@@ -194,9 +178,9 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
 
     //firstpost's treatment
     if(firstPost.y() < 0) {
-        firstPost.setPosition(true, firstPost.x(), firstPost.y() - 0.1f);
+        firstPost.setPosition(true, firstPost.x(), firstPost.y() - postIncrement);
     } else {
-        firstPost.setPosition(true, firstPost.x(), firstPost.y() + 0.1f);
+        firstPost.setPosition(true, firstPost.x(), firstPost.y() + postIncrement);
     }
     if(firstPost.x() < 0) {
         firstPost.setPosition(true, firstPost.x() - offsetX, firstPost.y());
@@ -206,9 +190,9 @@ bool Role_Attacker::inRangeToPush(Position ballPos) {
 
     //secondpost's treatment
     if(secondPost.y() < 0) {
-        secondPost.setPosition(true, secondPost.x(), secondPost.y() - 0.1f);
+        secondPost.setPosition(true, secondPost.x(), secondPost.y() - postIncrement);
     } else {
-        secondPost.setPosition(true, secondPost.x(), secondPost.y() + 0.1f);
+        secondPost.setPosition(true, secondPost.x(), secondPost.y() + postIncrement);
     }
     if(secondPost.x() < 0) {
         secondPost.setPosition(true, secondPost.x() - offsetX, secondPost.y());

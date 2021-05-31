@@ -32,7 +32,7 @@ public:
     QString name();
 
     // Auxiliar
-    bool inRangeToPush(Position ballPos);
+    bool inRangeToPush(Position ballPos, float postIncrement = 0.0f);
     float normAngle(float angleRadians);
 private:
     // Role inherited methods
