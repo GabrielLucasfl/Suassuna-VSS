@@ -56,7 +56,7 @@ public:
 
     // Player checkers
     bool isLookingTo(Position &pos, float error);
-    bool isBehindBallXCoord (Position playerPosition);
+    bool isBehindBallXCoord (Position playerPosition, float inc = 0);
 
     // Player setters
     void setPlayerDesiredPosition(Position desiredPosition) { _desiredPosition = desiredPosition; }

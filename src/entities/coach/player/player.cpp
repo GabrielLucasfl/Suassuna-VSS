@@ -168,16 +168,16 @@ bool Player::isLookingTo(Position &pos, float error) {
     }
 }
 
-bool Player::isBehindBallXCoord(Position pos) {
+bool Player::isBehindBallXCoord(Position pos, float inc) {
     // Inspects if the player object of interest in between the ball and the player's goal, comparing the X coordinate
     Position posBall = getWorldMap()->getBall().getPosition();
     float robotRadius = 0.035f;
     float ballRadius = 0.0215f;
     bool isBehindObjX;
     if(getWorldMap()->getLocations()->ourSide().isLeft()) {
-        isBehindObjX = pos.x() < (posBall.x() - robotRadius - ballRadius);
+        isBehindObjX = pos.x() < (posBall.x() - robotRadius - ballRadius - inc);
     } else {
-        isBehindObjX = pos.x() > (posBall.x() + robotRadius + ballRadius);
+        isBehindObjX = pos.x() > (posBall.x() + robotRadius + ballRadius + inc);
     }
     return isBehindObjX;
 }
