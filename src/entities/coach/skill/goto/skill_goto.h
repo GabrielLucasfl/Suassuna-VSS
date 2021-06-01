@@ -31,7 +31,6 @@ public:
     QString name();
 
     // Target management
-    void setTargetPosition(Position &targetPosition) { _targetPosition = targetPosition; }
     void setMovementBaseSpeed(float desiredBaseSpeed) { _desiredBaseSpeed = desiredBaseSpeed; }
     void setLinearError(float desiredLinearError) { _desiredLinearError = desiredLinearError; }
 
@@ -48,7 +47,6 @@ private:
     void run();
 
     // Internal
-    Position _targetPosition;
     float _desiredBaseSpeed;
     float _desiredLinearError;
 

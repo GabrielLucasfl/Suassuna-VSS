@@ -22,7 +22,6 @@
 #include "skill_goto.h"
 
 Skill_GoTo::Skill_GoTo() {
-    _targetPosition = Position(false, 0.0, 0.0);
     _avoidTeammates = false;
     _avoidOpponents = false;
     _avoidBall = false;
@@ -40,5 +39,5 @@ void Skill_GoTo::configure() {
 }
 
 void Skill_GoTo::run() {
-    player()->goTo(_targetPosition, _desiredBaseSpeed, _desiredLinearError, _avoidTeammates, _avoidOpponents, _avoidBall, _avoidOurGoalArea, _avoidTheirGoalArea);
+    player()->goTo(_desiredBaseSpeed, _desiredLinearError, _avoidTeammates, _avoidOpponents, _avoidBall, _avoidOurGoalArea, _avoidTheirGoalArea);
 }

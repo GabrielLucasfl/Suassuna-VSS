@@ -136,7 +136,7 @@ void Role::runRole() {
 
                     // Set desired position
                     Position targetPosition = Utils::threePoints(getProjectionInStuckedWall(), player()->position(), 0.3f, 0.0);
-                    _bh_stuckAvoid->setTargetPosition(targetPosition);
+                    player()->setPlayerDesiredPosition(targetPosition);
 
                     // Set player and run
                     _bh_stuckAvoid->setPlayer(player());

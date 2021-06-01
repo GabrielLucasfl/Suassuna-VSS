@@ -67,7 +67,7 @@ void Behavior_GoToBall::run() {
         }
 
     }
-    _skill_goTo->setTargetPosition(_targetPosition);
+    player()->setPlayerDesiredPosition(_targetPosition);
     _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);
     _skill_goTo->setAvoidBall(_avoidBall);
     _skill_goTo->setAvoidTeammates(_avoidTeammates);

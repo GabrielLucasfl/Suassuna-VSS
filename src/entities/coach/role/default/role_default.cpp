@@ -62,7 +62,7 @@ void Role_Default::run() {
 //    std::cout << "Coordenada y do poste direito: " << rightPost2.y() << "\n";
     */
 
-    _bhv_moveTo->setTargetPosition(getWorldMap()->getLocations()->fieldCenter());
+    player()->setPlayerDesiredPosition(getWorldMap()->getLocations()->fieldCenter());
     setBehavior(BHV_MOVETO);
 }
 

@@ -22,7 +22,6 @@
 #include "behavior_moveto.h"
 
 Behavior_MoveTo::Behavior_MoveTo() {
-    _targetPosition = Position(false, 0.0, 0.0);
     _isRotationEnabled = false;
     _avoidTeammates = false;
     _avoidOpponents = false;
@@ -54,7 +53,6 @@ void Behavior_MoveTo::configure() {
 
 void Behavior_MoveTo::run() {
     if (_isRotationEnabled) {
-        _skill_rotateTo->setTargetPosition(_targetPosition);
         setSkill(SKILL_ROTATE);
     } else if(_spin) {
         _skill_spin->setClockWise(_spinClock);
@@ -62,7 +60,6 @@ void Behavior_MoveTo::run() {
     }
     else {
         // Situation where we use the GoTo skill
-        _skill_goTo->setTargetPosition(_targetPosition);
         _skill_goTo->setMovementBaseSpeed(_desiredBaseSpeed);
         _skill_goTo->setAvoidBall(_avoidBall);
         _skill_goTo->setAvoidTeammates(_avoidTeammates);

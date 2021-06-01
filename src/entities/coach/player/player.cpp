@@ -20,7 +20,6 @@
  ***/
 
 #include "player.h"
-
 #include <src/entities/coach/role/role.h>
 #include <src/entities/coach/player/navigation/navigation.h>
 
@@ -216,12 +215,11 @@ QLinkedList<Position> Player::getPath() const {
     return _nav->getPath();
 }
 
-void Player::goTo(Position &targetPosition, float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates,
+void Player::goTo(float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates,
                   bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea) {
 
-    targetPosition = limitPosInsideField(targetPosition);
-    Position destination = projectPosOutsideGoalArea(targetPosition, avoidOurGoalArea, avoidTheirGoalArea);
-    destination = limitPosInsideField(destination);
+    Position destination = limitPosInsideField(_desiredPosition);
+    destination = projectPosOutsideGoalArea(destination, avoidOurGoalArea, avoidTheirGoalArea);
 
     // Take angle to target
     float angleToTarget;
@@ -247,8 +245,8 @@ void Player::goTo(Position &targetPosition, float desiredBaseSpeed, float desire
     emit setWheelsSpeed(playerId(), wheelsSpeed.first, wheelsSpeed.second);
 }
 
-void Player::rotateTo(Position &targetPosition) {
-    std::pair<float,float> speed = getWheelsSpeed(Utils::getAngle(position(), targetPosition), 0);
+void Player::rotateTo() {
+    std::pair<float,float> speed = getWheelsSpeed(Utils::getAngle(position(), _desiredPosition), 0);
 
     emit setWheelsSpeed(playerId(), speed.first, speed.second);
 }

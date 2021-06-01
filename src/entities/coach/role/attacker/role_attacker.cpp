@@ -123,10 +123,10 @@ void Role_Attacker::run() {
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             if(!_push) {
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
-                _bhv_moveTo->setTargetPosition(ballProj);
+                player()->setPlayerDesiredPosition(ballProj);
             } else {
                 _bhv_moveTo->setBaseSpeed(50);
-                _bhv_moveTo->setTargetPosition(ballProj);
+                player()->setPlayerDesiredPosition(ballProj);
             }
 
             if(Utils::distance(player()->position(), ballPos) < 0.06f && !_push) {
@@ -152,7 +152,7 @@ void Role_Attacker::run() {
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             float moveX = getWorldMap()->getLocations()->ourSide().isLeft()? -0.3f : 0.3f;
             float moveY = (ballProj.y() > 0)? 0.4f : -0.4f;
-            _bhv_moveTo->setTargetPosition(Position(true, moveX, moveY));
+            player()->setPlayerDesiredPosition(Position(true, moveX, moveY));
             setBehavior(MOVETO);
 
             if((abs(ballPos.y()) > 0.4f) || player()->isBehindBallXCoord(player()->position())) {

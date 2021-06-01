@@ -30,16 +30,10 @@ public:
     Skill_RotateTo();
     QString name();
 
-    // Target management
-    void setTargetPosition(Position &targetPosition) { _targetPosition = targetPosition; }
-
 private:
     // Skill inherited methods
     void configure();
     void run();
-
-    // Internal
-    Position _targetPosition;
 };
 
 #endif // SKILL_ROTATETO_H

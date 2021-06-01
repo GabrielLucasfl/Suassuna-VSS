@@ -22,7 +22,6 @@
 #include "skill_rotateto.h"
 
 Skill_RotateTo::Skill_RotateTo() {
-    _targetPosition = Position(false, 0.0, 0.0);
 }
 
 QString Skill_RotateTo::name() {
@@ -33,7 +32,5 @@ void Skill_RotateTo::configure() {
 }
 
 void Skill_RotateTo::run() {
-    if(!_targetPosition.isInvalid()) {
-        player()->rotateTo(_targetPosition);
-    }
+    player()->rotateTo();
 }

@@ -108,7 +108,7 @@ void Behavior_Barrier::run() {
     }
 
     //setting goto
-    _skill_goTo->setTargetPosition(desiredPosition);
+    player()->setPlayerDesiredPosition(_targetPosition);
     _skill_goTo->setAvoidOurGoalArea(true);
     //setting skill goTo velocity factor
     _skill_goTo->setMovementBaseSpeed(getConstants()->playerBaseSpeed());

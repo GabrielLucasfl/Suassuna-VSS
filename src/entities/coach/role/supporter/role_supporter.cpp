@@ -85,7 +85,7 @@ void Role_Supporter::run() {
     _bhv_moveTo->enableRotation(false);
     _bhv_moveTo->setBaseSpeed(33);
     _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
-    _bhv_moveTo->setTargetPosition(desiredPosition);
+    player()->setPlayerDesiredPosition(desiredPosition);
     setBehavior(BHV_MOVETO);
 }
 

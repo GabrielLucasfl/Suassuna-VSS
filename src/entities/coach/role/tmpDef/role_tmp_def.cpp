@@ -125,7 +125,7 @@ void Role_TMP_DEF::run() {
             }
         }
 
-        _bhv_moveTo->setTargetPosition(desiredPosition);
+        player()->setPlayerDesiredPosition(desiredPosition);
         setBehavior(BHV_MOVETO);
     }
 }

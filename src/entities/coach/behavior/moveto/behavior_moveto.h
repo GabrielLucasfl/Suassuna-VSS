@@ -32,7 +32,6 @@ public:
     QString name();
 
     // Setters
-    void setTargetPosition(Position targetPosition) { _targetPosition = targetPosition; }
     void setBaseSpeed(float baseSpeed) { _desiredBaseSpeed = baseSpeed; }
     void setAvoidFlags(bool avoidBall, bool avoidTeammates, bool avoidOpponents, bool avoidOurGoalArea, bool avoidTheirGoalArea);
     void enableRotation(bool isRotationEnabled) { _isRotationEnabled = isRotationEnabled; }
@@ -58,7 +57,6 @@ private:
     Skill_Spin *_skill_spin;
 
     // Parameters
-    Position _targetPosition;
     float _desiredBaseSpeed;
     bool _isRotationEnabled;
     float _desiredLinearError;

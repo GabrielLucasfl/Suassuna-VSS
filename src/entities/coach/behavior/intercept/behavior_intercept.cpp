@@ -75,7 +75,7 @@ void Behavior_Intercept::run() {
     if (_spinEnabled && playerDistance < player()->getLinearError()) {
         setSkill(SKILL_SPIN);
     } else {
-        _skill_goTo->setTargetPosition(_interceptPos);
+        player()->setPlayerDesiredPosition(_interceptPos);
         _skill_goTo->setMovementBaseSpeed(_baseSpeed);
         _skill_goTo->setLinearError(_desiredLinearError);
         setSkill(SKILL_GOTO);

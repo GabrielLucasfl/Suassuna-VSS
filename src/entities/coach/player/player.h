@@ -70,8 +70,8 @@ public:
     QLinkedList<Position> getPath() const;
 
     // Skills
-    void goTo(Position &targetPosition, float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea);
-    void rotateTo(Position &targetPosition);
+    void goTo(float desiredBaseSpeed, float desiredLinearError, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea , bool avoidTheirGoalArea);
+    void rotateTo();
     void spin(bool isClockWise);
     void idle();
 
@@ -104,7 +104,6 @@ private:
     // Path Planning
     Navigation *_nav;
     std::pair<Angle,float> getNavDirectionDistance(const Position &destination, const Angle &positionToLook, bool avoidTeammates, bool avoidOpponents, bool avoidBall, bool avoidOurGoalArea, bool avoidTheirGoalArea);
-    float _displacement;
 
     // Player internal
     quint8 _playerId;
