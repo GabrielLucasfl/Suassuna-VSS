@@ -70,6 +70,7 @@ private:
     float _offsetRange;
     bool _charge;
     bool _gameInterrupted;
+    float _lastSpeed;
 
     // Timer
     Timer _interuption;
@@ -96,6 +97,9 @@ private:
 
     //FreeBall Function
     void freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::Quadrant quadrant);
+
+    //set push speed
+    float pushSpeed(float playerBallDist);
 
 };
 

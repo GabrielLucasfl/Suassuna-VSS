@@ -51,6 +51,7 @@ void Role_Attacker::configure() {
     _state = GOTOBALL;
     _push = false;
     //setBehavior(BHV_GOTOBALL);
+    _lastSpeed  = getConstants()->playerBaseSpeed();
 }
 
 void Role_Attacker::run() {
@@ -70,10 +71,10 @@ void Role_Attacker::run() {
     // Bhv goToBall parameters
     float bhvGoToBallOffset;
     float ballPlayerDist = Utils::distance(ballProj, player()->position());
-    if(player()->isBehindBallXCoord(player()->position(), 0.1f)) {
+    if(player()->isBehindBallXCoord(player()->position(), 0.18f)) {
         bhvGoToBallOffset = std::min(Utils::distance(ballProj, player()->position()) - 0.03f, 0.3f);
     }else {
-        bhvGoToBallOffset = 0.09f;
+        bhvGoToBallOffset = 0.2f;
     }
     Position theirGoal = getWorldMap()->getLocations()->theirGoal();
     Position bhvGoToBallRef;
@@ -132,10 +133,10 @@ void Role_Attacker::run() {
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
                 player()->setPlayerDesiredPosition(ballProj);
             } else {
-                _bhv_moveTo->setBaseSpeed(35);
-                player()->setPlayerDesiredPosition(ballProj);
+                _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
+                _bhv_moveTo->setTargetPosition(ballProj);
             }
-            if(player()->isLookingTo(theirGoal, 0.3f) && ballPlayerDist < 0.11f && !_push) {
+            if(player()->isLookingTo(theirGoal, 0.3f) && ballPlayerDist < 0.3f && !_push) {
                 _push = true;
             }
             _bhv_moveTo->setLinearError(0.02f);
@@ -147,6 +148,7 @@ void Role_Attacker::run() {
                 && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
+                _lastSpeed = getConstants()->playerBaseSpeed();
             }
             break;
         }
@@ -154,6 +156,18 @@ void Role_Attacker::run() {
             break;
         }
     }
+}
+
+float Role_Attacker::pushSpeed(float ballPlayerDist){
+    if(ballPlayerDist < 0.11f){
+        std::cout << "Vel max\n";
+        return 40;
+    }
+    float factor = std::sqrt((ballPlayerDist-0.11f)/0.19f);
+    float speed = 40, delta = speed - getConstants()->playerBaseSpeed();
+    _lastSpeed = std::max(speed-delta*factor, _lastSpeed);
+    std::cout << "Vel variavel: " << std::max(_lastSpeed, speed-delta*factor)<< std::endl;
+    return _lastSpeed;
 }
 
 bool Role_Attacker::hasAllyInTheirArea() {
