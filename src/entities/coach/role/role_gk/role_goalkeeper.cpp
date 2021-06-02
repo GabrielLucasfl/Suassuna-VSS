@@ -90,15 +90,15 @@ void Role_Goalkeeper::run() {
         _overlapTimer.stop();
 
 
-        if(Utils::distance(player()->position(), getWorldMap()->getLocations()->ourGoal()) > 0.38 ){
+        if(Utils::distance(player()->position(), getWorldMap()->getLocations()->ourGoal()) > 0.38f) {
             _gkOverlap = false;
         }
 
-        if(Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.38 ){
+        if(Utils::distance(player()->position(), getWorldMap()->getBall().getPosition()) > 0.38f) {
             _gkOverlap = false;
         }
 
-        if (_overlapTimer.getSeconds() > 1.0f) {
+        if (_overlapTimer.getSeconds() > 1.0) {
             _isOverlapTimerInit = false;
             _gkOverlap = false;
         }
@@ -141,7 +141,7 @@ void Role_Goalkeeper::run() {
                     setBehavior(BHV_MOVETO);
                 }
             }
-            else if(Utils::distance(ballPos, getWorldMap()->getLocations()->ourGoal()) < 0.38){
+            else if(Utils::distance(ballPos, getWorldMap()->getLocations()->ourGoal()) < 0.38f){
                 float _limity = ballPos.y();
                 Utils::limitValue(&_limity, -0.2f, 0.2f);
                 player()->setPlayerDesiredPosition(Position(true, standardPosition.x(), _limity));

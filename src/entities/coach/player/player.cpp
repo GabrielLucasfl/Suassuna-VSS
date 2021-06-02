@@ -59,7 +59,7 @@ Position Player::getPlayerDesiredPosition() {
 }
 
 float Player::getPlayerDistanceTo(Position &targetPosition) {
-    return sqrt(pow(position().x() - targetPosition.x(), 2) + pow(position().y() - targetPosition.y(), 2));
+    return sqrt(powf(position().x() - targetPosition.x(), 2) + powf(position().y() - targetPosition.y(), 2));
 }
 
 float Player::getPlayerRotateAngleTo(Position &targetPosition) {
@@ -85,7 +85,7 @@ std::pair<float, float> Player::getWheelsSpeed(float angleToObject, float baseSp
 
     // Check if robot front can be reversed to reach target
     bool reversed = false;
-    if(fabs(error) > M_PI/2.0 + M_PI/20.0) {
+    if(fabs(error) > static_cast<float>(M_PI)/2 + static_cast<float>(M_PI)/20) {
         // Mark as reversed and update robot ori
         reversed = true;
         angleRobot = Utils::to180Range(angleRobot + static_cast<float>(M_PI));
@@ -132,13 +132,14 @@ std::pair<float, float> Player::getWheelsSpeed(float angleToObject, float baseSp
 
 float Player::getSmallestAngleDiff(float target, float source) {
     // Gets the smallest angle between the target and one of the "fronts" of the robot
-    double diff;
-    diff = fmod(target + 2*M_PI, 2 * M_PI) - fmod(source + 2*M_PI, 2 * M_PI);
+    float diff;
+    diff = fmod(target + 2 * static_cast<float>(M_PI), 2 * static_cast<float>(M_PI))
+            - fmod(source + 2 * static_cast<float>(M_PI), 2 * static_cast<float>(M_PI));
 
-    if (diff > M_PI) {
-        diff = diff - 2 * M_PI;
-    } else if (diff < -M_PI) {
-        diff = diff + 2 * M_PI;
+    if (diff > static_cast<float>(M_PI)) {
+        diff = diff - 2 * static_cast<float>(M_PI);
+    } else if (diff < static_cast<float>(-M_PI)) {
+        diff = diff + 2 * static_cast<float>(M_PI);
     }
     return diff;
 }
@@ -278,92 +279,92 @@ Position Player::projectPosOutsideGoalArea(Position targetPosition, bool avoidOu
 
     // Check our area
     if (avoidOurArea && getWorldMap()->getLocations()->isInsideOurArea(targetPosition)) {
-            // Check quadrant
-            if (targetPosition.y() >= 0.0f) {
-                Position topCorner;
+        // Check quadrant
+        if (targetPosition.y() >= 0.0f) {
+            Position topCorner;
             if (getWorldMap()->getLocations()->ourSide().isLeft()) {
                 topCorner = getWorldMap()->getLocations()->ourAreaLeftFrontCorner();
-                }
-                else {
+            }
+            else {
                 topCorner = getWorldMap()->getLocations()->ourAreaRightFrontCorner();
-                }
-                // Compare Distances
-                float horizontalDist = abs(targetPosition.x() - topCorner.x());
-                float verticalDist = abs(targetPosition.y() - topCorner.y());
+            }
+            // Compare Distances
+            float horizontalDist = abs(targetPosition.x() - topCorner.x());
+            float verticalDist = abs(targetPosition.y() - topCorner.y());
 
-                if (horizontalDist <= verticalDist) {
-                    float directionX = 0.01 * ((topCorner.x() - targetPosition.x())/abs(topCorner.x() - targetPosition.x()));
+            if (horizontalDist <= verticalDist) {
+                float directionX = 0.01f * ((topCorner.x() - targetPosition.x())/abs(topCorner.x() - targetPosition.x()));
                 return Position(true, topCorner.x() + DISPLACEMENT * directionX, targetPosition.y());
-                } else {
-                return Position(true, targetPosition.x(), topCorner.y() + DISPLACEMENT * 0.01f);
-                }
-
             } else {
-                Position bottomCorner;
+                return Position(true, targetPosition.x(), topCorner.y() + DISPLACEMENT * 0.01f);
+            }
+
+        } else {
+            Position bottomCorner;
             if (getWorldMap()->getLocations()->ourSide().isLeft()) {
                 bottomCorner = getWorldMap()->getLocations()->ourAreaRightFrontCorner();
-                }
-                else {
+            }
+            else {
                 bottomCorner = getWorldMap()->getLocations()->ourAreaLeftFrontCorner();
-                }
+            }
 
-                // Compare Distances
-                float horizontalDist = abs(targetPosition.x() - bottomCorner.x());
-                float verticalDist = abs(targetPosition.y() - bottomCorner.y());
+            // Compare Distances
+            float horizontalDist = abs(targetPosition.x() - bottomCorner.x());
+            float verticalDist = abs(targetPosition.y() - bottomCorner.y());
 
-                if (horizontalDist <= verticalDist) {
-                    float directionX = 0.01 * ((bottomCorner.x() - targetPosition.x())/abs(bottomCorner.x()
-                                                                                           - targetPosition.x()));
+            if (horizontalDist <= verticalDist) {
+                float directionX = 0.01f * ((bottomCorner.x() - targetPosition.x())/abs(bottomCorner.x()
+                                                                                       - targetPosition.x()));
                 return Position(true, bottomCorner.x() + DISPLACEMENT * directionX, targetPosition.y());
-                } else {
+            } else {
                 return Position(true, targetPosition.x(), bottomCorner.y() - DISPLACEMENT * 0.01f);
-                }
             }
         }
+    }
     // Check their area
     if (avoidTheirArea && getWorldMap()->getLocations()->isInsideTheirArea(targetPosition)) {
-            // Check quadrant
-            if (targetPosition.y() >= 0.0f) {
-                Position topCorner;
+        // Check quadrant
+        if (targetPosition.y() >= 0.0f) {
+            Position topCorner;
             if (getWorldMap()->getLocations()->theirSide().isLeft()) {
                 topCorner = getWorldMap()->getLocations()->theirAreaLeftFrontCorner();
-                }
-                else {
+            }
+            else {
                 topCorner = getWorldMap()->getLocations()->theirAreaRightFrontCorner();
-                }
+            }
 
-                // Compare Distances
-                float horizontalDist = abs(targetPosition.x() - topCorner.x());
-                float verticalDist = abs(targetPosition.y() - topCorner.y());
+            // Compare Distances
+            float horizontalDist = abs(targetPosition.x() - topCorner.x());
+            float verticalDist = abs(targetPosition.y() - topCorner.y());
 
-                if (horizontalDist <= verticalDist) {
-                    float directionX = 0.01 * ((topCorner.x() - targetPosition.x())/abs(topCorner.x() - targetPosition.x()));
+            if (horizontalDist <= verticalDist) {
+                float directionX = 0.01f * ((topCorner.x() - targetPosition.x())/abs(topCorner.x() - targetPosition.x()));
                 return Position(true, topCorner.x() + DISPLACEMENT * directionX, targetPosition.y());
-                } else {
-                return Position(true, targetPosition.x(), topCorner.y() + DISPLACEMENT * 0.01f);
-                }
-
             } else {
-                Position bottomCorner;
+                return Position(true, targetPosition.x(), topCorner.y() + DISPLACEMENT * 0.01f);
+            }
+
+        } else {
+            Position bottomCorner;
             if (getWorldMap()->getLocations()->theirSide().isLeft()) {
                 bottomCorner = getWorldMap()->getLocations()->theirAreaRightFrontCorner();
-                }
-                else {
+            }
+            else {
                 bottomCorner = getWorldMap()->getLocations()->theirAreaLeftFrontCorner();
-                }
+            }
 
-                // Compare Distances
-                float horizontalDist = abs(targetPosition.x() - bottomCorner.x());
-                float verticalDist = abs(targetPosition.y() - bottomCorner.y());
+            // Compare Distances
+            float horizontalDist = abs(targetPosition.x() - bottomCorner.x());
+            float verticalDist = abs(targetPosition.y() - bottomCorner.y());
 
-                if (horizontalDist <= verticalDist) {
-                    float directionX = 0.01 * (bottomCorner.x() - targetPosition.x())/abs(bottomCorner.x()
+            if (horizontalDist <= verticalDist) {
+                float directionX = 0.01f * (bottomCorner.x() - targetPosition.x())/abs(bottomCorner.x() - targetPosition.x());
                 return Position(true, bottomCorner.x() + DISPLACEMENT * directionX, targetPosition.y());
-                } else {
+            } else {
                 return Position(true, targetPosition.x(), bottomCorner.y() - DISPLACEMENT * 0.01f);
-                }
             }
         }
+    }
     return targetPosition;
 }
 

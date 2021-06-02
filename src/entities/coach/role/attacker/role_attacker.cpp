@@ -332,9 +332,9 @@ void Role_Attacker:: penaltyKick(quint8 _teamPriority,QPair<Position, Angle> *_p
     if(_teamPriority == 1){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
             Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),
-                                    getWorldMap()->getLocations()->theirGoalLeftPost().y() - 0.05);
+                                    getWorldMap()->getLocations()->theirGoalLeftPost().y() - 0.05f);
             Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),
-                                     getWorldMap()->getLocations()->theirGoalRightPost().y() + 0.05);
+                                     getWorldMap()->getLocations()->theirGoalRightPost().y() + 0.05f);
             if(gkPos.y() > 0 ){
                 _penaltyPlacement->first  = Utils::threePoints(Position(true,-0.375, 0), _amPenaltyLeft, 0.1f, Angle::pi);
             } else {
@@ -343,9 +343,9 @@ void Role_Attacker:: penaltyKick(quint8 _teamPriority,QPair<Position, Angle> *_p
             _penaltyPlacement->second = Angle(true,Utils::getAngle(_penaltyPlacement->first, Position(true,-0.375, 0)));
         } else {
             Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),
-                                    getWorldMap()->getLocations()->theirGoalLeftPost().y() + 0.05);
+                                    getWorldMap()->getLocations()->theirGoalLeftPost().y() + 0.05f);
             Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),
-                                     getWorldMap()->getLocations()->theirGoalRightPost().y() - 0.05);
+                                     getWorldMap()->getLocations()->theirGoalRightPost().y() - 0.05f);
             if(gkPos.y() >= 0 ){
                 _penaltyPlacement->first = Utils::threePoints(Position(true,0.375, 0), _amPenaltyRight, 0.1f, Angle::pi);
             } else {
@@ -370,14 +370,14 @@ void Role_Attacker:: kickOff(quint8 _teamPriority, QPair<Position, Angle> *_pena
         if(getWorldMap()->getLocations()->ourSide().isRight()){
             //assistant near the middle of the field
             _penaltyPlacement->first = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
-                                                          Position(true, -0.75,-0.35),
+                                                          Position(true, -0.75, -0.35f),
                                                           0.1f, Angle::pi);
             _penaltyPlacement->second = Angle(true, Utils::getAngle(_penaltyPlacement->first,
                                                                     getWorldMap()->getLocations()->fieldCenter()));
         } else {
             //assistant near the middle of the field
             _penaltyPlacement->first = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
-                                                          Position(true, 0.75, 0.35),
+                                                          Position(true, 0.75, 0.35f),
                                                           0.1f, Angle::pi);
             _penaltyPlacement->second = Angle(true, Utils::getAngle(_penaltyPlacement->first,
                                                                     getWorldMap()->getLocations()->fieldCenter()));
@@ -394,7 +394,7 @@ void Role_Attacker:: kickOff(quint8 _teamPriority, QPair<Position, Angle> *_pena
 }
 
 void Role_Attacker::freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::Quadrant quadrant){
-    float freeBallXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.375);
+    float freeBallXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.375f);
     float freeBallYabs = (getWorldMap()->getLocations()->fieldMaxY() - 0.25f);
     float freeBallOffset = 0.2f;
 

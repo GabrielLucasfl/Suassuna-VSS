@@ -192,7 +192,7 @@ QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, V
     // Standard position will be at our penalty mark
     Position standardPosition = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
                                                    getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
-    Angle standardAngle = Angle(true, M_PI / 2.0);
+    Angle standardAngle = Angle(true, static_cast<float>(M_PI) / 2.0f);
 
     bool isForOurTeam = (forTeam == static_cast<VSSRef::Color>(getConstants()->teamColor()));
 
@@ -202,15 +202,15 @@ QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, V
             if(isForOurTeam) {
                 standardPosition = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
                                                       getWorldMap()->getLocations()->theirGoal(),
-                                                      0.1f, M_PI);
-                standardPosition = Position(true, standardPosition.x(),standardPosition.y() + 0.15);
+                                                      0.1f, static_cast<float>(M_PI));
+                standardPosition = Position(true, standardPosition.x(),standardPosition.y() + 0.15f);
                 standardAngle = Angle(true, 0.0);
             }
             else {
                 standardPosition = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
                                                       getWorldMap()->getLocations()->ourGoal(),
-                                                      0.1f, M_PI);
-                standardPosition = Position(true, standardPosition.x(),standardPosition.y() - 0.15);
+                                                      0.1f, static_cast<float>(M_PI));
+                standardPosition = Position(true, standardPosition.x(),standardPosition.y() - 0.15f);
                 standardAngle = Angle(true, 0.0);
             }
         }
@@ -220,7 +220,7 @@ QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, V
             if(isForOurTeam) {
                 standardPosition = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
                                                       getWorldMap()->getLocations()->theirGoal(),
-                                                      0.3f, M_PI);
+                                                      0.3f, static_cast<float>(M_PI));
                 standardAngle = Angle(true, 0.0);
             }
         }
@@ -229,7 +229,7 @@ QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, V
             if(!isForOurTeam) {
                 standardPosition = Utils::threePoints(getWorldMap()->getLocations()->theirPenaltyMark(),
                                                       getWorldMap()->getLocations()->theirAreaLeftBackCorner(),
-                                                      0.1f, M_PI);
+                                                      0.1f, static_cast<float>(M_PI));
                 standardAngle = Angle(true, 0.0);
             }
         }
