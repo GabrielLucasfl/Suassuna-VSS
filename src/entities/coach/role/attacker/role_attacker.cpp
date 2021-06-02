@@ -161,10 +161,10 @@ void Role_Attacker::run() {
 float Role_Attacker::pushSpeed(float ballPlayerDist){
     if(ballPlayerDist < 0.11f){
         std::cout << "Vel max\n";
-        return 40;
+        return 35;
     }
     float factor = std::sqrt((ballPlayerDist-0.11f)/0.19f);
-    float speed = 40, delta = speed - getConstants()->playerBaseSpeed();
+    float speed = 35, delta = speed - getConstants()->playerBaseSpeed();
     _lastSpeed = std::max(speed-delta*factor, _lastSpeed);
     std::cout << "Vel variavel: " << std::max(_lastSpeed, speed-delta*factor)<< std::endl;
     return _lastSpeed;
