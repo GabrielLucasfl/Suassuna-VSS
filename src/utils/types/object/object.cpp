@@ -47,6 +47,18 @@ Angle Object::getOrientation() {
     return retn;
 }
 
+Velocity Object::getAcceleration() {
+    Velocity retn = _acceleration;
+
+    return retn;
+}
+
+Position Object::getNextPosition() {
+    Position retn = _nextPosition;
+
+    return retn;
+}
+
 bool Object::isObjectLoss() {
     return _lossFilter.checkLoss();
 }
@@ -80,6 +92,13 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                 _kalmanFilter.predict();
                 _position = _kalmanFilter.getPosition();
                 _velocity = _kalmanFilter.getVelocity();
+                _acceleration = _kalmanFilter.getAcceleration();
+                if(_stepTimer.hasBeenStarted()) {
+                    _stepTimer.stop();
+                    _dt = std::max(static_cast<float>(_stepTimer.getSeconds()), 0.001f);
+                }
+                _nextPosition = predictNextPosition();
+                _stepTimer.start();
             }
         }
     }
@@ -106,6 +125,13 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                 _position.setPosition(true, _kalmanFilter.getPosition().x(), _kalmanFilter.getPosition().y());
                 _velocity = _kalmanFilter.getVelocity();
                 _orientation = orientation;
+                _acceleration = _kalmanFilter.getAcceleration();
+                if(_stepTimer.hasBeenStarted()) {
+                    _stepTimer.stop();
+                    _dt = std::max(static_cast<float>(_stepTimer.getSeconds()), 0.001f);
+                }
+                _nextPosition = predictNextPosition();
+                _stepTimer.start();
             }
             // If object is unsafe yet (noise is running)
             else {
@@ -119,9 +145,28 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
     }
 }
 
+Position Object::predictNextPosition(int cycles) {
+    Position predPos;
+    float fac = 1.1f;
+    float nextPx = _position.x() + _velocity.vx()*cycles*_dt + _acceleration.vx()*powf(cycles*_dt,2)/2;
+    float nextPy = _position.y() + _velocity.vy()*cycles*_dt + _acceleration.vy()*powf(cycles*_dt,2)/2;
+    nextPx *= fac;
+    nextPy *= fac;
+    predPos.setPosition(!_position.isInvalid(), nextPx, nextPy);
+    return predPos;
+}
+
+Position Object::predictNextPosition(float interval) {
+    int cycles = static_cast<int>(std::ceil(interval/_dt));
+    return predictNextPosition(cycles);
+}
+
 void Object::setInvalid() {
     _position.setInvalid();
     _velocity.setInvalid();
     _orientation.setInvalid();
+    _acceleration.setInvalid();
+    _nextPosition.setInvalid();
+    _dt = 0.001f;
     _confidence = 0.0;
 }

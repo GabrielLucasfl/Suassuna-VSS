@@ -38,6 +38,12 @@ public:
     Position getPosition();
     Velocity getVelocity();
     Angle getOrientation();
+    Velocity getAcceleration();
+    Position getNextPosition();
+
+    // Other methods
+    Position predictNextPosition(int cycles=1);
+    Position predictNextPosition(float interval);
 
     // Filtering
     bool isObjectSafe();
@@ -52,12 +58,18 @@ private:
     Position _position;
     Velocity _velocity;
     Angle _orientation;
+    Position _nextPosition;
+    Velocity _acceleration;
+    float _dt;
     float _confidence;
 
     // Object filters
     LossFilter _lossFilter;
     NoiseFilter _noiseFilter;
     KalmanFilter _kalmanFilter;
+
+    // Timer
+    Timer _stepTimer;
 };
 
 #endif // OBJECT_H
