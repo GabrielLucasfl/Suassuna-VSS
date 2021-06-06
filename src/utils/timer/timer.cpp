@@ -22,12 +22,14 @@
 #include "timer.h"
 
 Timer::Timer() {
+    _hasBeenStarted = false;
     // Updating time1 and time2 with actual time
     clock_gettime(CLOCK_REALTIME, &_time1);
     clock_gettime(CLOCK_REALTIME, &_time2);
 }
 
 void Timer::start() {
+    _hasBeenStarted = true;
     // Updating time1 with last time
     clock_gettime(CLOCK_REALTIME, &_time1);
 }

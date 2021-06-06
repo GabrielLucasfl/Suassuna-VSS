@@ -38,10 +38,14 @@ public:
     double getMiliSeconds();
     double getMicroSeconds();
     double getNanoSeconds();
+    bool hasBeenStarted() { return _hasBeenStarted; }
 
 private:
     timespec _time1;
     timespec _time2;
+
+    // Indicate if timer has already been started with start method
+    bool _hasBeenStarted;
 };
 
 #endif // TIMER_H
