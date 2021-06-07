@@ -136,7 +136,8 @@ void Role_Attacker::run() {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
                 _bhv_moveTo->setTargetPosition(ballProj);
             }
-            if(player()->isLookingTo(theirGoal, 0.3f) && ballPlayerDist < 0.3f && !_push) {
+
+            if(ballPlayerDist < 0.26f && !_push) {
                 _push = true;
             }
             _bhv_moveTo->setLinearError(0.02f);
@@ -144,7 +145,7 @@ void Role_Attacker::run() {
 
             //transitions
             _interuption.stop();
-            if((ballPlayerDist >= 0.3f && !inRangeToPush(ballProj))
+            if((ballPlayerDist >= 0.3f) && !inRangeToPush(ballProj)
                 && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
@@ -160,13 +161,13 @@ void Role_Attacker::run() {
 
 float Role_Attacker::pushSpeed(float ballPlayerDist){
     if(ballPlayerDist < 0.11f){
-        std::cout << "Vel max\n";
-        return 35;
+        //std::cout << "Vel max\n";
+        return 40;
     }
-    float factor = std::sqrt((ballPlayerDist-0.11f)/0.19f);
-    float speed = 35, delta = speed - getConstants()->playerBaseSpeed();
+    float factor = std::cbrt((ballPlayerDist-0.11f)/0.15f);
+    float speed = 40, delta = speed - getConstants()->playerBaseSpeed();
     _lastSpeed = std::max(speed-delta*factor, _lastSpeed);
-    std::cout << "Vel variavel: " << std::max(_lastSpeed, speed-delta*factor)<< std::endl;
+    //std::cout << "Vel variavel: " << std::max(_lastSpeed, speed-delta*factor)<< std::endl;
     return _lastSpeed;
 }
 
