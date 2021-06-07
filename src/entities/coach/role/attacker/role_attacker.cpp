@@ -134,7 +134,7 @@ void Role_Attacker::run() {
                 player()->setPlayerDesiredPosition(ballProj);
             } else {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
-                _bhv_moveTo->setTargetPosition(ballProj);
+                player()->setPlayerDesiredPosition(ballProj);
             }
 
             if(ballPlayerDist < 0.26f && !_push) {
