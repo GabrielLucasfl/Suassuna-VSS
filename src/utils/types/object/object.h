@@ -39,11 +39,8 @@ public:
     Velocity getVelocity();
     Angle getOrientation();
     Velocity getAcceleration();
-    Position getNextPosition();
-
-    // Other methods
-    Position predictNextPosition(int cycles=1);
-    Position predictNextPosition(float interval);
+    Position getPredPosition(int cycles=1);
+    Position getPredPosition(float interval);
 
     // Filtering
     bool isObjectSafe();
@@ -58,7 +55,6 @@ private:
     Position _position;
     Velocity _velocity;
     Angle _orientation;
-    Position _nextPosition;
     Velocity _acceleration;
     float _dt;
     float _confidence;
@@ -67,6 +63,9 @@ private:
     LossFilter _lossFilter;
     NoiseFilter _noiseFilter;
     KalmanFilter _kalmanFilter;
+
+    // Other methods
+    Position predictNextPosition(int cycles=1);
 
     // Timer
     Timer _stepTimer;

@@ -53,8 +53,15 @@ Velocity Object::getAcceleration() {
     return retn;
 }
 
-Position Object::getNextPosition() {
-    Position retn = _nextPosition;
+Position Object::getPredPosition(int cycles) {
+    Position retn = predictNextPosition(cycles);
+
+    return retn;
+}
+
+Position Object::getPredPosition(float interval) {
+    int cycles = static_cast<int>(std::ceil(interval/_dt));
+    Position retn = predictNextPosition(cycles);
 
     return retn;
 }
@@ -97,7 +104,6 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                     _stepTimer.stop();
                     _dt = std::max(static_cast<float>(_stepTimer.getSeconds()), 0.001f);
                 }
-                _nextPosition = predictNextPosition();
                 _stepTimer.start();
             }
         }
@@ -130,7 +136,6 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                     _stepTimer.stop();
                     _dt = std::max(static_cast<float>(_stepTimer.getSeconds()), 0.001f);
                 }
-                _nextPosition = predictNextPosition();
                 _stepTimer.start();
             }
             // If object is unsafe yet (noise is running)
@@ -156,17 +161,11 @@ Position Object::predictNextPosition(int cycles) {
     return predPos;
 }
 
-Position Object::predictNextPosition(float interval) {
-    int cycles = static_cast<int>(std::ceil(interval/_dt));
-    return predictNextPosition(cycles);
-}
-
 void Object::setInvalid() {
     _position.setInvalid();
     _velocity.setInvalid();
     _orientation.setInvalid();
     _acceleration.setInvalid();
-    _nextPosition.setInvalid();
     _dt = 0.001f;
     _confidence = 0.0;
 }
