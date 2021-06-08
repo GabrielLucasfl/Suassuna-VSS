@@ -106,7 +106,22 @@ void Role_Attacker::run() {
         _state = MOVETO;
     }
 
-    switch (_state) {
+    float angle = Utils::teste(ballPos, theirGoal, player()->position());
+    std::cout << "angle: " << normAngle(angle) * 180/M_PI<< std::endl;
+    Position pos = Utils::threePoints(ballPos, theirGoal, 0.20f, M_PI);
+    if(ballPos.y() >= 0) pos = Utils::threePoints(ballPos, theirGoal, 0.30f, M_PI);
+
+    _avoidBall = false;
+    _avoidTeammates = false;
+    _avoidOpponents = false;
+    _avoidOurGoalArea = true;
+    _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
+    _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
+    player()->setPlayerDesiredPosition(pos);
+    _bhv_moveTo->setLinearError(0.02f);
+    setBehavior(BHV_MOVETO);
+
+    /*switch (_state) {
         case GOTOBALL: {
             _avoidBall = true;
             _avoidTeammates = true;
@@ -156,7 +171,7 @@ void Role_Attacker::run() {
         default: {
             break;
         }
-    }
+    }*/
 }
 
 float Role_Attacker::pushSpeed(float ballPlayerDist){
