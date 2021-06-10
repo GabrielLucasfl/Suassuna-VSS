@@ -101,6 +101,12 @@ private:
     //set push speed
     float pushSpeed(float playerBallDist);
 
+    //get distance based on angle to ball
+    float getDist(float angle);
+
+    //get the target angle to use with threePoints method
+    float getAngle(float angle);
+
 };
 
 #endif // ROLE_ATTACKER_H

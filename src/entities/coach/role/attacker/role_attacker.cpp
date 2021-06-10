@@ -106,33 +106,22 @@ void Role_Attacker::run() {
         _state = MOVETO;
     }
 
-    float angle = Utils::teste(ballPos, theirGoal, player()->position());
-    std::cout << "angle: " << normAngle(angle) * 180/M_PI<< std::endl;
-    Position pos = Utils::threePoints(ballPos, theirGoal, 0.20f, M_PI);
-    if(ballPos.y() >= 0) pos = Utils::threePoints(ballPos, theirGoal, 0.30f, M_PI);
+    float angle = normAngle(Utils::angleToBall(ballPos, theirGoal, player()->position()));
+    float dist = getDist(angle);
+    float targetAngle = getAngle(angle);
+    Position pos = Utils::threePoints(ballPos, theirGoal, dist, M_PI);
 
-    _avoidBall = false;
-    _avoidTeammates = false;
-    _avoidOpponents = false;
-    _avoidOurGoalArea = true;
-    _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
-    _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
-    player()->setPlayerDesiredPosition(pos);
-    _bhv_moveTo->setLinearError(0.02f);
-    setBehavior(BHV_MOVETO);
-
-    /*switch (_state) {
+    switch (_state) {
         case GOTOBALL: {
-            _avoidBall = true;
-            _avoidTeammates = true;
-            _avoidOpponents = true;
+            _avoidBall = false;
+            _avoidTeammates = false;
+            _avoidOpponents = false;
             _avoidOurGoalArea = true;
-            _bhv_goToBall->setReferencePosition(getWorldMap()->getLocations()->theirGoal());
-            _bhv_goToBall->setOffsetBehindBall(bhvGoToBallOffset);
-            _bhv_goToBall->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea,
-                                         _avoidTheirGoalArea);
-            _bhv_goToBall->setLinearError(0.02f);
-            setBehavior(BHV_GOTOBALL);
+            _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
+            _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
+            player()->setPlayerDesiredPosition(pos);
+            _bhv_moveTo->setLinearError(0.02f);
+            setBehavior(BHV_MOVETO);
             if(isInRange) {
                 _state = MOVETO;
             }
@@ -160,7 +149,7 @@ void Role_Attacker::run() {
 
             //transitions
             _interuption.stop();
-            if((ballPlayerDist >= 0.3f) && !inRangeToPush(ballProj)
+            if((ballPlayerDist >= 0.3f)
                 && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
@@ -171,7 +160,34 @@ void Role_Attacker::run() {
         default: {
             break;
         }
-    }*/
+    }
+}
+
+float Role_Attacker::getAngle(float angle){
+    float angleAux = fmin(angle, M_PI/2);
+    if(angleAux <= M_PI/2){
+        angleAux -= 0.1f;
+    }
+    return (angleAux);
+}
+
+
+float Role_Attacker::getDist(float angle){
+    float maxAngle = M_PI/2;
+    std::cout << "angle: " << angle * 180/M_PI<< std::endl;
+
+    if(angle > 0){
+        angle = fmin(angle, maxAngle);
+    }
+    else{
+        angle = fmax(angle, -maxAngle);
+    }
+
+    float maxDist = 0.45f, delta = 0.25f;
+    float dist = maxDist - delta*((maxAngle - fabs(angle))/(maxAngle));
+    std::cout << "dist: " << dist << std::endl;
+
+    return dist;
 }
 
 float Role_Attacker::pushSpeed(float ballPlayerDist){

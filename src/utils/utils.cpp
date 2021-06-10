@@ -93,7 +93,7 @@ Position Utils::threePoints(const Position &near, const Position &far, float dis
     return p;
 }
 
-float Utils::teste(const Position &ballPos, const Position &theirGoal, const Position &playerPos){
+float Utils::angleToBall(const Position &ballPos, const Position &theirGoal, const Position &playerPos){
     //float alpha = (acos((playerPos.x()-ballPos.x())/Utils::distance(ballPos, theirGoal))) + Utils::getAngle(ballPos, theirGoal);
 
     float alpha =  getAngle(ballPos, theirGoal) - getAngle(playerPos, ballPos);
