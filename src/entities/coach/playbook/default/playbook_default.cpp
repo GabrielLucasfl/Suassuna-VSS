@@ -56,7 +56,6 @@ void Playbook_Default::configure(int numPlayers) {
 
 void Playbook_Default::run(int numPlayers) {
     // Defining robot IDs
-        std::cout<<"Timer:" << _switchRoleTimer.getSeconds() << std::endl;
         if(_first){
             _switchPlayersTimer.start();
             _switchRoleTimer.start();
@@ -92,10 +91,8 @@ void Playbook_Default::run(int numPlayers) {
         setPlayerRole(_goalkeeperID, _rl_gk);
         setPlayerRole(_attackerID, _rl_atk);
         if (_defenderState) {
-            std::cout << "Its def\n";
             setPlayerRole(_lastID, _rl_df);
         } else {
-            std::cout << "Its sup\n";
             setPlayerRole(_lastID, _rl_sup);
         }
 }
