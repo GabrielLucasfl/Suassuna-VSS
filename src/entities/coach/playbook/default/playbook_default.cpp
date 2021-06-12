@@ -30,6 +30,7 @@ Playbook_Default::Playbook_Default() {
     _rl_atk = nullptr;
 
     _switchedPlayers = true;
+    _switchedRoles = false;
     _atkStuck = false;
     _defenderState = true;
 }
@@ -55,26 +56,48 @@ void Playbook_Default::configure(int numPlayers) {
 
 void Playbook_Default::run(int numPlayers) {
     // Defining robot IDs
-    if(_first) {
-        _switchPlayersTimer.start();
-        selectInitialIDs();
-        _first = false;
-    }
-    _switchPlayersTimer.stop();
-    if(_switchPlayersTimer.getSeconds() > 2) {
-        _switchedPlayers = false;
-        switchPlayersIDs();
-        thirdPlayerState();
-    }
+        std::cout<<"Timer:" << _switchRoleTimer.getSeconds() << std::endl;
+        if(_first){
+            _switchPlayersTimer.start();
+            _switchRoleTimer.start();
+            selectInitialIDs();
+            _first = false;//this if is done only one time
+        }
+        _switchPlayersTimer.stop();
+        _switchRoleTimer.stop();
+        if(_switchRoleTimer.getSeconds() > 2.0f) {
+            _switchedPlayers = false;
+            _switchedRoles = false;
 
-    // Setting roles
-    setPlayerRole(_goalkeeperID, _rl_gk);
-    setPlayerRole(_attackerID, _rl_atk);
-    if (_defenderState) {
-        setPlayerRole(_lastID, _rl_df);
-    } else {
-        setPlayerRole(_lastID, _rl_sup);
-    }
+        }
+        if(!_switchedRoles){// if hasn't switched the roles
+            switchPlayersIDs();
+            if(_defenderState){
+                thirdPlayerState();
+                if(!_defenderState){//if the defender state is false, then it has switched
+                    _switchedRoles = true;
+                    _switchRoleTimer.start();
+                }
+            }
+            else{
+                thirdPlayerState();
+                if(_defenderState){//if the defender state is true then it has switched
+                    _switchedRoles = true;
+                    _switchRoleTimer.start();
+                }
+            }
+        }
+
+        // Setting roles
+        setPlayerRole(_goalkeeperID, _rl_gk);
+        setPlayerRole(_attackerID, _rl_atk);
+        if (_defenderState) {
+            std::cout << "Its def\n";
+            setPlayerRole(_lastID, _rl_df);
+        } else {
+            std::cout << "Its sup\n";
+            setPlayerRole(_lastID, _rl_sup);
+        }
 }
 
 void Playbook_Default::switchPlayersIDs() {

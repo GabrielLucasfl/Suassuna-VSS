@@ -61,7 +61,9 @@ private:
 
     // Switch players parameters
     Timer _switchPlayersTimer;
+    Timer _switchRoleTimer;
     bool _switchedPlayers;
+    bool _switchedRoles;
     Timer _atkStuckTimer;
     bool _atkStuck;
 };
