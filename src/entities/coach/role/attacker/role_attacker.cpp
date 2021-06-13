@@ -88,7 +88,7 @@ void Role_Attacker::run() {
     Colors::Color ourColor = getConstants()->teamColor();
     if(getWorldMap()->getPlayer(ourColor, player()->playerId()).getVelocity().abs() < 0.02f
                                 && getWorldMap()->getBall().getVelocity().abs() < 0.02f) {
-        _offsetRange = 0.15f;
+        _offsetRange = 0.16f;
         _charge = true;
     } else {
         _offsetRange = bhvGoToBallOffset;
@@ -109,7 +109,7 @@ void Role_Attacker::run() {
     float angle = normAngle(Utils::angleToBall(ballPos, theirGoal, player()->position()));
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
-    Position pos = Utils::threePoints(ballPos, theirGoal, dist, M_PI);
+    Position pos = Utils::threePoints(ballPos, theirGoal, dist, targetAngle);
 
     switch (_state) {
         case GOTOBALL: {
@@ -118,11 +118,11 @@ void Role_Attacker::run() {
             _avoidOpponents = false;
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
-            _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
+            _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed() + 5.0f);
             player()->setPlayerDesiredPosition(pos);
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
-            if(isInRange) {
+            if((isInRange)) {
                 _state = MOVETO;
             }
             break;
@@ -133,24 +133,22 @@ void Role_Attacker::run() {
             _avoidOpponents = false;
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
+
             if(!_push) {
-                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
+                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed()+5.0f);
                 player()->setPlayerDesiredPosition(ballProj);
             } else {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
                 player()->setPlayerDesiredPosition(ballProj);
             }
 
-            if(ballPlayerDist < 0.26f && !_push) {
-                _push = true;
-            }
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
 
             //transitions
             _interuption.stop();
-            if((ballPlayerDist >= 0.3f)
-                && _interuption.getSeconds() > 1) {
+            if((ballPlayerDist >= 0.3f) && !inRangeToPush(ballProj)
+                    && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
                 _lastSpeed = getConstants()->playerBaseSpeed();
@@ -164,11 +162,31 @@ void Role_Attacker::run() {
 }
 
 float Role_Attacker::getAngle(float angle){
-    float angleAux = fmin(angle, M_PI/2);
-    if(angleAux <= M_PI/2){
-        angleAux -= 0.1f;
+
+    return M_PI;
+
+   /* if(angle < 0){
+        angle = fmax(angle, -M_PI/2);
+        return M_PI + angle;
     }
-    return (angleAux);
+    angle = fmin(angle, M_PI/2);
+    return angle - M_PI;*/
+
+
+    /*int negative = 1;
+    if(angle < 0) negative = -1;
+
+    if(angle*negative <= M_PI/6 + 0.1f){
+        return M_PI;
+    }
+    else if(angle*negative <= M_PI/3 + 0.1f){
+        return negative*M_PI/6 + M_PI;
+    }
+    else if(angle*negative <= M_PI/2 + 0.1f){
+        return negative*M_PI/3 + M_PI;
+    }
+
+    return negative*M_PI/2;*/
 }
 
 
@@ -183,7 +201,7 @@ float Role_Attacker::getDist(float angle){
         angle = fmax(angle, -maxAngle);
     }
 
-    float maxDist = 0.45f, delta = 0.25f;
+    float maxDist = 0.40f, delta = 0.25f;
     float dist = maxDist - delta*((maxAngle - fabs(angle))/(maxAngle));
     std::cout << "dist: " << dist << std::endl;
 
@@ -193,10 +211,10 @@ float Role_Attacker::getDist(float angle){
 float Role_Attacker::pushSpeed(float ballPlayerDist){
     if(ballPlayerDist < 0.11f){
         //std::cout << "Vel max\n";
-        return 40;
+        return 45;
     }
     float factor = std::cbrt((ballPlayerDist-0.11f)/0.15f);
-    float speed = 40, delta = speed - getConstants()->playerBaseSpeed();
+    float speed = 45, delta = speed - getConstants()->playerBaseSpeed() - 5.0f;
     _lastSpeed = std::max(speed-delta*factor, _lastSpeed);
     //std::cout << "Vel variavel: " << std::max(_lastSpeed, speed-delta*factor)<< std::endl;
     return _lastSpeed;
