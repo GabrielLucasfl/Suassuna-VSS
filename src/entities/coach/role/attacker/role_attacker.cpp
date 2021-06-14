@@ -163,31 +163,16 @@ void Role_Attacker::run() {
 }
 
 float Role_Attacker::getAngle(float angle){
-
-    return M_PI;
-
-   /* if(angle < 0){
-        angle = fmax(angle, -M_PI/2);
-        return M_PI + angle;
+    int signal = static_cast<int>(angle/fabs(angle));
+    float halfAngle = fabs(angle)/2;
+    if(fabs(angle) > 0.95f*static_cast<float>(M_PI)) {
+        if(getWorldMap()->getBall().getVelocity().vy() < 0) {
+            return static_cast<float>(M_PI)/2;
+        }else {
+            return -1*static_cast<float>(M_PI)/2;
+        }
     }
-    angle = fmin(angle, M_PI/2);
-    return angle - M_PI;*/
-
-
-    /*int negative = 1;
-    if(angle < 0) negative = -1;
-
-    if(angle*negative <= M_PI/6 + 0.1f){
-        return M_PI;
-    }
-    else if(angle*negative <= M_PI/3 + 0.1f){
-        return negative*M_PI/6 + M_PI;
-    }
-    else if(angle*negative <= M_PI/2 + 0.1f){
-        return negative*M_PI/3 + M_PI;
-    }
-
-    return negative*M_PI/2;*/
+    return -1 * signal * (static_cast<float>(M_PI) - halfAngle);
 }
 
 
