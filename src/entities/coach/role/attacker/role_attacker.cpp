@@ -122,7 +122,8 @@ void Role_Attacker::run() {
             player()->setPlayerDesiredPosition(pos);
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
-            if((isInRange)) {
+            // if player is in range or: if it is near the ball and the angle between them is small
+            if(isInRange || ((fabs(angle) < static_cast<float>(M_PI)/6) && Utils::distance(ballPos, player()->position()) < 0.2f)) {
                 _state = MOVETO;
             }
             break;
@@ -191,8 +192,8 @@ float Role_Attacker::getAngle(float angle){
 
 
 float Role_Attacker::getDist(float angle){
-    float maxAngle = M_PI/2;
-    std::cout << "angle: " << angle * 180/M_PI<< std::endl;
+    float maxAngle = static_cast<float>(M_PI)/2;
+    //std::cout << "angle: " << angle * 180/static_cast<float>(M_PI) << std::endl;
 
     if(angle > 0){
         angle = fmin(angle, maxAngle);
@@ -203,7 +204,7 @@ float Role_Attacker::getDist(float angle){
 
     float maxDist = 0.40f, delta = 0.25f;
     float dist = maxDist - delta*((maxAngle - fabs(angle))/(maxAngle));
-    std::cout << "dist: " << dist << std::endl;
+    //std::cout << "dist: " << dist << std::endl;
 
     return dist;
 }
