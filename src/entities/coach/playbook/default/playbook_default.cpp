@@ -30,7 +30,6 @@ Playbook_Default::Playbook_Default() {
     _rl_atk = nullptr;
 
     _switchedPlayers = true;
-    _switchedRoles = false;
     _atkStuck = false;
     _defenderState = true;
 }
@@ -58,34 +57,16 @@ void Playbook_Default::run(int numPlayers) {
     // Defining robot IDs
         if(_first){
             _switchPlayersTimer.start();
-            _switchRoleTimer.start();
             selectInitialIDs();
             _first = false;//this if is done only one time
         }
         _switchPlayersTimer.stop();
-        _switchRoleTimer.stop();
-        if(_switchRoleTimer.getSeconds() > 2.0f) {
+        if(_switchPlayersTimer.getSeconds() > 2) {
             _switchedPlayers = false;
-            _switchedRoles = false;
+        }
 
-        }
-        if(!_switchedRoles){// if hasn't switched the roles
-            switchPlayersIDs();
-            if(_defenderState){
-                thirdPlayerState();
-                if(!_defenderState){//if the defender state is false, then it has switched
-                    _switchedRoles = true;
-                    _switchRoleTimer.start();
-                }
-            }
-            else{
-                thirdPlayerState();
-                if(_defenderState){//if the defender state is true then it has switched
-                    _switchedRoles = true;
-                    _switchRoleTimer.start();
-                }
-            }
-        }
+        switchPlayersIDs();
+        thirdPlayerState();
 
         // Setting roles
         setPlayerRole(_goalkeeperID, _rl_gk);
@@ -174,47 +155,28 @@ void Playbook_Default::selectInitialIDs() {
 }
 
 void Playbook_Default::thirdPlayerState() {
-//    Colors::Color enemyColor;
-//    if (getConstants()->teamColor() == Colors::BLUE) {
-//        enemyColor = Colors::YELLOW;
-//    } else {
-//        enemyColor = Colors::BLUE;
-//    }
-//    bool result = false;
-
-//    // Defining Defender situation
-//    QList<quint8> enemyPlayers = getWorldMap()->getAvailablePlayers(enemyColor);
-//    for (int i = 0; i < enemyPlayers.size(); i++) {
-//        Position enemyPlayerPosition = getWorldMap()->getPlayer(enemyColor, enemyPlayers[i]).getPosition();
-//        float enemyAngleToOurGoal = Utils::getAngle(getWorldMap()->getLocations()->ourGoal(), enemyPlayerPosition);
-//        float enemyAngleToBall = Utils::getAngle(getWorldMap()->getBall().getPosition(), enemyPlayerPosition);
-//        float enemyOrientation = getWorldMap()->getPlayer(enemyColor, enemyPlayers[i]).getOrientation().value();
-//        float enemyBalDistance = Utils::distance(enemyPlayerPosition, getWorldMap()->getLocations()->ourGoal());
-//        if ((enemyBalDistance < 0.07f && abs(enemyAngleToBall - enemyAngleToOurGoal) < static_cast<float>(M_PI) / 6)
-//                && abs(enemyAngleToOurGoal - enemyOrientation) < static_cast<float>(M_PI) / 12) {
-//            result = true;
-//        } else {
-//            result = false;
-//        }
-//    }
-//    return result;
-
     Position selfPosition = getWorldMap()->getPlayer(getConstants()->teamColor(), _lastID).getPosition();
-    if (_defenderState) {
-        if ((((getWorldMap()->getLocations()->ourSide().isRight() && getWorldMap()->getBall().getVelocity().vx() < 0.0f)
-                || (getWorldMap()->getLocations()->ourSide().isLeft() && getWorldMap()->getBall().getVelocity().vx() > 0.0f))
-                && getWorldMap()->getLocations()->isInsideOurField(getWorldMap()->getBall().getPosition()))
-                || (getWorldMap()->getLocations()->isInsideTheirField(selfPosition) && _switchedPlayers)) {
-            _defenderState = false;
-        }
-    } else {
-        Position atkPosition = getWorldMap()->getPlayer(getConstants()->teamColor(), _attackerID).getPosition();
-        if (_atkStuck || (((Utils::distance(atkPosition, getWorldMap()->getBall().getPosition()) > 0.3f
-                && isBehindBallXcoord(atkPosition)) || !isBehindBallXcoord(atkPosition))
-                && ((getWorldMap()->getLocations()->ourSide().isRight() && getWorldMap()->getBall().getVelocity().vx() > 0.0f)
-                || (getWorldMap()->getLocations()->ourSide().isLeft() && getWorldMap()->getBall().getVelocity().vx() < 0.0f)))
-                || (getWorldMap()->getLocations()->isInsideOurField(selfPosition) && _switchedPlayers)) {
-            _defenderState = true;
+    if(!_switchedPlayers) {
+        if (_defenderState) {
+            if ((((getWorldMap()->getLocations()->ourSide().isRight() && getWorldMap()->getBall().getVelocity().vx() < 0.0f)
+                    || (getWorldMap()->getLocations()->ourSide().isLeft() && getWorldMap()->getBall().getVelocity().vx() > 0.0f))
+                    && getWorldMap()->getLocations()->isInsideOurField(getWorldMap()->getBall().getPosition()))
+                    || (getWorldMap()->getLocations()->isInsideTheirField(selfPosition) && _switchedPlayers)) {
+                _defenderState = false;
+                _switchedPlayers = true;
+                _switchPlayersTimer.start();
+            }
+        } else {
+            Position atkPosition = getWorldMap()->getPlayer(getConstants()->teamColor(), _attackerID).getPosition();
+            if (_atkStuck || (((Utils::distance(atkPosition, getWorldMap()->getBall().getPosition()) > 0.3f
+                    && isBehindBallXcoord(atkPosition)) || !isBehindBallXcoord(atkPosition))
+                    && ((getWorldMap()->getLocations()->ourSide().isRight() && getWorldMap()->getBall().getVelocity().vx() > 0.0f)
+                    || (getWorldMap()->getLocations()->ourSide().isLeft() && getWorldMap()->getBall().getVelocity().vx() < 0.0f)))
+                    || (getWorldMap()->getLocations()->isInsideOurField(selfPosition) && _switchedPlayers)) {
+                _defenderState = true;
+                _switchedPlayers = true;
+                _switchPlayersTimer.start();
+            }
         }
     }
 }
