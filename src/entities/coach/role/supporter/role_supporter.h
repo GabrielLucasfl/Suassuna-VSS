@@ -32,6 +32,9 @@ public:
     Role_Supporter();
     QString name();
 
+    // Methods
+    void setAttackerPosition(Position pos) { _attackerPos = pos; }
+
 private:
     // Role inherited methods
     void configure();
@@ -74,6 +77,7 @@ private:
     bool _nofreeAngles;
     bool _canAvoidBall;
 
+    Position _attackerPos;
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
 };
 

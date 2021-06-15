@@ -30,6 +30,7 @@ Role_Supporter::Role_Supporter(){
     _avoidOurGoalArea = true;
     _avoidTheirGoalArea = false;
     _canAvoidBall = false;
+    _attackerPos.setPosition(false , 0.0f , 0.0f);
 }
 
 QString Role_Supporter::name() {

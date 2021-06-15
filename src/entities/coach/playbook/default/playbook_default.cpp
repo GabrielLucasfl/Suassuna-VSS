@@ -75,6 +75,11 @@ void Playbook_Default::run(int numPlayers) {
     } else {
         setPlayerRole(_lastID, _rl_sup);
     }
+
+    //Communication between Roles
+    Colors::Color ourColor = getConstants()->teamColor();
+    Position attackerPos = getWorldMap()->getPlayer(ourColor, _attackerID).getPosition();
+    _rl_sup->setAttackerPosition(attackerPos);
 }
 
 void Playbook_Default::switchPlayersIDs() {
