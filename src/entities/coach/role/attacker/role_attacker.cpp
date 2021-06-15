@@ -33,6 +33,7 @@ Role_Attacker::Role_Attacker() {
     _offsetRange = 0.3f;
     _charge = true;
     _gameInterrupted = false;
+    _positiveAngle = true;
 }
 
 QString Role_Attacker::name() {
@@ -164,15 +165,19 @@ void Role_Attacker::run() {
 
 float Role_Attacker::getAngle(float angle){
     int signal = static_cast<int>(angle/fabs(angle));
-    float halfAngle = fabs(angle)/2;
-    if(fabs(angle) > 0.95f*static_cast<float>(M_PI)) {
-        if(getWorldMap()->getBall().getVelocity().vy() < 0) {
-            return static_cast<float>(M_PI)/2;
-        }else {
-            return -1*static_cast<float>(M_PI)/2;
+    if(_positiveAngle) {
+        if(signal < 0 && fabs(angle) < 0.9f*static_cast<float>(M_PI)) {
+            signal = 1;
+            _positiveAngle = false;
+        }
+    }else {
+        if(signal > 0 && fabs(angle) < 0.9f*static_cast<float>(M_PI)) {
+            signal = -1;
+            _positiveAngle = true;
         }
     }
-    return -1 * signal * (static_cast<float>(M_PI) - halfAngle);
+    float halfAngle = fabs(angle)/2;
+    return signal * (static_cast<float>(M_PI) - halfAngle);
 }
 
 

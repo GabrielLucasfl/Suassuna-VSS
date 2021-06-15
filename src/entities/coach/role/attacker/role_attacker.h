@@ -71,6 +71,7 @@ private:
     bool _charge;
     bool _gameInterrupted;
     float _lastSpeed;
+    bool _positiveAngle;
 
     // Timer
     Timer _interuption;
