@@ -36,6 +36,13 @@ private:
     void configure(int numPlayers);
     void run(int numPlayers);
 
+    // State machine
+    int _state;
+    enum {
+      STATE_ATK,
+      STATE_MID
+    };
+
     // Role pointer vector
     Role_Default *_rl_default;
     Role_Goalkeeper *_rl_gk;
@@ -43,6 +50,7 @@ private:
     //Role_TMP_DEF *_rl_tmp;
     Role_Supporter *_rl_sup;
     Role_Attacker *_rl_atk;
+    Role_Midfielder *_rl_mid;
 
     // Internal functions
     void switchPlayersIDs();

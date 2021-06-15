@@ -73,6 +73,7 @@ SOURCES += \
     src/entities/coach/role/role_gk/role_goalkeeper.cpp \
     src/entities/coach/role/supporter/role_supporter.cpp \
     src/entities/coach/role/tmpDef/role_tmp_def.cpp \
+    src/entities/coach/role/midfielder/role_midfielder.cpp \
     src/entities/coach/skill/goto/skill_goto.cpp \
     src/entities/coach/skill/rotateto/skill_rotateto.cpp \
     src/entities/coach/skill/skill.cpp \
@@ -154,6 +155,7 @@ HEADERS += \
     src/entities/coach/role/role_gk/role_goalkeeper.h \
     src/entities/coach/role/roles.h \
     src/entities/coach/role/tmpDef/role_tmp_def.h \
+    src/entities/coach/role/midfielder/role_midfielder.h \
     src/entities/coach/skill/goto/skill_goto.h \
     src/entities/coach/skill/rotateto/skill_rotateto.h \
     src/entities/coach/skill/skill.h \

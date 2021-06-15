@@ -28,6 +28,7 @@ Playbook_Default::Playbook_Default() {
     //_rl_tmp = nullptr;
     _rl_sup = nullptr;
     _rl_atk = nullptr;
+    _rl_mid = nullptr;
 
     _switchedPlayers = true;
     _atkStuck = false;
@@ -45,15 +46,26 @@ void Playbook_Default::configure(int numPlayers) {
     _rl_df = new Role_TMP_DEF();
     _rl_sup = new Role_Supporter();
     _rl_atk = new Role_Attacker();
+    _rl_mid = new Role_Midfielder();
 
     usesRole(_rl_default);
     usesRole(_rl_gk);
     usesRole(_rl_df);
     usesRole(_rl_sup);
     usesRole(_rl_atk);
+    usesRole(_rl_mid);
+
+    _state = STATE_MID;
 }
 
 void Playbook_Default::run(int numPlayers) {
+
+    //Communication between Roles
+    Colors::Color ourColor = getConstants()->teamColor();
+    Position attackerPos = getWorldMap()->getPlayer(ourColor, _attackerID).getPosition();
+    _rl_sup->setAttackerPosition(attackerPos);
+    _rl_df->setAttackerPosition(attackerPos);
+
     // Defining robot IDs
     if(_first) {
         _switchPlayersTimer.start();
@@ -67,20 +79,150 @@ void Playbook_Default::run(int numPlayers) {
         thirdPlayerState();
     }
 
+    //mid to attacker
+
+    //ballProj
+    Position ballPos = getWorldMap()->getBall().getPosition();
+    Velocity ballVel = getWorldMap()->getBall().getVelocity();
+    Position ballDirection, ballProj;
+    if(ballVel.abs() > 0.03f) {
+        ballDirection = Position(true, ballVel.vx()/ballVel.abs(), ballVel.vy()/ballVel.abs());
+    } else {
+        ballDirection = Position(true, 0, 0);
+    }
+    float factor = std::min(0.2f * ballVel.abs(), 0.5f);
+    ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
+
+    //midToAtk();
+    switch (_state) {
+    case STATE_ATK:
+        std::cout << "ATTACK" << std::endl;
+        setPlayerRole(_attackerID, _rl_atk);
+        //left side
+        if(getWorldMap()->getLocations()->ourSide().isLeft()){
+            if(isBehindBallXcoord(attackerPos)){
+                if(ballPos.x() >= getWorldMap()->getLocations()->theirPenaltyMark().x()){
+                    if(Utils::distance(attackerPos , ballProj) < 0.3f){
+                        //has ball possession so maintain atk
+                        _state = STATE_ATK;
+                    }
+                    else{
+                        _state = STATE_MID;
+                    }
+                }
+                else if(ballPos.x() >=0.0f){
+                    if(Utils::distance(attackerPos , ballProj) < 0.3f){
+                        //has ball possession so maintain atk
+                        _state = STATE_ATK;
+                    }
+                    else if(ballVel.vx() >= -1.0f){
+                        _state = STATE_ATK;
+                    }
+                    else{
+                        _state = STATE_MID;
+                    }
+                }
+                else{//our side
+                    if(Utils::distance(attackerPos , ballProj) < 0.3f){
+                        //has ball possession so maintain atk
+                        _state = STATE_ATK;
+                    }
+                    else if(ballVel.vx() >= -1.0f){
+                        _state = STATE_ATK;
+                    }
+                    else{
+                        _state = STATE_MID;
+                    }
+                }
+            }
+            else if(ballVel.vx() < 0.0f && ballVel.abs() >= 2.0f){//ball coming in high speed
+                _state = STATE_MID;
+            }
+            else{
+                _state = STATE_MID;
+            }
+        }
+        //right side
+        else{
+            if(isBehindBallXcoord(attackerPos)){
+                if(ballPos.x() <= getWorldMap()->getLocations()->theirPenaltyMark().x()){
+                    if(Utils::distance(attackerPos , ballProj) < 0.3f){
+                        //has ball possession so maintain atk
+                        _state = STATE_ATK;
+                    }
+                    else{
+                        _state = STATE_MID;
+                    }
+                }
+                else if(ballPos.x() <=0.0f){
+                    if(Utils::distance(attackerPos , ballProj) < 0.3f){
+                        //has ball possession so maintain atk
+                        _state = STATE_ATK;
+                    }
+                    else if(ballVel.vx() <= 1.0f){
+                        _state = STATE_ATK;
+                    }
+                    else{
+                        _state = STATE_MID;
+                    }
+                }
+                else{//our side
+                    if(Utils::distance(attackerPos , ballProj) < 0.3f){
+                        //has ball possession so maintain atk
+                        _state = STATE_ATK;
+                    }
+                    else if(ballVel.vx() <= 2.0f){
+                        _state = STATE_ATK;
+                    }
+                    else{
+                        _state = STATE_MID;
+                    }
+                }
+            }
+            else if(ballVel.vx() > 0.0f && ballVel.abs() >= 2.0f){//ball coming in high speed
+                _state = STATE_MID;
+            }
+            else{
+                _state = STATE_MID;
+            }
+        }
+        break;
+    case STATE_MID:
+        std::cout << "MID" << std::endl;
+        setPlayerRole(_attackerID , _rl_mid);
+        //left side
+        if(getWorldMap()->getLocations()->ourSide().isLeft()){
+            if(ballVel.vx() < 0.0f){//ball is coming to our side
+                //maintain
+            }
+            else{
+                if(Utils::distance(attackerPos , ballProj) < 0.3f && isBehindBallXcoord(attackerPos)){
+                    _state = STATE_ATK;
+                }
+            }
+        }
+        //right side
+        else{
+            if(ballVel.vx() > 0.0f){//ball is coming to our side
+                //maintain
+            }
+            else{
+                if(Utils::distance(attackerPos , ballProj) < 0.3f && isBehindBallXcoord(attackerPos)){
+                    _state = STATE_ATK;
+                }
+            }
+        }
+        break;
+    }
+
     // Setting roles
     setPlayerRole(_goalkeeperID, _rl_gk);
-    setPlayerRole(_attackerID, _rl_atk);
     if (_defenderState) {
         setPlayerRole(_lastID, _rl_df);
     } else {
         setPlayerRole(_lastID, _rl_sup);
     }
 
-    //Communication between Roles
-    Colors::Color ourColor = getConstants()->teamColor();
-    Position attackerPos = getWorldMap()->getPlayer(ourColor, _attackerID).getPosition();
-    _rl_sup->setAttackerPosition(attackerPos);
-    _rl_df->setAttackerPosition(attackerPos);
 }
 
 void Playbook_Default::switchPlayersIDs() {
