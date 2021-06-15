@@ -31,6 +31,9 @@ public:
     Role_Defender();
     QString name();
 
+    // Methods
+    void setAttackerPosition(Position pos) { _attackerPos = pos; }
+
 private:
     // Role inherited methods
     void configure();
@@ -47,6 +50,8 @@ private:
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_Intercept *_bhv_intercept;
     Behavior_Barrier *_bhv_barrier;
+
+    Position _attackerPos;
 
     // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);

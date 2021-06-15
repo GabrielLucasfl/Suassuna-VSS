@@ -80,6 +80,7 @@ void Playbook_Default::run(int numPlayers) {
     Colors::Color ourColor = getConstants()->teamColor();
     Position attackerPos = getWorldMap()->getPlayer(ourColor, _attackerID).getPosition();
     _rl_sup->setAttackerPosition(attackerPos);
+    _rl_df->setAttackerPosition(attackerPos);
 }
 
 void Playbook_Default::switchPlayersIDs() {

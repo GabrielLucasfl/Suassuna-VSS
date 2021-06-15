@@ -30,6 +30,7 @@ Role_TMP_DEF::Role_TMP_DEF() {
     _pushBall = false;
     _accelerate = false;
     _canAvoidBall = false;
+    _attackerPos.setPosition(false , 0.0f , 0.0f);
 }
 
 QString Role_TMP_DEF::name() {

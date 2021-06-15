@@ -78,6 +78,8 @@ private:
     bool _canAvoidBall;
 
     Position _attackerPos;
+
+    // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
 };
 

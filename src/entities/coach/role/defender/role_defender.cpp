@@ -22,6 +22,7 @@
 #include "role_defender.h"
 
 Role_Defender::Role_Defender() {
+    _attackerPos.setPosition(false , 0.0f , 0.0f);
 }
 
 QString Role_Defender::name() {
@@ -41,6 +42,7 @@ void Role_Defender::configure() {
 }
 
 void Role_Defender::run() {
+    std::cout << "Posição atacante pelo DEF: " << _attackerPos.x() << " - " << _attackerPos.y() << std::endl;
     // Fixed variables
     Position ballPosition = getWorldMap()->getBall().getPosition();
     Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
