@@ -43,7 +43,7 @@ void Playbook_Default::configure(int numPlayers) {
     // For each player, register an role and call usesRole() to register it in the table
     _rl_default = new Role_Default();
     _rl_gk = new Role_Goalkeeper();
-    _rl_df = new Role_TMP_DEF();
+    _rl_df = new Role_Defender();
     _rl_sup = new Role_Supporter();
     _rl_atk = new Role_Attacker();
 

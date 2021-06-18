@@ -41,55 +41,33 @@ void Role_Defender::configure() {
 }
 
 void Role_Defender::run() {
-    // Fixed variables
+    Position desiredPosition;
     Position ballPosition = getWorldMap()->getBall().getPosition();
     Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
-    Position invalidPosition(false, 0.0f, 0.0f);
+    Position ballRelocated(true, ballPosition.x() + ballVelocity.vx(), ballPosition.y() + ballVelocity.vy());
+    
+    // Gnerating ball movement line
+    float angularCoeff = (ballRelocated.y() - ballPosition.y()) / (ballRelocated.x() - ballPosition.x());
+    float linearCoeff = ballPosition.y() - ballPosition.x() * angularCoeff;
+    // --> y = angularCoefficient * x + linearCoefficient <--
+    // Sacou?
+    
+    int signal;
 
-    setBehavior(BHV_BARRIER);
+    if (getConstants()->teamSide().isRight()) {
+        signal = -1;
+    } else {
+        signal = 1;
+    }
 
-//    // Taking the position where the GK wait for
-//    Position standardPosition;
-//    if (getWorldMap()->getLocations()->ourSide().isRight()) {
-//        standardPosition = Position(true, 0.5f, 0.0f);
-//    } else {
-//        standardPosition = Position(true, -0.5f, 0.0f);
-//    }
-
-//    // Reference position to look at
-//    Position lookingPosition(true, standardPosition.x(), 2.0f);
-
-//    if (abs(player()->position().x() - standardPosition.x()) > 0.3f
-//            || getWorldMap()->getLocations()->isInsideTheirField(ballPosition)) {
-//        // Get a break at the standard position if the ball is far away or if the player is outside our goal area
-//        _bhv_moveTo->setTargetPosition(standardPosition);
-//        setBehavior(BHV_MOVETO);
-//    }
-//    else if (player()->getPlayerDistanceTo(ballPosition) < 0.20f
-//               && ballVelocity.abs() < player()->isLookingTo(ballPosition, 1.0f)) {
-//        // Clear the ball if it is close enough and if it is in a good angle to deslocate
-//        _bhv_moveTo->setTargetPosition(ballPosition);
-//        //_bhv_moveTo->setMinimalVelocity(1.0);
-//        setBehavior(BHV_MOVETO);
-//    }
-//    else if (!player()->isLookingTo(lookingPosition, 0.3f)) {
-//        // Rotates to a better angle of movement
-//        _bhv_moveTo->setTargetPosition(lookingPosition);
-//        _bhv_moveTo->enableRotation(true);
-//        setBehavior(BHV_MOVETO);
-//    } else {
-//        // Intercept the ball movement in order to prevent a danger play
-//        Position firstLimitationPoint(true, standardPosition.x(), 0.65f);
-//        Position secondLimitationPoint(true, standardPosition.x(), -0.65f);
-//        _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
-//        _bhv_intercept->setObjectPosition(ballPosition);
-//        _bhv_intercept->setObjectVelocity(ballVelocity);
-//        setBehavior(BHV_INTERCEPT);
-//    }
+    //float x = 0.75f + signal * sqrt(0.09f * (1 - powf(angularCoefficient * x + linearCoefficient, 2) / 0.45f));
+    float x = (sqrt(180 - 189 * powf(angularCoeff, 2) - 600 * angularCoeff * linearCoeff - 400 * powf(linearCoeff, 2)) * sqrt(5)
+            - 20 * angularCoeff * linearCoeff + 75) / (20 * (powf(angularCoeff, 2) + 5));
+    float y = angularCoeff * x + linearCoeff;
+    desiredPosition.setPosition(true, x, y);
+    player()->setPlayerDesiredPosition(desiredPosition);
+    setBehavior(BHV_MOVETO);
 }
-
-
-
 
 QPair<Position, Angle> Role_Defender::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam,
                                                            VSSRef::Quadrant atQuadrant) {

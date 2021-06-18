@@ -39,7 +39,7 @@ private:
     // Role pointer vector
     Role_Default *_rl_default;
     Role_Goalkeeper *_rl_gk;
-    Role_TMP_DEF *_rl_df;
+    Role_Defender *_rl_df;
     //Role_TMP_DEF *_rl_tmp;
     Role_Supporter *_rl_sup;
     Role_Attacker *_rl_atk;
