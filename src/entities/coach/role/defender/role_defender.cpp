@@ -43,30 +43,38 @@ void Role_Defender::configure() {
 void Role_Defender::run() {
     Position desiredPosition;
     Position ballPosition = getWorldMap()->getBall().getPosition();
-    Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
-    Position ballRelocated(true, ballPosition.x() + ballVelocity.vx(), ballPosition.y() + ballVelocity.vy());
-    
-    // Gnerating ball movement line
-    float angularCoeff = (ballRelocated.y() - ballPosition.y()) / (ballRelocated.x() - ballPosition.x());
-    float linearCoeff = ballPosition.y() - ballPosition.x() * angularCoeff;
-    // --> y = angularCoefficient * x + linearCoefficient <--
-    // Sacou?
-    
-    int signal;
+    Position ourGoal = getWorldMap()->getLocations()->ourGoal();
+    Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
 
-    if (getConstants()->teamSide().isRight()) {
-        signal = -1;
-    } else {
-        signal = 1;
-    }
+    float alpha = normAngle(M_PI - atan2(ballPosition.y() - ourGoal.y(), ballPosition.x()-ourGoal.x()));
+    std::cout << alpha*180/M_PI << std::endl;
 
-    //float x = 0.75f + signal * sqrt(0.09f * (1 - powf(angularCoefficient * x + linearCoefficient, 2) / 0.45f));
-    float x = (sqrt(180 - 189 * powf(angularCoeff, 2) - 600 * angularCoeff * linearCoeff - 400 * powf(linearCoeff, 2)) * sqrt(5)
-            - 20 * angularCoeff * linearCoeff + 75) / (20 * (powf(angularCoeff, 2) + 5));
-    float y = angularCoeff * x + linearCoeff;
-    desiredPosition.setPosition(true, x, y);
+    float dist = getDist(alpha);
+
+    desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
+
     player()->setPlayerDesiredPosition(desiredPosition);
     setBehavior(BHV_MOVETO);
+}
+
+float Role_Defender::getDist(float alpha){
+    float deltaD = 0.20f;
+    float distInit = 0.35f;
+    float deltaAlpha = M_PI/2;
+
+    float dist = distInit + deltaD*fabs(alpha)/deltaAlpha;
+
+    return dist;
+}
+
+float Role_Defender::normAngle(float angleRadians) {
+    if (angleRadians > static_cast<float>(M_PI)) {
+        return angleRadians = angleRadians - 2 * static_cast<float>(M_PI);
+    } else if (angleRadians < -static_cast<float>(M_PI)) {
+        return angleRadians = angleRadians + 2 * static_cast<float>(M_PI);
+    } else {
+        return angleRadians;
+    }
 }
 
 QPair<Position, Angle> Role_Defender::getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam,

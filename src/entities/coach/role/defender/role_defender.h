@@ -36,6 +36,10 @@ private:
     void configure();
     void run();
 
+    //Role methods
+    float normAngle(float angleRadians);
+    float getDist(float alpha);
+
     // Behaviors enum
     enum {
         BHV_MOVETO,
