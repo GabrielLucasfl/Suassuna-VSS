@@ -46,23 +46,21 @@ void Role_Defender::run() {
     Position ourGoal = getWorldMap()->getLocations()->ourGoal();
     Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
 
-    float alpha = normAngle(M_PI - atan2(ballPosition.y() - ourGoal.y(), ballPosition.x()-ourGoal.x()));
-    std::cout << alpha*180/M_PI << std::endl;
+    if (ballPosition.x() != ourGoal.x()) {
+        float alpha = normAngle(static_cast<float>(M_PI) - atan2(ballPosition.y() - ourGoal.y(), ballPosition.x()-ourGoal.x()));
+        float dist = getDist(alpha);
 
-    float dist = getDist(alpha);
-
-    desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
+        desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
+    } else {
+        desiredPosition = player()->position();
+    }
 
     player()->setPlayerDesiredPosition(desiredPosition);
     setBehavior(BHV_MOVETO);
 }
 
 float Role_Defender::getDist(float alpha){
-    float deltaD = 0.20f;
-    float distInit = 0.35f;
-    float deltaAlpha = M_PI/2;
-
-    float dist = distInit + deltaD*fabs(alpha)/deltaAlpha;
+    float dist = sqrt((0.09f * 0.45f) / (0.45f * powf(cosf(alpha), 2) + 0.09f * powf(sinf(alpha), 2)));
 
     return dist;
 }
