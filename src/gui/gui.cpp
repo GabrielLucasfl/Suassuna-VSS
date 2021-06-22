@@ -211,6 +211,20 @@ void GUI::updateField() {
         ui->fieldView->enableSupporterShow(false);
     }
 
+    if (ui->defenderBox->isChecked()) {
+        ui->fieldView->enableDefenderShow(true);
+        Position desiredPosition(false, 0.0, 0.0);
+        for (quint8 i = 0; i < _players.keys().size(); i++) {
+            Player *playerPointer = getWorldMap()->getPlayerPointer(i);
+            if (playerPointer->roleName() == "Role_Defender") {
+                desiredPosition = playerPointer->getPlayerDesiredPosition();
+                ui->fieldView->setDefenderDesiredPosition(desiredPosition);
+            }
+        }
+    } else {
+        ui->fieldView->enableDefenderShow(false);
+    }
+
     ui->fieldView->redraw();
 }
 

@@ -213,18 +213,31 @@
      <attribute name="title">
       <string>Configurations</string>
      </attribute>
-     <widget class="QCheckBox" name="supporterBox">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
         <x>50</x>
         <y>50</y>
-        <width>271</width>
-        <height>23</height>
+        <width>195</width>
+        <height>54</height>
        </rect>
       </property>
-      <property name="text">
-       <string>Show Supporter Position (attacking)</string>
-      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QCheckBox" name="supporterBox">
+         <property name="text">
+          <string>Show Supporter Position</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="defenderBox">
+         <property name="text">
+          <string>Show Defender Position</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </widget>

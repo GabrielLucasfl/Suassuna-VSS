@@ -46,9 +46,11 @@ public:
 
     // CheckBox enablers
     void enableSupporterShow(bool enabled) { _supporterShowEnabled = enabled; }
+    void enableDefenderShow(bool enabled) { _defenderShowEnabled = enabled; }
 
     // CheckBox setters
     void setSupporterDesiredPosition(Position supporterPosition) { _supporterDesiredPosition = supporterPosition; }
+    void setDefenderDesiredPosition(Position defenderPosition) { _defenderDesiredPosition = defenderPosition; }
 
 protected:
     void paintGL();
@@ -82,9 +84,11 @@ private:
 
     // CheckBox enablers
     bool _supporterShowEnabled;
+    bool _defenderShowEnabled;
 
     // CheckBox Parameters
     Position _supporterDesiredPosition;
+    Position _defenderDesiredPosition;
 
     // Mouse events
     bool leftButton;
@@ -114,6 +118,7 @@ private:
 
     // CheckBox functions
     void showSupporterPosition(Position supporterPosition);
+    void showDefenderPosition(Position supporterPosition);
 
     // Mutex to control graphics
     QMutex _graphicsMutex;

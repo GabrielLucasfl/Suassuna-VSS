@@ -38,9 +38,11 @@ FieldView::FieldView(QWidget *parent) : QOpenGLWidget(parent) {
 
     // CheckBox enablers starters
     _supporterShowEnabled = false;
+    _defenderShowEnabled = false;
 
     // Checkbox parameters starters
     _supporterDesiredPosition.setPosition(false, 0.0, 0.0);
+    _defenderDesiredPosition.setPosition(false, 0.0, 0.0);
 }
 
 void FieldView::setConstantsAndWorldMap(Constants *constants, WorldMap *worldMap) {
@@ -158,6 +160,10 @@ void FieldView::paintGL() {
 
     if (_supporterShowEnabled) {
         showSupporterPosition(_supporterDesiredPosition);
+    }
+
+    if (_defenderShowEnabled) {
+        showDefenderPosition(_defenderDesiredPosition);
     }
 
     glPopMatrix();
@@ -410,7 +416,15 @@ void FieldView::showSupporterPosition(Position supporterPosition) {
     if (!supporterPosition.isInvalid()) {
         glColor3d(0, 255, 255);
         drawArc(QVector2D(supporterPosition.x() * 1000.0f, supporterPosition.y() * 1000.0f), -15.0f, 15.0f,
-                static_cast<float>(-M_PI), static_cast<float>(M_PI), 2.5f);
+                static_cast<float>(-M_PI), static_cast<float>(M_PI), 4.0f);
+    }
+}
+
+void FieldView::showDefenderPosition(Position defenderPosition) {
+    if (!defenderPosition.isInvalid()) {
+        glColor3d(0, 255, 255);
+        drawArc(QVector2D(defenderPosition.x() * 1000.0f, defenderPosition.y() * 1000.0f), 0.0f, 15.0f,
+                static_cast<float>(-M_PI), static_cast<float>(M_PI), 4.0f);
     }
 }
 
