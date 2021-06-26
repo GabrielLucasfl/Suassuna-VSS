@@ -47,9 +47,9 @@ void Role_Defender::run() {
     Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
 
     if (ballPosition.x() != ourGoal.x()) {
-        float alpha = normAngle(static_cast<float>(M_PI) - atan2(ballPosition.y() - ourGoal.y(), ballPosition.x()-ourGoal.x()));
+        float alpha = normAngle(static_cast<float>(M_PI) - Utils::getAngle(ourGoal, ballPosition));
+        setElipseParameters(0.1, 0.225);
         float dist = getDist(alpha);
-
         desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
     } else {
         desiredPosition = player()->position();
@@ -59,9 +59,13 @@ void Role_Defender::run() {
     setBehavior(BHV_MOVETO);
 }
 
-float Role_Defender::getDist(float alpha){
-    float dist = sqrt((0.09f * 0.45f) / (0.45f * powf(cosf(alpha), 2) + 0.09f * powf(sinf(alpha), 2)));
+void Role_Defender::setElipseParameters(float _a, float _b){
+    elipseA = _a;
+    elipseB = _b;
+}
 
+float Role_Defender::getDist(float alpha){
+    float dist = sqrt((elipseA * elipseB) / (elipseB * powf(cosf(alpha), 2) + elipseA * powf(sinf(alpha), 2)));
     return dist;
 }
 

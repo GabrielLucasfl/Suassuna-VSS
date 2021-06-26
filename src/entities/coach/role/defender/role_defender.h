@@ -39,6 +39,8 @@ private:
     //Role methods
     float normAngle(float angleRadians);
     float getDist(float alpha);
+    void setElipseParameters(float _a, float _b);
+
 
     // Behaviors enum
     enum {
@@ -54,6 +56,10 @@ private:
 
     // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
+
+    //Attributes
+    float elipseA;
+    float elipseB;
 };
 
 #endif // ROLE_DEFENDER_H
