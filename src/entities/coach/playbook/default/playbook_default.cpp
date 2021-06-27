@@ -30,6 +30,7 @@ Playbook_Default::Playbook_Default() {
     _rl_atk = nullptr;
 
     _switchedPlayers = true;
+    _replacedSecRole = true;
     _atkStuck = false;
     _defenderState = true;
 }
@@ -57,12 +58,18 @@ void Playbook_Default::run(int numPlayers) {
     // Defining robot IDs
         if(_first){
             _switchPlayersTimer.start();
+            _replaceSecRoleTimer.start();
             selectInitialIDs();
             _first = false;//this if is done only one time
         }
         _switchPlayersTimer.stop();
-        if(_switchPlayersTimer.getSeconds() > 2) {
+        if(_switchedPlayers && _switchPlayersTimer.getSeconds() > 2) {
             _switchedPlayers = false;
+        }
+
+        _replaceSecRoleTimer.stop();
+        if(_replacedSecRole && _replaceSecRoleTimer.getSeconds() > 2) {
+            _replacedSecRole = false;
         }
 
         switchPlayersIDs();
@@ -82,7 +89,6 @@ void Playbook_Default::switchPlayersIDs() {
     Position ballPos = getWorldMap()->getBall().getPosition();
     float ballVel = getWorldMap()->getBall().getVelocity().abs();
     Colors::Color ourColor = getConstants()->teamColor();
-
     float attackerVel = getWorldMap()->getPlayer(ourColor, _attackerID).getVelocity().abs();
     // If our attacker has stopped (possibly stuck)
     if(attackerVel <= 0.02f && !(ballVel <= 0.02f)) {
@@ -156,15 +162,15 @@ void Playbook_Default::selectInitialIDs() {
 
 void Playbook_Default::thirdPlayerState() {
     Position selfPosition = getWorldMap()->getPlayer(getConstants()->teamColor(), _lastID).getPosition();
-    if(!_switchedPlayers) {
+    if(!_switchedPlayers && !_replacedSecRole) {
         if (_defenderState) {
             if ((((getWorldMap()->getLocations()->ourSide().isRight() && getWorldMap()->getBall().getVelocity().vx() < 0.0f)
                     || (getWorldMap()->getLocations()->ourSide().isLeft() && getWorldMap()->getBall().getVelocity().vx() > 0.0f))
                     && getWorldMap()->getLocations()->isInsideOurField(getWorldMap()->getBall().getPosition()))
                     || (getWorldMap()->getLocations()->isInsideTheirField(selfPosition) && _switchedPlayers)) {
                 _defenderState = false;
-                _switchedPlayers = true;
-                _switchPlayersTimer.start();
+                _replacedSecRole = true;
+                _replaceSecRoleTimer.start();
             }
         } else {
             Position atkPosition = getWorldMap()->getPlayer(getConstants()->teamColor(), _attackerID).getPosition();
@@ -174,8 +180,8 @@ void Playbook_Default::thirdPlayerState() {
                     || (getWorldMap()->getLocations()->ourSide().isLeft() && getWorldMap()->getBall().getVelocity().vx() < 0.0f)))
                     || (getWorldMap()->getLocations()->isInsideOurField(selfPosition) && _switchedPlayers)) {
                 _defenderState = true;
-                _switchedPlayers = true;
-                _switchPlayersTimer.start();
+                _replacedSecRole = true;
+                _replaceSecRoleTimer.start();
             }
         }
     }

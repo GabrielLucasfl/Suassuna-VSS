@@ -59,10 +59,12 @@ private:
     // Initial
     bool _first = true;
 
-    // Switch players parameters
+    // Switch players/roles parameters
     Timer _switchPlayersTimer;
-    bool _switchedPlayers;
+    Timer _replaceSecRoleTimer;
     Timer _atkStuckTimer;
+    bool _switchedPlayers;
+    bool _replacedSecRole;
     bool _atkStuck;
 };
 
