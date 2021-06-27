@@ -107,7 +107,7 @@ void Role_Attacker::run() {
         _state = MOVETO;
     }
 
-    float angle = normAngle(Utils::angleToBall(ballPos, theirGoal, player()->position()));
+    float angle = normAngle(Utils::getAngle(ballPos, theirGoal) - Utils::getAngle(player()->position(), ballPos));
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
     Position pos = Utils::threePoints(ballPos, theirGoal, dist, targetAngle);

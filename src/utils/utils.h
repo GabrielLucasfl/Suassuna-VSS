@@ -41,7 +41,6 @@ public:
     static float to180Range(float angle);
     static void angleLimitZeroTwoPi(float *angle);
     static Position rotatePoint(Position point, float angle);
-    static float angleToBall(const Position &ballPos, const Position &theirGoal, const Position &playerPos);
 
     // Projection related
     static Position threePoints(const Position &near, const Position &far, float distance, float beta);
