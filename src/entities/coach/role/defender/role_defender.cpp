@@ -47,8 +47,12 @@ void Role_Defender::run() {
     Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
 
     if (ballPosition.x() != ourGoal.x()) {
-        float alpha = normAngle(static_cast<float>(M_PI) - Utils::getAngle(ourGoal, ballPosition));
-        setElipseParameters(0.1, 0.225);
+        float alpha;
+        if (getWorldMap()->getLocations()->ourSide().isRight()) {
+            alpha = normAngle(static_cast<float>(M_PI) - Utils::getAngle(ourGoal, ballPosition));
+        } else {
+            alpha = normAngle(-Utils::getAngle(ourGoal, ballPosition));
+        }
         float dist = getDist(alpha);
         desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
     } else {
