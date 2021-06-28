@@ -75,14 +75,19 @@ void Playbook_Default::run(int numPlayers) {
         switchPlayersIDs();
         thirdPlayerState();
 
-        // Setting roles
-        setPlayerRole(_goalkeeperID, _rl_gk);
-        setPlayerRole(_attackerID, _rl_atk);
-        if (_defenderState) {
-            setPlayerRole(_lastID, _rl_df);
+    // Setting roles
+    setPlayerRole(_goalkeeperID, _rl_gk);
+    setPlayerRole(_attackerID, _rl_atk);
+    if (_defenderState) {
+        if (isBallInsideDefenderEllipse(0.07f, 0.43f)) {
+            _rl_df->setElipseParameters(0.1f, 0.25f);
         } else {
-            setPlayerRole(_lastID, _rl_sup);
+            _rl_df->setElipseParameters(0.07f, 0.43f);
         }
+        setPlayerRole(_lastID, _rl_df);
+    } else {
+        setPlayerRole(_lastID, _rl_sup);
+    }
 }
 
 void Playbook_Default::switchPlayersIDs() {
@@ -198,4 +203,23 @@ bool Playbook_Default::isBehindBallXcoord(Position pos) {
         isBehindObjX = pos.x() > (posBall.x() - robotRadius - ballRadius);
     }
     return isBehindObjX;
+}
+
+bool Playbook_Default::isBallInsideDefenderEllipse(float ellipseA, float ellipseB) {
+    Position ballPosition = getWorldMap()->getBall().getPosition();
+    float alpha;
+    if (getConstants()->teamSide().isRight()) {
+        alpha = static_cast<float>(M_PI) - Utils::getAngle(getWorldMap()->getLocations()->ourGoal(), ballPosition);
+    } else {
+        alpha = -Utils::getAngle(getWorldMap()->getLocations()->ourGoal(), ballPosition);
+    }
+
+    float ellipseDist = sqrt((ellipseA * ellipseB) / (ellipseB * powf(cosf(alpha), 2) + ellipseA * powf(sinf(alpha), 2)));
+    float ballDist = Utils::distance(ballPosition, getWorldMap()->getLocations()->ourGoal());
+
+    if (ballDist < ellipseDist) {
+        return true;
+    } else {
+        return  false;
+    }
 }

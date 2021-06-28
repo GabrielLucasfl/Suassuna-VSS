@@ -31,16 +31,21 @@ public:
     Role_Defender();
     QString name();
 
+    // Setters
+    void setElipseParameters(float ellipseA, float ellipseB) { _ellipseA = ellipseA; _ellipseB = ellipseB; };
+
 private:
     // Role inherited methods
     void configure();
     void run();
 
-    //Role methods
+    // Role methods
     float normAngle(float angleRadians);
     float getDist(float alpha);
-    void setElipseParameters(float _a, float _b);
 
+    // Role Parameters
+    float _ellipseA;
+    float _ellipseB;
 
     // Behaviors enum
     enum {
@@ -56,10 +61,6 @@ private:
 
     // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);
-
-    //Attributes
-    float elipseA;
-    float elipseB;
 };
 
 #endif // ROLE_DEFENDER_H

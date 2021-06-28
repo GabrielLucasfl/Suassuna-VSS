@@ -22,6 +22,8 @@
 #include "role_defender.h"
 
 Role_Defender::Role_Defender() {
+    _ellipseA = 0.0f;
+    _ellipseB = 0.0f;
 }
 
 QString Role_Defender::name() {
@@ -63,13 +65,8 @@ void Role_Defender::run() {
     setBehavior(BHV_MOVETO);
 }
 
-void Role_Defender::setElipseParameters(float _a, float _b){
-    elipseA = _a;
-    elipseB = _b;
-}
-
 float Role_Defender::getDist(float alpha){
-    float dist = sqrt((elipseA * elipseB) / (elipseB * powf(cosf(alpha), 2) + elipseA * powf(sinf(alpha), 2)));
+    float dist = sqrt((_ellipseA * _ellipseB) / (_ellipseB * powf(cosf(alpha), 2) + _ellipseA * powf(sinf(alpha), 2)));
     return dist;
 }
 

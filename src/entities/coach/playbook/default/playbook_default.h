@@ -49,6 +49,7 @@ private:
     void selectInitialIDs();
     void thirdPlayerState();
     bool isBehindBallXcoord(Position pos);
+    bool isBallInsideDefenderEllipse(float ellipseA, float ellipseB);
 
     // Parameters
     quint8 _attackerID;
