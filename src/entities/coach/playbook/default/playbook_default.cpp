@@ -79,11 +79,19 @@ void Playbook_Default::run(int numPlayers) {
     setPlayerRole(_goalkeeperID, _rl_gk);
     setPlayerRole(_attackerID, _rl_atk);
     if (_defenderState) {
-        if (isBallInsideDefenderEllipse(0.07f, 0.43f)) {
+        if(getWorldMap()->getLocations()->ourGoal().x() > 0){
+            _rl_df->setEllipseCenter(Position(true, 0.67f, 0.0f));
+        }
+        else{
+            _rl_df->setEllipseCenter(Position(true, -0.67f, 0.0f));
+        }
+        _rl_df->setElipseParameters(0.1f, 0.25f);
+
+        /*if (isBallInsideDefenderEllipse(0.07f, 0.43f)) {
             _rl_df->setElipseParameters(0.1f, 0.25f);
         } else {
             _rl_df->setElipseParameters(0.07f, 0.43f);
-        }
+        }*/
         setPlayerRole(_lastID, _rl_df);
     } else {
         setPlayerRole(_lastID, _rl_sup);

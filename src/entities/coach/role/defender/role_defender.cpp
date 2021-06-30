@@ -24,6 +24,7 @@
 Role_Defender::Role_Defender() {
     _ellipseA = 0.0f;
     _ellipseB = 0.0f;
+    _ellipseCenter = Position(true, 0.0f, 0.0f);
 }
 
 QString Role_Defender::name() {
@@ -56,7 +57,7 @@ void Role_Defender::run() {
             alpha = normAngle(-Utils::getAngle(ourGoal, ballPosition));
         }
         float dist = getDist(alpha);
-        desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
+        desiredPosition = Utils::threePoints(_ellipseCenter, fieldCenter, dist, -alpha);
     } else {
         desiredPosition = player()->position();
     }

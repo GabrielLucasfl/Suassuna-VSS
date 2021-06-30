@@ -33,6 +33,7 @@ public:
 
     // Setters
     void setElipseParameters(float ellipseA, float ellipseB) { _ellipseA = ellipseA; _ellipseB = ellipseB; };
+    void setEllipseCenter(Position ellipseCenter){ _ellipseCenter = ellipseCenter; };
 
 private:
     // Role inherited methods
@@ -46,6 +47,7 @@ private:
     // Role Parameters
     float _ellipseA;
     float _ellipseB;
+    Position _ellipseCenter;
 
     // Behaviors enum
     enum {
