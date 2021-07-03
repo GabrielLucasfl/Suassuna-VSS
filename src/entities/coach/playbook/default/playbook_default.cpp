@@ -80,10 +80,10 @@ void Playbook_Default::run(int numPlayers) {
     setPlayerRole(_attackerID, _rl_atk);
     if (_defenderState) {
         if(getWorldMap()->getLocations()->ourGoal().x() > 0){
-            _rl_df->setEllipseCenter(Position(true, 0.67f, 0.0f));
+            _rl_df->setEllipseCenter(Position(true, 0.72f, 0.0f));
         }
         else{
-            _rl_df->setEllipseCenter(Position(true, -0.67f, 0.0f));
+            _rl_df->setEllipseCenter(Position(true, -0.72f, 0.0f));
         }
         _rl_df->setElipseParameters(0.1f, 0.25f);
 

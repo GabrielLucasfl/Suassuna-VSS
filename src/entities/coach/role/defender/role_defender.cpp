@@ -58,9 +58,11 @@ void Role_Defender::run() {
         }
         float dist = getDist(alpha);
 
-        if(_ellipseCenter.isInvalid()) desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
-        else desiredPosition = Utils::threePoints(_ellipseCenter, fieldCenter, dist, -alpha);
-
+        if (_ellipseCenter.isInvalid()) {
+            desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
+        } else {
+            desiredPosition = Utils::threePoints(_ellipseCenter, fieldCenter, dist, -alpha);
+        }
     } else {
         desiredPosition = player()->position();
     }
