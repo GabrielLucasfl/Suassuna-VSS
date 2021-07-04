@@ -103,7 +103,17 @@ void Role_Goalkeeper::run() {
             _gkOverlap = false;
         }
     } else {
-        if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
+        if(isBallInsideEllipse() && ballVelocity.abs()<=0.6f){
+            if(Utils::distance(player()->position(), ballProjection) > 0.8f*distSpin) {
+                player()->setPlayerDesiredPosition(ballProjection);
+                setBehavior(BHV_MOVETO);
+            }else {
+                _bhv_moveTo->setSpinOrientation(spinOrientarion());
+                _bhv_moveTo->enableSpin(true);
+                setBehavior(BHV_MOVETO);
+            }
+        }
+        else if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
                 || getWorldMap()->getLocations()->isInsideTheirField(ballProjection)) {
             // Get a break at the standard position if the ball is far away or if the player is outside our goal area
             player()->setPlayerDesiredPosition(standardPosition);
@@ -166,6 +176,20 @@ void Role_Goalkeeper::run() {
         }
     }
 }
+
+bool Role_Goalkeeper::isBallInsideEllipse(){
+    Position ballPos = getWorldMap()->getBall().getPosition();
+    float aux = pow((ballPos.x()-_defenderEllipseCenter.x()), 2)/_defenderEllipseA + pow(ballPos.y(), 2)/_defenderEllipseB;
+    if(aux >= 1){
+        std::cout << "Fora\n";
+        return false;
+    }
+    else{
+        std::cout << "Dentro\n";
+        return true;
+    }
+}
+
 
 bool Role_Goalkeeper::spinOrientarion() {
     Position ballPos = getWorldMap()->getBall().getPosition();

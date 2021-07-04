@@ -31,6 +31,10 @@ public:
     Role_Goalkeeper();
     QString name();
 
+    // Setters
+    void setDenfenderElipseParameters(float ellipseA, float ellipseB) { _defenderEllipseA = ellipseA; _defenderEllipseB = ellipseB; };
+    void setDefenderEllipseCenter(Position ellipseCenter){ _defenderEllipseCenter = ellipseCenter; };
+
 private:
     // Role inherited methods
     void configure();
@@ -52,8 +56,14 @@ private:
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_Intercept *_bhv_intercept;
 
+    // Role Parameters
+    float _defenderEllipseA;
+    float _defenderEllipseB;
+    Position _defenderEllipseCenter;
+
     // Methods
     bool spinOrientarion();
+    bool isBallInsideEllipse();
 
     // Replacer
     QPair<Position, Angle> getPlacementPosition(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant atQuadrant);

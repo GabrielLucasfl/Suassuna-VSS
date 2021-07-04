@@ -72,20 +72,19 @@ void Playbook_Default::run(int numPlayers) {
             _replacedSecRole = false;
         }
 
-        switchPlayersIDs();
-        thirdPlayerState();
+        //switchPlayersIDs();
+        //thirdPlayerState();
 
     // Setting roles
     setPlayerRole(_goalkeeperID, _rl_gk);
     setPlayerRole(_attackerID, _rl_atk);
     if (_defenderState) {
         if(getWorldMap()->getLocations()->ourGoal().x() > 0){
-            _rl_df->setEllipseCenter(Position(true, 0.72f, 0.0f));
+            setDefenderEllipse(Position(true, 0.72f, 0.0f), 0.1f, 0.25f);
         }
         else{
-            _rl_df->setEllipseCenter(Position(true, -0.72f, 0.0f));
+            setDefenderEllipse(Position(true, -0.72f, 0.0f), 0.1f, 0.25f);
         }
-        _rl_df->setElipseParameters(0.1f, 0.25f);
 
         /*if (isBallInsideDefenderEllipse(0.07f, 0.43f)) {
             _rl_df->setElipseParameters(0.1f, 0.25f);
@@ -96,6 +95,14 @@ void Playbook_Default::run(int numPlayers) {
     } else {
         setPlayerRole(_lastID, _rl_sup);
     }
+}
+
+void Playbook_Default::setDefenderEllipse(Position center, float ellipseA, float ellipseB){
+    _rl_df->setEllipseCenter(center);
+    _rl_df->setElipseParameters(ellipseA, ellipseB);
+
+    _rl_gk->setDefenderEllipseCenter(center);
+    _rl_gk->setDenfenderElipseParameters(ellipseA, ellipseB);
 }
 
 void Playbook_Default::switchPlayersIDs() {
