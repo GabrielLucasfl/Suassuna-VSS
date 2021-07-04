@@ -28,6 +28,7 @@
 #include <src/constants/constants.h>
 #include <src/utils/types/color/color.h>
 #include <src/utils/types/object/object.h>
+#include <src/utils/types/ballobject/ballobject.h>
 #include <include/packet.pb.h>
 
 class Vision : public Entity
@@ -59,7 +60,7 @@ private:
 
     // Objects control
     QMap<Colors::Color, QMap<quint8, Object*>*> _playerObjects;
-    Object _ballObject;
+    BallObject _ballObject;
     void updatePlayer(Colors::Color teamColor, quint8 playerId, fira_message::Robot player);
     void updateBall(fira_message::Ball ball);
 
@@ -72,7 +73,7 @@ private:
 signals:
     void updateVision();
     void sendPlayer(Colors::Color teamColor, quint8 playerId, Object playerObject);
-    void sendBall(Object ballObject);
+    void sendBall(BallObject ballObject);
     void sendGeometryData(fira_message::Field geometData);
 };
 

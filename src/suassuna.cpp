@@ -61,7 +61,7 @@ void Suassuna::start(bool startGUI) {
 
     // Vision-WorldMap connection
     QObject::connect(getVision(), SIGNAL(sendPlayer(Colors::Color, quint8, Object)), getWorldMap(), SLOT(updatePlayer(Colors::Color, quint8, Object)), Qt::DirectConnection);
-    QObject::connect(getVision(), SIGNAL(sendBall(Object)), getWorldMap(), SLOT(updateBall(Object)), Qt::DirectConnection);
+    QObject::connect(getVision(), SIGNAL(sendBall(BallObject)), getWorldMap(), SLOT(updateBall(BallObject)), Qt::DirectConnection);
     QObject::connect(getVision(), SIGNAL(sendGeometryData(fira_message::Field)), getWorldMap(), SLOT(updateGeometry(fira_message::Field)), Qt::DirectConnection);
 
     // Creating and adding actuator to world

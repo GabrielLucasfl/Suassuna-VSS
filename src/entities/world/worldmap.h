@@ -30,6 +30,7 @@
 #include <src/entities/world/locations/locations.h>
 #include <src/utils/types/color/color.h>
 #include <src/utils/types/object/object.h>
+#include <src/utils/types/ballobject/ballobject.h>
 #include <include/packet.pb.h>
 
 class WorldMap : public QObject
@@ -41,7 +42,7 @@ public:
 
     // Objects getter
     Object getPlayer(Colors::Color teamColor, quint8 playerId);
-    Object getBall();
+    BallObject getBall();
 
     // Player pointer management
     void addPlayer(quint8 playerId, Player *playerPointer);
@@ -56,7 +57,7 @@ public:
 private:
     // Objects internal vars
     QMap<Colors::Color, QMap<quint8, Object>*> _playerObjects;
-    Object _ballObject;
+    BallObject _ballObject;
 
     // Player internal pointers
     QMap<quint8, Player*> _playerPointers;
@@ -69,12 +70,12 @@ private:
     Locations *_locations;
 
     // Mutexes for read/write control management
-    QReadWriteLock _playerMutex;
-    QReadWriteLock _ballMutex;
+    QMutex _playerMutex;
+    QMutex _ballMutex;
 
 public slots:
     void updatePlayer(Colors::Color teamColor, quint8 playerId, Object playerObject);
-    void updateBall(Object ballObject);
+    void updateBall(BallObject ballObject);
     void updateGeometry(fira_message::Field geometryData);
 };
 

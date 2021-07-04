@@ -76,7 +76,7 @@ Constants* WorldMap::getConstants() {
 
 
 Object WorldMap::getPlayer(Colors::Color teamColor, quint8 playerId) {
-    _playerMutex.lockForRead();
+    _playerMutex.lock();
 
     // Check if contains teamColor
     if(!_playerObjects.contains(teamColor)) {
@@ -101,9 +101,9 @@ Object WorldMap::getPlayer(Colors::Color teamColor, quint8 playerId) {
     return requiredObject;
 }
 
-Object WorldMap::getBall() {
-    _ballMutex.lockForRead();
-    Object ballObject = _ballObject;
+BallObject WorldMap::getBall() {
+    _ballMutex.lock();
+    BallObject ballObject = _ballObject;
     _ballMutex.unlock();
 
     return ballObject;
@@ -129,7 +129,7 @@ QList<quint8> WorldMap::getAvailablePlayers(Colors::Color teamColor) {
         return playersList;
     }
 
-    _playerMutex.lockForRead();
+    _playerMutex.lock();
     // Take team players
     QMap<quint8, Object> *teamPlayers = _playerObjects.value(teamColor);
     QMap<quint8, Object>::iterator it;
@@ -150,7 +150,7 @@ QList<quint8> WorldMap::getAvailablePlayers(Colors::Color teamColor) {
 }
 
 void WorldMap::updatePlayer(Colors::Color teamColor, quint8 playerId, Object playerObject) {
-    _playerMutex.lockForWrite();
+    _playerMutex.lock();
 
     // If !contains teamColor, create it
     if(!_playerObjects.contains(teamColor)) {
@@ -172,8 +172,8 @@ void WorldMap::updatePlayer(Colors::Color teamColor, quint8 playerId, Object pla
 
     _playerMutex.unlock();
 }
-void WorldMap::updateBall(Object ballObject) {
-    _ballMutex.lockForWrite();
+void WorldMap::updateBall(BallObject ballObject) {
+    _ballMutex.lock();
 
     _ballObject = ballObject;
 

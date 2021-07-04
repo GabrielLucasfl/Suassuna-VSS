@@ -51,7 +51,7 @@ public:
     void updateObject(float confidence, Position pos, Angle orientation = Angle(false, 0.0));
     void setInvalid();
 
-private:
+protected:
     // Object params
     Position _position;
     Velocity _velocity;

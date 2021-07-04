@@ -104,6 +104,7 @@ SOURCES += \
     src/utils/timer/timer.cpp \
     src/utils/types/angle/angle.cpp \
     src/utils/types/angularspeed/angularspeed.cpp \
+    src/utils/types/ballobject/ballobject.cpp \
     src/utils/types/field/field.cpp \
     src/utils/types/field/vss/field_vssb.cpp \
     src/utils/types/fieldside/fieldside.cpp \
@@ -188,6 +189,7 @@ HEADERS += \
     src/utils/timer/timer.h \
     src/utils/types/angle/angle.h \
     src/utils/types/angularspeed/angularspeed.h \
+    src/utils/types/ballobject/ballobject.h \
     src/utils/types/color/color.h \
     src/utils/types/field/field.h \
     src/utils/types/field/vss/field_vssb.h \
