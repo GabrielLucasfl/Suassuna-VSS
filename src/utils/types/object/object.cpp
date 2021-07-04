@@ -22,6 +22,7 @@
 #include "object.h"
 
 Object::Object() {
+    _mavgVelocity.setVelocity(true, 0, 0);
     setInvalid();
 }
 
@@ -99,6 +100,7 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                 _kalmanFilter.predict();
                 _position = _kalmanFilter.getPosition();
                 _velocity = _kalmanFilter.getVelocity();
+                updateMavgVelocity();
                 _acceleration = _kalmanFilter.getAcceleration();
                 if(_stepTimer.hasBeenStarted()) {
                     _stepTimer.stop();
@@ -130,6 +132,7 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                 // Update positions, orientations, velocity and confidence
                 _position.setPosition(true, _kalmanFilter.getPosition().x(), _kalmanFilter.getPosition().y());
                 _velocity = _kalmanFilter.getVelocity();
+                updateMavgVelocity();
                 _orientation = orientation;
                 _acceleration = _kalmanFilter.getAcceleration();
                 if(_stepTimer.hasBeenStarted()) {
@@ -148,6 +151,12 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
             }
         }
     }
+}
+
+void Object::updateMavgVelocity() {
+    float newVx = _beta * _mavgVelocity.vx() + (1 - _beta) * _velocity.vx();
+    float newVy = _beta * _mavgVelocity.vy() + (1 - _beta) * _velocity.vy();
+    _mavgVelocity.setVelocity(true, newVx, newVy);
 }
 
 Position Object::predictNextPosition(int cycles) {

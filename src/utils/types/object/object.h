@@ -41,6 +41,7 @@ public:
     Velocity getAcceleration();
     Position getPredPosition(int cycles=1);
     Position getPredPosition(float interval);
+    Velocity getMavgVelocity() { return _mavgVelocity; }
 
     // Filtering
     bool isObjectSafe();
@@ -54,11 +55,13 @@ private:
     // Object params
     Position _position;
     Velocity _velocity;
+    Velocity _mavgVelocity;
     Angle _orientation;
     Velocity _acceleration;
     float _dt;
     float _confidence;
 
+    float _beta;
     // Object filters
     LossFilter _lossFilter;
     NoiseFilter _noiseFilter;
@@ -66,6 +69,7 @@ private:
 
     // Other methods
     Position predictNextPosition(int cycles=1);
+    void updateMavgVelocity();
 
     // Timer
     Timer _stepTimer;
