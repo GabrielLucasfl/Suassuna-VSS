@@ -6,6 +6,19 @@ BallObject::BallObject()
 
 }
 
+Position BallObject::getPredPosition(int cycles) {
+    Position retn = predictNextPosition(cycles);
+
+    return retn;
+}
+
+Position BallObject::getPredPosition(float interval) {
+    int cycles = static_cast<int>(std::ceil(interval/_dt));
+    Position retn = predictNextPosition(cycles);
+
+    return retn;
+}
+
 Position BallObject::predictNextPosition(int cycles) {
     float work, energy, force, ds, totalDs=0;
     Velocity velocity = _velocity;
@@ -14,7 +27,7 @@ Position BallObject::predictNextPosition(int cycles) {
     Position pos = _position;
 
     //  If object isn't moving
-    if(vel < 0.01f) {
+    if(vel < 0.02f) {
         return pos;
     }
     // Based on FIRASim
