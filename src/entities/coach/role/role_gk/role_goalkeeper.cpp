@@ -103,7 +103,7 @@ void Role_Goalkeeper::run() {
             _gkOverlap = false;
         }
     } else {
-        if(isBallInsideEllipse() && ballVelocity.abs()<=0.6f){
+        if(isBallInsideEllipse() && ballVelocity.abs()<=0.6f && fabs(ballVelocity.vy()) < 0.4f){
             if(Utils::distance(player()->position(), ballProjection) > 0.8f*distSpin) {
                 player()->setPlayerDesiredPosition(ballProjection);
                 setBehavior(BHV_MOVETO);
@@ -119,16 +119,7 @@ void Role_Goalkeeper::run() {
             player()->setPlayerDesiredPosition(standardPosition);
             setBehavior(BHV_MOVETO);
         }
-        else if (getWorldMap()->getLocations()->isInsideOurArea(ballProjection)) {
-            if(Utils::distance(player()->position(), ballProjection) > 0.8f*distSpin) {
-                player()->setPlayerDesiredPosition(ballProjection);
-                setBehavior(BHV_MOVETO);
-            }else {
-                _bhv_moveTo->setSpinOrientation(spinOrientarion());
-                _bhv_moveTo->enableSpin(true);
-                setBehavior(BHV_MOVETO);
-            }
-        }else if((getWorldMap()->getLocations()->ourSide().isLeft()? ballVelocity.vx() > 0 : ballVelocity.vx() < 0)
+        else if((getWorldMap()->getLocations()->ourSide().isLeft()? ballVelocity.vx() > 0 : ballVelocity.vx() < 0)
                  && (getWorldMap()->getLocations()->ourSide().isLeft()? !areanokl : !areanokr) ) {
             player()->setPlayerDesiredPosition(standardPosition);
             setBehavior(BHV_MOVETO);
@@ -181,11 +172,11 @@ bool Role_Goalkeeper::isBallInsideEllipse(){
     Position ballPos = getWorldMap()->getBall().getPosition();
     float aux = pow((ballPos.x()-_defenderEllipseCenter.x()), 2)/_defenderEllipseA + pow(ballPos.y(), 2)/_defenderEllipseB;
     if(aux >= 1){
-        std::cout << "Fora\n";
+        //std::cout << "Fora\n";
         return false;
     }
     else{
-        std::cout << "Dentro\n";
+        //std::cout << "Dentro\n";
         return true;
     }
 }
