@@ -21,7 +21,7 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>0</y>
       <width>1121</width>
       <height>531</height>
@@ -31,7 +31,7 @@
      <enum>QTabWidget::West</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="icon">
@@ -213,13 +213,13 @@
      <attribute name="title">
       <string>Configurations</string>
      </attribute>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>50</x>
         <y>50</y>
-        <width>195</width>
-        <height>54</height>
+        <width>201</width>
+        <height>91</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -234,6 +234,13 @@
         <widget class="QCheckBox" name="defenderBox">
          <property name="text">
           <string>Show Defender Position</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="goalkeeperBox">
+         <property name="text">
+          <string>Show Goalkeeper Ellipse</string>
          </property>
         </widget>
        </item>

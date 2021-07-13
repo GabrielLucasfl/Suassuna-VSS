@@ -225,6 +225,27 @@ void GUI::updateField() {
         ui->fieldView->enableDefenderShow(false);
     }
 
+    if(ui->goalkeeperBox->isChecked()){
+        ui->fieldView->enableGlkShow(true);
+        if(getWorldMap()->getLocations()->ourGoal().x() > 0){
+            //setDefenderEllipse(Position(true, 0.72f, 0.0f), 0.1f, 0.25f);
+            Position ellipseCenter = Position(true, 0.72f, 0.0f);
+            ui->fieldView->setGlkEllipseCenter(ellipseCenter);
+            ui->fieldView->setGlkEllipseParameters(0.1f, 0.25f);
+        }
+        else{
+            //setDefenderEllipse(Position(true, -0.72f, 0.0f), 0.1f, 0.25f);
+            Position ellipseCenter = Position(true, -0.72f, 0.0f);
+            ui->fieldView->setGlkEllipseCenter(ellipseCenter);
+            ui->fieldView->setGlkEllipseParameters(0.1f, 0.25f);
+        }
+    }
+    else{
+        ui->fieldView->enableGlkShow(false);
+    }
+
+
+
     ui->fieldView->redraw();
 }
 

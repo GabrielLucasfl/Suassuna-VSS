@@ -39,10 +39,12 @@ FieldView::FieldView(QWidget *parent) : QOpenGLWidget(parent) {
     // CheckBox enablers starters
     _supporterShowEnabled = false;
     _defenderShowEnabled = false;
+    _glkEllipseEnabled = false;
 
     // Checkbox parameters starters
     _supporterDesiredPosition.setPosition(false, 0.0, 0.0);
     _defenderDesiredPosition.setPosition(false, 0.0, 0.0);
+    _glkEllipseCenter.setPosition(false, 0.0, 0.0);
 }
 
 void FieldView::setConstantsAndWorldMap(Constants *constants, WorldMap *worldMap) {
@@ -166,6 +168,9 @@ void FieldView::paintGL() {
         showDefenderPosition(_defenderDesiredPosition);
     }
 
+    if(_glkEllipseEnabled){
+        showGlkEllipse(_glkEllipseCenter, _glkEllipseA, _glkEllipseB);
+    }
     glPopMatrix();
     _graphicsMutex.unlock();
 }
@@ -259,6 +264,28 @@ void FieldView::drawArc(QVector2D center, float r1, float r2, float theta1, floa
     float s1 = sin(theta2);
     glVertex3d(r2*c1 + center.x(), r2*s1 + center.y(), z);
     glVertex3d(r1*c1 + center.x(), r1*s1 + center.y(), z);
+    glEnd();
+}
+
+void FieldView::drawEllipse(QVector2D center, float a, float b, float theta1, float theta2, float z, float dTheta) {
+    static const float tesselation = 1.0;
+
+    if(dTheta < 0) {
+        dTheta = tesselation/1000.0f;
+    }
+    //float dist = sqrt((_ellipseA * _ellipseB) / (_ellipseB * powf(cosf(alpha), 2) + _ellipseA * powf(sinf(alpha), 2)));
+    glBegin(GL_QUAD_STRIP);
+    for(float theta = theta1; theta < theta2; theta += dTheta) {
+        float c1 = a*cos(theta);
+        float s1 = b*sin(theta);
+        glVertex3d(c1 + center.x(), s1 + center.y(), z);
+        glVertex3d(0.98*c1 + center.x(), 0.98*s1 + center.y(), z);
+    }
+
+    float c1 = a*cos(theta2);
+    float s1 = b*sin(theta2);
+    glVertex3d(c1 + center.x(), s1 + center.y(), z);
+    glVertex3d(0.98*c1 + center.x(), 0.98*s1 + center.y(), z);
     glEnd();
 }
 
@@ -426,6 +453,11 @@ void FieldView::showDefenderPosition(Position defenderPosition) {
         drawArc(QVector2D(defenderPosition.x() * 1000.0f, defenderPosition.y() * 1000.0f), 0.0f, 15.0f,
                 static_cast<float>(-M_PI), static_cast<float>(M_PI), 4.0f);
     }
+}
+
+void FieldView::showGlkEllipse(Position center, float a, float b){
+    glColor3d(0, 255, 255);
+    drawEllipse(QVector2D(center.x()*1000.0f, center.y()*1000.0f), 1000.0f*sqrt(a), 1000.0f*sqrt(b), static_cast<float>(-M_PI), static_cast<float>(M_PI), 1.5f, -1.0f);
 }
 
 Constants* FieldView::getConstants() {

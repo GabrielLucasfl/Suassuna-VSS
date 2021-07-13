@@ -47,10 +47,13 @@ public:
     // CheckBox enablers
     void enableSupporterShow(bool enabled) { _supporterShowEnabled = enabled; }
     void enableDefenderShow(bool enabled) { _defenderShowEnabled = enabled; }
+    void enableGlkShow(bool enabled){ _glkEllipseEnabled = enabled; };
 
     // CheckBox setters
     void setSupporterDesiredPosition(Position supporterPosition) { _supporterDesiredPosition = supporterPosition; }
     void setDefenderDesiredPosition(Position defenderPosition) { _defenderDesiredPosition = defenderPosition; }
+    void setGlkEllipseCenter(Position center) { _glkEllipseCenter = center; };
+    void setGlkEllipseParameters(float a, float b) { _glkEllipseA = a; _glkEllipseB = b; };
 
 protected:
     void paintGL();
@@ -74,6 +77,7 @@ private:
     void drawQuad(QVector2D v1, QVector2D v2, QVector2D v3, QVector2D v4, float z);
     void drawArc(QVector2D center, float r1, float r2, float theta1, float theta2, float z, float dTheta = -1);
     void drawTriangle(QVector2D v1, QVector2D v2, QVector2D v3, float z);
+    void drawEllipse(QVector2D center, float a, float b, float theta1, float theta2, float z, float dTheta);
 
     // Field view
     double viewScale; /// Ratio of world space to screen space coordinates
@@ -85,10 +89,14 @@ private:
     // CheckBox enablers
     bool _supporterShowEnabled;
     bool _defenderShowEnabled;
+    bool _glkEllipseEnabled;
 
     // CheckBox Parameters
     Position _supporterDesiredPosition;
     Position _defenderDesiredPosition;
+    Position _glkEllipseCenter;
+    float _glkEllipseA;
+    float _glkEllipseB;
 
     // Mouse events
     bool leftButton;
@@ -119,6 +127,7 @@ private:
     // CheckBox functions
     void showSupporterPosition(Position supporterPosition);
     void showDefenderPosition(Position supporterPosition);
+    void showGlkEllipse(Position center, float a, float b);
 
     // Mutex to control graphics
     QMutex _graphicsMutex;
