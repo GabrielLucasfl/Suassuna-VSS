@@ -267,11 +267,13 @@ void FieldView::drawArc(QVector2D center, float r1, float r2, float theta1, floa
     glEnd();
 }
 
-void FieldView::drawEllipse(QVector2D center, float a, float b, float theta1, float theta2, float z, float dTheta) {
-    static const float tesselation = 1.0;
+void FieldView::drawEllipse(QVector2D center, float a, float b, float thicknessPercentage, float theta1, float theta2, float z, float dTheta) {
+    // Adjusting a and b values to elliptic coords
+    a = 1000*sqrt(a);
+    b = 1000*sqrt(b);
 
     if(dTheta < 0) {
-        dTheta = tesselation/1000.0f;
+        dTheta = 1.0f/1000.0f;
     }
     //float dist = sqrt((_ellipseA * _ellipseB) / (_ellipseB * powf(cosf(alpha), 2) + _ellipseA * powf(sinf(alpha), 2)));
     glBegin(GL_QUAD_STRIP);
@@ -279,13 +281,13 @@ void FieldView::drawEllipse(QVector2D center, float a, float b, float theta1, fl
         float c1 = a*cos(theta);
         float s1 = b*sin(theta);
         glVertex3d(c1 + center.x(), s1 + center.y(), z);
-        glVertex3d(0.98*c1 + center.x(), 0.98*s1 + center.y(), z);
+        glVertex3d(thicknessPercentage*c1 + center.x(), thicknessPercentage*s1 + center.y(), z);
     }
 
     float c1 = a*cos(theta2);
     float s1 = b*sin(theta2);
     glVertex3d(c1 + center.x(), s1 + center.y(), z);
-    glVertex3d(0.98*c1 + center.x(), 0.98*s1 + center.y(), z);
+    glVertex3d(thicknessPercentage*c1 + center.x(), thicknessPercentage*s1 + center.y(), z);
     glEnd();
 }
 
@@ -457,7 +459,7 @@ void FieldView::showDefenderPosition(Position defenderPosition) {
 
 void FieldView::showGlkEllipse(Position center, float a, float b){
     glColor3d(0, 255, 255);
-    drawEllipse(QVector2D(center.x()*1000.0f, center.y()*1000.0f), 1000.0f*sqrt(a), 1000.0f*sqrt(b), static_cast<float>(-M_PI), static_cast<float>(M_PI), 1.5f, -1.0f);
+    drawEllipse(QVector2D(center.x()*1000.0f, center.y()*1000.0f), a, b, 0.98f, static_cast<float>(-M_PI), static_cast<float>(M_PI), 1.5f, -1.0f);
 }
 
 Constants* FieldView::getConstants() {

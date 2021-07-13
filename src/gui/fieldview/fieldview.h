@@ -77,7 +77,7 @@ private:
     void drawQuad(QVector2D v1, QVector2D v2, QVector2D v3, QVector2D v4, float z);
     void drawArc(QVector2D center, float r1, float r2, float theta1, float theta2, float z, float dTheta = -1);
     void drawTriangle(QVector2D v1, QVector2D v2, QVector2D v3, float z);
-    void drawEllipse(QVector2D center, float a, float b, float theta1, float theta2, float z, float dTheta);
+    void drawEllipse(QVector2D center, float a, float b, float thicknessPercentage, float theta1, float theta2, float z, float dTheta = -1);
 
     // Field view
     double viewScale; /// Ratio of world space to screen space coordinates
