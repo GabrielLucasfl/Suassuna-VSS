@@ -60,20 +60,21 @@ void Role_Attacker::run() {
     // Ball projection
     Position ballPos = getWorldMap()->getBall().getPosition();
     Velocity ballVel = getWorldMap()->getBall().getVelocity();
-    Position ballDirection, ballProj;
+    Position ballDirection;
     if(ballVel.abs() > 0.03f) {
         ballDirection = Position(true, ballVel.vx()/ballVel.abs(), ballVel.vy()/ballVel.abs());
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    float factor = std::min(ATKFACTOR * ballVel.abs(), 0.5f);
-    ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
+    //float factor = std::min(ATKFACTOR * ballVel.abs(), 0.5f);
+    //Position ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
+    Position ballPred = getWorldMap()->getBall().getPredPosition(10);
 
     // Bhv goToBall parameters
     float bhvGoToBallOffset;
-    float ballPlayerDist = Utils::distance(ballProj, player()->position());
+    float ballPlayerDist = Utils::distance(ballPred, player()->position());
     if(player()->isBehindBallXCoord(player()->position(), 0.18f)) {
-        bhvGoToBallOffset = std::min(Utils::distance(ballProj, player()->position()) - 0.03f, 0.3f);
+        bhvGoToBallOffset = std::min(Utils::distance(ballPred, player()->position()) - 0.03f, 0.3f);
     }else {
         bhvGoToBallOffset = 0.2f;
     }
@@ -97,7 +98,7 @@ void Role_Attacker::run() {
     }
 
     //check if player is behind ball based on its reference position
-    bool isInRange = inRangeToPush(ballProj) && (ballPlayerDist > 1.1f*_offsetRange);
+    bool isInRange = inRangeToPush(ballPred) && (ballPlayerDist > 1.1f*_offsetRange);
 
     _avoidTheirGoalArea = hasAllyInTheirArea();
 
@@ -107,10 +108,10 @@ void Role_Attacker::run() {
         _state = MOVETO;
     }
 
-    float angle = normAngle(Utils::getAngle(ballPos, theirGoal) - Utils::getAngle(player()->position(), ballPos));
+    float angle = normAngle(Utils::getAngle(ballPred, theirGoal) - Utils::getAngle(player()->position(), ballPred));
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
-    Position pos = Utils::threePoints(ballPos, theirGoal, dist, targetAngle);
+    Position pos = Utils::threePoints(ballPred, theirGoal, dist, targetAngle);
 
     switch (_state) {
         case GOTOBALL: {
@@ -138,10 +139,10 @@ void Role_Attacker::run() {
 
             if(!_push) {
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed()+5.0f);
-                player()->setPlayerDesiredPosition(ballProj);
+                player()->setPlayerDesiredPosition(ballPred);
             } else {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
-                player()->setPlayerDesiredPosition(ballProj);
+                player()->setPlayerDesiredPosition(ballPred);
             }
 
             _bhv_moveTo->setLinearError(0.02f);
@@ -149,7 +150,7 @@ void Role_Attacker::run() {
 
             //transitions
             _interuption.stop();
-            if((ballPlayerDist >= 0.3f) && !inRangeToPush(ballProj)
+            if((ballPlayerDist >= 0.3f) && !inRangeToPush(ballPred)
                     && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
