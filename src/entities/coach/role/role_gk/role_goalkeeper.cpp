@@ -46,6 +46,7 @@ void Role_Goalkeeper::run() {
     // Fixed variables
     Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
     Position ballPos = getWorldMap()->getBall().getPosition();
+    Position ballPred = getWorldMap()->getBall().getPredPosition(15);
 
     Position ballDirection;
     if(ballVelocity.abs() > 0) {
@@ -54,7 +55,7 @@ void Role_Goalkeeper::run() {
         ballDirection = Position(true, 0, 0);
     }
     float factor = std::min(GKFACTOR * ballVelocity.abs(), 0.5f);
-    Position ballProjection = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
+    //Position ballProjection = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
 
     // Spin minimal distance from ball
     float distSpin = 0.09f;
@@ -104,8 +105,8 @@ void Role_Goalkeeper::run() {
         }
     } else {
         if(isBallInsideEllipse() && ballVelocity.abs()<=0.6f && fabs(ballVelocity.vy()) < 0.4f){
-            if(Utils::distance(player()->position(), ballProjection) > 0.8f*distSpin) {
-                player()->setPlayerDesiredPosition(ballProjection);
+            if(Utils::distance(player()->position(), ballPred) > 0.8f*distSpin) {
+                player()->setPlayerDesiredPosition(ballPred);
                 setBehavior(BHV_MOVETO);
             }else {
                 _bhv_moveTo->setSpinOrientation(spinOrientarion());
@@ -114,7 +115,7 @@ void Role_Goalkeeper::run() {
             }
         }
         else if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
-                || getWorldMap()->getLocations()->isInsideTheirField(ballProjection)) {
+                || getWorldMap()->getLocations()->isInsideTheirField(ballPred)) {
             // Get a break at the standard position if the ball is far away or if the player is outside our goal area
             player()->setPlayerDesiredPosition(standardPosition);
             setBehavior(BHV_MOVETO);
@@ -131,19 +132,19 @@ void Role_Goalkeeper::run() {
             setBehavior(BHV_MOVETO);
         }
         else {
-            if ((ballProjection.x() > 0.6f && getWorldMap()->getLocations()->ourSide().isRight()) ||
-                    (ballProjection.x() < -0.6f && getWorldMap()->getLocations()->ourSide().isLeft())) {
-                if (ballProjection.y() > 0.35f) {
+            if ((ballPred.x() > 0.6f && getWorldMap()->getLocations()->ourSide().isRight()) ||
+                    (ballPred.x() < -0.6f && getWorldMap()->getLocations()->ourSide().isLeft())) {
+                if (ballPred.y() > 0.35f) {
                     player()->setPlayerDesiredPosition(Position(true, standardPosition.x(), 0.3f));
                     setBehavior(BHV_MOVETO);
                 }
-                else if (ballProjection.y() < -0.35f) {
+                else if (ballPred.y() < -0.35f) {
                     player()->setPlayerDesiredPosition(Position(true, standardPosition.x(), -0.3f));
                     setBehavior(BHV_MOVETO);
                 }
             }
-            else if(Utils::distance(ballPos, getWorldMap()->getLocations()->ourGoal()) < 0.38f){
-                float _limity = ballPos.y();
+            else if(Utils::distance(ballPred, getWorldMap()->getLocations()->ourGoal()) < 0.38f){
+                float _limity = ballPred.y();
                 Utils::limitValue(&_limity, -0.2f, 0.2f);
                 player()->setPlayerDesiredPosition(Position(true, standardPosition.x(), _limity));
                 setBehavior(BHV_MOVETO);
@@ -152,14 +153,14 @@ void Role_Goalkeeper::run() {
 
                 Position firstLimitationPoint(true, standardPosition.x(), 0.2f);
                 Position secondLimitationPoint(true, standardPosition.x(), -0.2f);
-                float factorRangeGK = 0.7f*0.2f*(1 - (abs(ballPos.y())/getWorldMap()->getLocations()->fieldMaxY()));
-                if (ballPos.y() > 0.0f) {
+                float factorRangeGK = 0.7f*0.2f*(1 - (abs(ballPred.y())/getWorldMap()->getLocations()->fieldMaxY()));
+                if (ballPred.y() > 0.0f) {
                     secondLimitationPoint.setPosition(true, standardPosition.x(), -factorRangeGK);
                 } else {
                     firstLimitationPoint.setPosition(true, standardPosition.x(), factorRangeGK);
                 }
                 _bhv_intercept->setInterceptSegment(firstLimitationPoint, secondLimitationPoint);
-                _bhv_intercept->setObjectPosition(ballProjection);
+                _bhv_intercept->setObjectPosition(ballPred);
                 _bhv_intercept->setObjectVelocity(ballVelocity);
                 _bhv_intercept->setBaseSpeed(getConstants()->playerBaseSpeed());
                 setBehavior(BHV_INTERCEPT);
@@ -169,8 +170,8 @@ void Role_Goalkeeper::run() {
 }
 
 bool Role_Goalkeeper::isBallInsideEllipse(){
-    Position ballPos = getWorldMap()->getBall().getPosition();
-    float aux = pow((ballPos.x()-_defenderEllipseCenter.x()), 2)/_defenderEllipseA + pow(ballPos.y(), 2)/_defenderEllipseB;
+    Position ballPred = getWorldMap()->getBall().getPredPosition(15);
+    float aux = pow((ballPred.x()-_defenderEllipseCenter.x()), 2)/_defenderEllipseA + pow(ballPred.y(), 2)/_defenderEllipseB;
     if(aux >= 1){
         //std::cout << "Fora\n";
         return false;
