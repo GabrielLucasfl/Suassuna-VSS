@@ -46,15 +46,16 @@ void Role_Defender::configure() {
 void Role_Defender::run() {
     Position desiredPosition;
     Position ballPosition = getWorldMap()->getBall().getPosition();
+    Position ballPred = getWorldMap()->getBall().getPredPosition(20);
     Position ourGoal = getWorldMap()->getLocations()->ourGoal();
     Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
 
     if (ballPosition.x() != ourGoal.x()) {
         float alpha;
         if (getWorldMap()->getLocations()->ourSide().isRight()) {
-            alpha = normAngle(static_cast<float>(M_PI) - Utils::getAngle(ourGoal, ballPosition));
+            alpha = normAngle(static_cast<float>(M_PI) - Utils::getAngle(ourGoal, ballPred));
         } else {
-            alpha = normAngle(-Utils::getAngle(ourGoal, ballPosition));
+            alpha = normAngle(-Utils::getAngle(ourGoal, ballPred));
         }
         float dist = getDist(alpha);
 
