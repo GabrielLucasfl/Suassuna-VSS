@@ -68,16 +68,18 @@ void Role_Supporter::run() {
     }
 
     Position ballPosition = getWorldMap()->getBall().getPosition();
+    Position ballPred = getWorldMap()->getBall().getPredPosition(10);
     float largestMid = getLargestFreeAngle();
 
     // Advanced Support
-    float posx_advanced = calc_x_advanced();
-    float moduloVet = abs((posx_advanced - ballPosition.x())/cos(largestMid));
+    //float posx_advanced = calc_x_advanced();
+    float posx_advanced = getWorldMap()->getBall().getPredPosition(20).x();
+    float moduloVet = abs((posx_advanced - ballPred.x())/cos(largestMid));
     float posy_advanced;
     if(_nofreeAngles){
-        posy_advanced = ballPosition.y();
+        posy_advanced = ballPred.y();
     } else {
-        posy_advanced = ballPosition.y() + (moduloVet * sin(largestMid));
+        posy_advanced = getWorldMap()->getBall().getPredPosition(20).x();
     }
     Position desiredPosition(true, posx_advanced, posy_advanced);
     player()->setPlayerDesiredPosition(player()->limitPosInsideField(desiredPosition));
@@ -90,7 +92,7 @@ void Role_Supporter::run() {
 }
 
 float Role_Supporter::getLargestFreeAngle() {
-    Position ballPosition = getWorldMap()->getBall().getPosition();
+    Position ballPred = getWorldMap()->getBall().getPredPosition(10);
     QList<quint8> playersId1 = getWorldMap()->getAvailablePlayers(Colors::Color::BLUE);
     QList<quint8> playersId2 = getWorldMap()->getAvailablePlayers(Colors::Color::YELLOW);
 
@@ -112,17 +114,17 @@ float Role_Supporter::getLargestFreeAngle() {
         }
     }
 
-    QList<Obstacle> obstacles = FreeAngles::getObstacles(ballPosition, 30.0f, players);
+    QList<Obstacle> obstacles = FreeAngles::getObstacles(ballPred, 30.0f, players);
     QList<FreeAngles::Interval> intervalos;
 
     if(getConstants()->teamColor() == Colors::Color::YELLOW){
         Position leftPost = getWorldMap()->getLocations()->ourGoalLeftPost();
         Position rightPost = getWorldMap()->getLocations()->ourGoalRightPost();
-        intervalos = FreeAngles::getFreeAngles(ballPosition,leftPost,rightPost,obstacles,false);
+        intervalos = FreeAngles::getFreeAngles(ballPred,leftPost,rightPost,obstacles,false);
     } else {
         Position leftPost = getWorldMap()->getLocations()->ourGoalLeftPost();
         Position rightPost = getWorldMap()->getLocations()->ourGoalRightPost();
-        intervalos = FreeAngles::getFreeAngles(ballPosition,leftPost,rightPost,obstacles,false);
+        intervalos = FreeAngles::getFreeAngles(ballPred,leftPost,rightPost,obstacles,false);
     }
 
     float largestAngle=0;
