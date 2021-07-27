@@ -25,6 +25,18 @@
 #include <src/entities/coach/playbook/playbook.h>
 #include <src/entities/coach/role/roles.h>
 
+class PlayerState {
+public:
+    PlayerState(quint8 id) {
+        this->id = id;
+        stuckState = false;
+    }
+    quint8 id;
+    Timer timer;
+    bool stuckState;
+    bool isStuck();
+};
+
 class Playbook_Default : public Playbook
 {
 public:
@@ -51,6 +63,8 @@ private:
     bool isBehindBallXcoord(Position pos);
     bool isBallInsideDefenderEllipse(float ellipseA, float ellipseB);
     void setDefenderEllipse(Position center, float ellipseA, float ellipseB);
+    void updatePlayerStuck(quint8 id);
+    float minDistPlayerObstacle(quint8 id);
 
     // Parameters
     quint8 _attackerID;
@@ -62,12 +76,11 @@ private:
     bool _first = true;
 
     // Switch players/roles parameters
+    QHash<quint8, PlayerState*> playersState;
     Timer _switchPlayersTimer;
     Timer _replaceSecRoleTimer;
-    Timer _atkStuckTimer;
     bool _switchedPlayers;
     bool _replacedSecRole;
-    bool _atkStuck;
 };
 
 #endif // PLAYBOOK_DEFAULT_H
