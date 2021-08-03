@@ -67,19 +67,19 @@ void Role_Supporter::run() {
         _avoidTheirGoalArea = false;
     }
 
-    Position ballPosition = getWorldMap()->getBall().getPosition();
+    //Position ballPosition = getWorldMap()->getBall().getPosition();
     Position ballPred = getWorldMap()->getBall().getPredPosition(10);
-    float largestMid = getLargestFreeAngle();
+    //float largestMid = getLargestFreeAngle();
 
     // Advanced Support
     //float posx_advanced = calc_x_advanced();
     float posx_advanced = getWorldMap()->getBall().getPredPosition(20).x();
-    float moduloVet = abs((posx_advanced - ballPred.x())/cos(largestMid));
+    //float moduloVet = abs((posx_advanced - ballPred.x())/cos(largestMid));
     float posy_advanced;
     if(_nofreeAngles){
         posy_advanced = ballPred.y();
     } else {
-        posy_advanced = getWorldMap()->getBall().getPredPosition(20).x();
+        posy_advanced = getWorldMap()->getBall().getPredPosition(20).y();
     }
     Position desiredPosition(true, posx_advanced, posy_advanced);
     player()->setPlayerDesiredPosition(player()->limitPosInsideField(desiredPosition));

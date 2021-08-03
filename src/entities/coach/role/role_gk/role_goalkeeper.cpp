@@ -54,7 +54,7 @@ void Role_Goalkeeper::run() {
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    float factor = std::min(GKFACTOR * ballVelocity.abs(), 0.5f);
+    //float factor = std::min(GKFACTOR * ballVelocity.abs(), 0.5f);
     //Position ballProjection = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
 
     // Spin minimal distance from ball
