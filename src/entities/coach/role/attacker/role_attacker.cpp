@@ -113,6 +113,17 @@ void Role_Attacker::run() {
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
     Position pos = Utils::threePoints(ballPred, referencePos, dist, targetAngle);
+    if(fabs(ballPos.y()) >= 0.450f){
+        pos = ballPred;
+    }
+    //std::cout << "Angle: " << angle << std::endl;
+    if(ballPlayerDist <= 0.2f && fabs(angle) <= 0.2f){
+        _push = true;
+        //std::cout << "PUSH\n";
+    }
+    else{
+        //std::cout << "N PUSH\n";
+    }
 
     switch (_state) {
         case GOTOBALL: {
@@ -125,6 +136,7 @@ void Role_Attacker::run() {
             player()->setPlayerDesiredPosition(pos);
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
+            //std::cout << "GOTOBALL\n";
             // if player is in range or: if it is near the ball and the angle between them is small
             if(isInRange || ((fabs(angle) < static_cast<float>(M_PI)/6) && Utils::distance(ballPos, player()->position()) < 0.2f)) {
                 _state = MOVETO;
@@ -137,18 +149,17 @@ void Role_Attacker::run() {
             _avoidOpponents = false;
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
-
             if(!_push) {
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed()+5.0f);
-                player()->setPlayerDesiredPosition(ballPred);
+                player()->setPlayerDesiredPosition(getPushPosition(ballPred));
             } else {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
-                player()->setPlayerDesiredPosition(ballPred);
+                player()->setPlayerDesiredPosition(getPushPosition(ballPred));
             }
 
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
-
+            //std::cout << "MOVETO\n";
             //transitions
             _interuption.stop();
             if((ballPlayerDist >= 0.3f) && !inRangeToPush(ballPred)
@@ -187,6 +198,14 @@ Position Role_Attacker::defineReferencePosition() {
         referencePos = theirGoal;
     }
     return referencePos;
+}
+
+Position Role_Attacker::getPushPosition(Position ballPos){
+    Position pos = Utils::threePoints(ballPos, getWorldMap()->getLocations()->theirGoal(), 0.3f, 0.0f);
+    if(fabs(ballPos.y()) >= 0.450f){
+        pos = ballPos;
+    }
+    return pos;
 }
 
 float Role_Attacker::getAngle(float angle){
@@ -231,10 +250,10 @@ float Role_Attacker::getDist(float angle){
 float Role_Attacker::pushSpeed(float ballPlayerDist){
     if(ballPlayerDist < 0.11f){
         //std::cout << "Vel max\n";
-        return 45;
+        return 50;
     }
     float factor = std::cbrt((ballPlayerDist-0.11f)/0.15f);
-    float speed = 45, delta = speed - getConstants()->playerBaseSpeed() - 5.0f;
+    float speed = 50, delta = speed - getConstants()->playerBaseSpeed();
     _lastSpeed = std::max(speed-delta*factor, _lastSpeed);
     //std::cout << "Vel variavel: " << std::max(_lastSpeed, speed-delta*factor)<< std::endl;
     return _lastSpeed;

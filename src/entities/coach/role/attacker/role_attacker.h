@@ -111,6 +111,9 @@ private:
     //get the target angle to use with threePoints method
     float getAngle(float angle);
 
+    //get the right position to push the ball to their goal
+    Position getPushPosition(Position ballPos);
+
 };
 
 #endif // ROLE_ATTACKER_H
