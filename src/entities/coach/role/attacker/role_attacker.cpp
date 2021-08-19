@@ -69,7 +69,7 @@ void Role_Attacker::run() {
     }
     //float factor = std::min(ATKFACTOR * ballVel.abs(), 0.5f);
     //Position ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
-    Position ballPred = getWorldMap()->getBall().getPredPosition(10);
+    Position ballPred = getWorldMap()->getBall().getPredPosition(40);
 
     // Bhv goToBall parameters
     float bhvGoToBallOffset;
@@ -138,7 +138,7 @@ void Role_Attacker::run() {
             setBehavior(BHV_MOVETO);
             //std::cout << "GOTOBALL\n";
             // if player is in range or: if it is near the ball and the angle between them is small
-            if(isInRange || ((fabs(angle) < static_cast<float>(M_PI)/6) && Utils::distance(ballPos, player()->position()) < 0.2f)) {
+            if(((fabs(angle) < static_cast<float>(M_PI)/8) && Utils::distance(ballPos, player()->position()) < 0.2f)) {
                 _state = MOVETO;
             }
             break;
@@ -250,10 +250,10 @@ float Role_Attacker::getDist(float angle){
 float Role_Attacker::pushSpeed(float ballPlayerDist){
     if(ballPlayerDist < 0.11f){
         //std::cout << "Vel max\n";
-        return 50;
+        return 40;
     }
     float factor = std::cbrt((ballPlayerDist-0.11f)/0.15f);
-    float speed = 50, delta = speed - getConstants()->playerBaseSpeed();
+    float speed = 40, delta = speed - getConstants()->playerBaseSpeed();
     _lastSpeed = std::max(speed-delta*factor, _lastSpeed);
     //std::cout << "Vel variavel: " << std::max(_lastSpeed, speed-delta*factor)<< std::endl;
     return _lastSpeed;
