@@ -57,6 +57,7 @@ SOURCES += \
     src/entities/coach/coordinator/coordinator.cpp \
     src/entities/coach/coordinator/ssl/coordinator_vss.cpp \
     src/entities/coach/playbook/default/playbook_default.cpp \
+    src/entities/coach/playbook/flex/playbook_flex.cpp \
     src/entities/coach/playbook/playbook.cpp \
     src/entities/coach/player/navigation/navalgorithm.cpp \
     src/entities/coach/player/navigation/navigation.cpp \
@@ -138,6 +139,7 @@ HEADERS += \
     src/entities/coach/coordinator/coordinator.h \
     src/entities/coach/coordinator/ssl/coordinator_vss.h \
     src/entities/coach/playbook/default/playbook_default.h \
+    src/entities/coach/playbook/flex/playbook_flex.h \
     src/entities/coach/playbook/playbook.h \
     src/entities/coach/playbook/playbooks.h \
     src/entities/coach/player/navigation/navalgorithm.h \

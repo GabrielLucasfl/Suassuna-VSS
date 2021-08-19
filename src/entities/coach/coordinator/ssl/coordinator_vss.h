@@ -16,11 +16,13 @@ private:
 
     // Playbook enums
     enum {
-        PLAYBOOK_DEFAULT
+        PLAYBOOK_DEFAULT,
+        PLAYBOOK_FLEX
     };
 
     // Playbook pointers
     Playbook_Default *_playbook_default;
+    Playbook_Flex *_playbook_flex;
 };
 
 #endif // COORDINATOR_VSS_H
