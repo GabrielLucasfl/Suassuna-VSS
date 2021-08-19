@@ -34,6 +34,7 @@ public:
     // Auxiliar
     bool inRangeToPush(Position ballPos, float postIncrement = 0.0f);
     float normAngle(float angleRadians);
+    void setPriority(bool prior) {_prior = prior;}
 private:
     // Role inherited methods
     void configure();
@@ -41,6 +42,7 @@ private:
 
     // Methods
     bool hasAllyInTheirArea();
+    Position defineReferencePosition();
 
     // Behaviors enum
     enum {
@@ -72,6 +74,7 @@ private:
     bool _gameInterrupted;
     float _lastSpeed;
     bool _positiveAngle;
+    bool _prior;
 
     // Timer
     Timer _interuption;

@@ -34,6 +34,7 @@ Role_Attacker::Role_Attacker() {
     _charge = true;
     _gameInterrupted = false;
     _positiveAngle = true;
+    _prior = true;
 }
 
 QString Role_Attacker::name() {
@@ -107,11 +108,11 @@ void Role_Attacker::run() {
         _gameInterrupted = false;
         _state = MOVETO;
     }
-
-    float angle = normAngle(Utils::getAngle(ballPred, theirGoal) - Utils::getAngle(player()->position(), ballPred));
+    Position referencePos = defineReferencePosition();
+    float angle = normAngle(Utils::getAngle(ballPred, referencePos) - Utils::getAngle(player()->position(), ballPred));
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
-    Position pos = Utils::threePoints(ballPred, theirGoal, dist, targetAngle);
+    Position pos = Utils::threePoints(ballPred, referencePos, dist, targetAngle);
 
     switch (_state) {
         case GOTOBALL: {
@@ -164,6 +165,30 @@ void Role_Attacker::run() {
     }
 }
 
+Position Role_Attacker::defineReferencePosition() {
+    Position theirGoal = getWorldMap()->getLocations()->theirGoal();
+    Position ballPos = getWorldMap()->getBall().getPosition();
+    Position referencePos;
+    if(!_prior) {
+        if(getWorldMap()->getLocations()->theirSide().isRight()) {
+            if(ballPos.y() > 0){
+                referencePos = getWorldMap()->getLocations()->theirFieldTopCorner();
+            }else {
+                referencePos = getWorldMap()->getLocations()->theirFieldBottomCorner();
+            }
+        }else {
+            if(ballPos.y() > 0) {
+                referencePos = getWorldMap()->getLocations()->theirFieldTopCorner();
+            }else {
+                referencePos = getWorldMap()->getLocations()->theirFieldBottomCorner();
+            }
+        }
+    }else {
+        referencePos = theirGoal;
+    }
+    return referencePos;
+}
+
 float Role_Attacker::getAngle(float angle){
     int signal = static_cast<int>(angle/fabs(angle));
     if(_positiveAngle) {
@@ -194,6 +219,9 @@ float Role_Attacker::getDist(float angle){
     }
 
     float maxDist = 0.40f, delta = 0.25f;
+    if(!_prior) {
+        maxDist += 0.2f;
+    }
     float dist = maxDist - delta*((maxAngle - fabs(angle))/(maxAngle));
     //std::cout << "dist: " << dist << std::endl;
 
