@@ -22,6 +22,7 @@
 #include "role_default.h"
 
 Role_Default::Role_Default() {
+    _state = STAYING;
 }
 
 QString Role_Default::name() {
@@ -39,30 +40,43 @@ void Role_Default::configure() {
 }
 
 void Role_Default::run() {
-    /*
-    Position playerPosition = player()->position();
-    Position ballPosition(getWorldMap()->getBall().getPosition());
-    bool result = getWorldMap()->getLocations()->isInsideOurArea(playerPosition);
-    if (result) std::cout << "Sucesso\n";
-    else std::cout << "Fracasso\n";
-//    Position leftPost = player()->getWorldMap()->getLocations()->ourGoalLeftPost();
-//    std::cout << "Coordenada x do poste esquerdo: " << leftPost.x() << "\n";
-//    std::cout << "Coordenada y do poste esquerdo: " << leftPost.y() << "\n";
-//    std::cout << "\n";
-//    Position rightPost = player()->getWorldMap()->getLocations()->ourGoalRightPost();
-//    std::cout << "Coordenada x do poste direito: " << rightPost.x() << "\n";
-//    std::cout << "Coordenada y do poste direito: " << rightPost.y() << "\n";
-//    std::cout << "\n";
-//    Position leftPost2 = player()->getWorldMap()->getLocations()->theirGoalLeftPost();
-//    std::cout << "Coordenada x do poste esquerdo: " << leftPost2.x() << "\n";
-//    std::cout << "Coordenada y do poste esquerdo: " << leftPost2.y() << "\n";
-//    std::cout << "\n";
-//    Position rightPost2 = player()->getWorldMap()->getLocations()->theirGoalRightPost();
-//    std::cout << "Coordenada x do poste direito: " << rightPost2.x() << "\n";
-//    std::cout << "Coordenada y do poste direito: " << rightPost2.y() << "\n";
-    */
+    Position base(true, getWorldMap()->getLocations()->theirGoal().x(), player()->position().y());
+    Position stop(true, 0.5f, player()->position().y());
+    float playerVelocity = getWorldMap()->getPlayer(getConstants()->teamColor(), player()->playerId()).getVelocity().abs();
+    _bhv_moveTo->setBaseSpeed((6 / 6) * getConstants()->playerBaseSpeed());
 
-    player()->setPlayerDesiredPosition(getWorldMap()->getLocations()->fieldCenter());
+    switch(_state) {
+    case ACCELERATING: {
+        std::cout << "Player velocity: " << playerVelocity << std::endl;
+        player()->setPlayerDesiredPosition(base);
+        if (player()->position().x() < 0.0f) {
+            _timer.stop();
+            std::cout << "\nTime: " << _timer.getSeconds() << std::endl;
+            _state = BREAKING;
+            std::cout << "\nSTOP\n\n";
+        }
+        break;
+    }
+    case BREAKING: {
+        std::cout << "Player velocity: " << playerVelocity << std::endl;
+        player()->setPlayerDesiredPosition(stop);
+        if (playerVelocity < 0.05f) {
+            _state = STAYING;
+        }
+        break;
+    }
+    case STAYING: {
+        _timer.stop();
+        std::cout << "\nTime: " << _timer.getSeconds() << std::endl;
+        player()->setPlayerDesiredPosition(player()->position());
+        if (player()->position().x() > 0.6f) {
+            _state = ACCELERATING;
+            std::cout << "\nSTART\n\n";
+            _timer.start();
+        }
+        break;
+    }
+    }
     setBehavior(BHV_MOVETO);
 }
 

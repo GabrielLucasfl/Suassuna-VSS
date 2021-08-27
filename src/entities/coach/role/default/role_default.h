@@ -42,6 +42,16 @@ private:
         BHV_INTERCEPT
     };
 
+    // State machine
+    int _state;
+    enum {
+        ACCELERATING,
+        BREAKING,
+        STAYING
+    };
+
+    Timer _timer;
+
     // Behaviors pointers
     Behavior_MoveTo *_bhv_moveTo;
     Behavior_Intercept *_bhv_intercept;
