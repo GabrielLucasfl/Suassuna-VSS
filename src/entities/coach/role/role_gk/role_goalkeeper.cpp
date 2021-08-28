@@ -71,8 +71,7 @@ void Role_Goalkeeper::run() {
     } else {
         standardPosition = Position(true, -0.72f, 0.0f);
     }
-    bool areanokl = (ballPos.y() < -0.35f && ballPos.x() < -0.375f) || (ballPos.y() > 0.35f && ballPos.x() < -0.375f);
-    bool areanokr = (ballPos.y() < -0.35f && ballPos.x() > 0.375f) || (ballPos.y() > 0.35f && ballPos.x() > 0.375f);
+
     // Reference position to look at
     Position lookingPosition(true, standardPosition.x(), 2.0f);
     _bhv_moveTo->enableRotation(false);
@@ -104,15 +103,14 @@ void Role_Goalkeeper::run() {
             _gkOverlap = false;
         }
     } else {
-        if(isBallInsideEllipse() && ballVelocity.abs()<=0.6f && fabs(ballVelocity.vy()) < 0.4f){
-            if(Utils::distance(player()->position(), ballPred) > 0.8f*distSpin) {
-                player()->setPlayerDesiredPosition(ballPred);
-                setBehavior(BHV_MOVETO);
-            }else {
-                _bhv_moveTo->setSpinOrientation(spinOrientarion());
-                _bhv_moveTo->enableSpin(true);
-                setBehavior(BHV_MOVETO);
-            }
+        if(Utils::distance(player()->position(), ballPred) < 0.8f*distSpin) {
+            _bhv_moveTo->setSpinOrientation(spinOrientarion());
+            _bhv_moveTo->enableSpin(true);
+            setBehavior(BHV_MOVETO);
+        }
+        else if(isBallInsideEllipse() && ballVelocity.abs() < 0.25f && ballVelocity.vy() < 0.2f) {
+            player()->setPlayerDesiredPosition(ballPred);
+            setBehavior(BHV_MOVETO);
         }
         else if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
                 || getWorldMap()->getLocations()->isInsideTheirField(ballPred)) {
@@ -121,7 +119,7 @@ void Role_Goalkeeper::run() {
             setBehavior(BHV_MOVETO);
         }
         else if((getWorldMap()->getLocations()->ourSide().isLeft()? ballVelocity.vx() > 0 : ballVelocity.vx() < 0)
-                 && (getWorldMap()->getLocations()->ourSide().isLeft()? !areanokl : !areanokr) ) {
+                 && !isBallInsideEllipse()) {
             player()->setPlayerDesiredPosition(standardPosition);
             setBehavior(BHV_MOVETO);
         }
