@@ -225,6 +225,15 @@ void GUI::updateField() {
         ui->fieldView->enableDefenderShow(false);
     }
 
+    if(ui->ballPredBox->isChecked()){
+        ui->fieldView->enableBallPredShow(true);
+        Position BallPredPos = getWorldMap()->getBall().getPredPosition(20);
+        ui->fieldView->setBallPredParameters(BallPredPos);
+    }
+    else{
+        ui->fieldView->enableBallPredShow(false);
+    }
+
     if(ui->goalkeeperBox->isChecked()){
         ui->fieldView->enableGlkShow(true);
         if(getWorldMap()->getLocations()->ourGoal().x() > 0){

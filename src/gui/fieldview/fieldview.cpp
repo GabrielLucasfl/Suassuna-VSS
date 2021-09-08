@@ -40,11 +40,13 @@ FieldView::FieldView(QWidget *parent) : QOpenGLWidget(parent) {
     _supporterShowEnabled = false;
     _defenderShowEnabled = false;
     _glkEllipseEnabled = false;
+    _ballPredEnabled = false;
 
     // Checkbox parameters starters
     _supporterDesiredPosition.setPosition(false, 0.0, 0.0);
     _defenderDesiredPosition.setPosition(false, 0.0, 0.0);
     _glkEllipseCenter.setPosition(false, 0.0, 0.0);
+    _ballPredPos.setPosition(false, 0.0, 0.0);
 }
 
 void FieldView::setConstantsAndWorldMap(Constants *constants, WorldMap *worldMap) {
@@ -171,6 +173,11 @@ void FieldView::paintGL() {
     if(_glkEllipseEnabled){
         showGlkEllipse(_glkEllipseCenter, _glkEllipseA, _glkEllipseB);
     }
+
+    if(_ballPredEnabled){
+        showBallPred(_ballPredPos);
+    }
+
     glPopMatrix();
     _graphicsMutex.unlock();
 }
@@ -460,6 +467,14 @@ void FieldView::showDefenderPosition(Position defenderPosition) {
 void FieldView::showGlkEllipse(Position center, float a, float b){
     glColor3d(0, 255, 255);
     drawEllipse(QVector2D(center.x()*1000.0f, center.y()*1000.0f), a, b, 0.98f, static_cast<float>(-M_PI), static_cast<float>(M_PI), 1.5f, -1.0f);
+}
+
+void FieldView::showBallPred(Position ballPred){
+    if(!ballPred.isInvalid()){
+        glColor3d(0, 255, 255);
+        drawArc(QVector2D(ballPred.x() * 1000.0f, ballPred.y() * 1000.0f), -15.0f, 15.0f,
+                static_cast<float>(-M_PI), static_cast<float>(M_PI), 4.0f);
+    }
 }
 
 Constants* FieldView::getConstants() {

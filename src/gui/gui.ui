@@ -22,7 +22,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>0</y>
+      <y>20</y>
       <width>1121</width>
       <height>531</height>
      </rect>
@@ -219,7 +219,7 @@
         <x>50</x>
         <y>50</y>
         <width>201</width>
-        <height>91</height>
+        <height>112</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -241,6 +241,13 @@
         <widget class="QCheckBox" name="goalkeeperBox">
          <property name="text">
           <string>Show Goalkeeper Ellipse</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="ballPredBox">
+         <property name="text">
+          <string>show BallPred</string>
          </property>
         </widget>
        </item>

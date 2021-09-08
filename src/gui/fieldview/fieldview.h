@@ -48,12 +48,14 @@ public:
     void enableSupporterShow(bool enabled) { _supporterShowEnabled = enabled; }
     void enableDefenderShow(bool enabled) { _defenderShowEnabled = enabled; }
     void enableGlkShow(bool enabled){ _glkEllipseEnabled = enabled; };
+    void enableBallPredShow(bool enabled){ _ballPredEnabled = enabled; };
 
     // CheckBox setters
     void setSupporterDesiredPosition(Position supporterPosition) { _supporterDesiredPosition = supporterPosition; }
     void setDefenderDesiredPosition(Position defenderPosition) { _defenderDesiredPosition = defenderPosition; }
     void setGlkEllipseCenter(Position center) { _glkEllipseCenter = center; };
     void setGlkEllipseParameters(float a, float b) { _glkEllipseA = a; _glkEllipseB = b; };
+    void setBallPredParameters(Position ballPredPos) { _ballPredPos = ballPredPos; };
 
 protected:
     void paintGL();
@@ -90,11 +92,13 @@ private:
     bool _supporterShowEnabled;
     bool _defenderShowEnabled;
     bool _glkEllipseEnabled;
+    bool _ballPredEnabled;
 
     // CheckBox Parameters
     Position _supporterDesiredPosition;
     Position _defenderDesiredPosition;
     Position _glkEllipseCenter;
+    Position _ballPredPos;
     float _glkEllipseA;
     float _glkEllipseB;
 
@@ -128,6 +132,7 @@ private:
     void showSupporterPosition(Position supporterPosition);
     void showDefenderPosition(Position supporterPosition);
     void showGlkEllipse(Position center, float a, float b);
+    void showBallPred(Position ballPred);
 
     // Mutex to control graphics
     QMutex _graphicsMutex;
