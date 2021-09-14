@@ -161,7 +161,6 @@ void Role_Attacker::run() {
                 _push = false;
                 _state = GOTOBALL;
                 _lastSpeed = getConstants()->playerBaseSpeed();
-                std::cout << "NO PUSH " << goingAgainst << " " << ballPlayerDist << std::endl;
             }
             break;
         }
