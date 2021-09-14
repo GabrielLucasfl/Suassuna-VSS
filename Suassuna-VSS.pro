@@ -110,6 +110,7 @@ SOURCES += \
     src/utils/types/field/vss/field_vssb.cpp \
     src/utils/types/fieldside/fieldside.cpp \
     src/utils/types/object/object.cpp \
+    src/utils/types/playerstate/playerstate.cpp \
     src/utils/types/position/position.cpp \
     src/utils/types/velocity/velocity.cpp \
     src/utils/types/wall/wall.cpp \
@@ -198,6 +199,7 @@ HEADERS += \
     src/utils/types/fieldside/fieldside.h \
     src/utils/types/fieldside/side.h \
     src/utils/types/object/object.h \
+    src/utils/types/playerstate/playerstate.h \
     src/utils/types/position/position.h \
     src/utils/types/velocity/velocity.h \
     src/utils/types/wall/wall.h \

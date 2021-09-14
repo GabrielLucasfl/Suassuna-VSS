@@ -3,6 +3,7 @@
 
 #include <src/entities/coach/playbook/playbook.h>
 #include <src/entities/coach/role/roles.h>
+#include <src/utils/types/playerstate/playerstate.h>
 
 class Playbook_Flex : public Playbook
 {
@@ -31,6 +32,8 @@ private:
     void thirdPlayerState();
     bool isBehindBallXcoord(Position pos);
     bool isBallInsideDefenderEllipse(float ellipseA, float ellipseB);
+    void updatePlayerStuck(quint8 id);
+    float minDistPlayerObstacle(quint8 id);
 
     // Parameters
     quint8 _attackerID;
@@ -44,10 +47,9 @@ private:
     // Switch players/roles parameters
     Timer _switchPlayersTimer;
     Timer _replaceSecRoleTimer;
-    Timer _atkStuckTimer;
     bool _switchedPlayers;
     bool _replacedSecRole;
-    bool _atkStuck;
+    QHash<quint8, PlayerState*> playersState;
 };
 
 

@@ -154,18 +154,6 @@ void Playbook_Default::updatePlayerStuck(quint8 id) {
     }
 }
 
-bool PlayerState::isStuck() {
-    // If it was already stuck
-    if(stuckState) {
-        timer.stop();
-        // If it is stuck for more than 2 seconds: return true
-        if(timer.getSeconds() > 2) {
-            return true;
-        }
-    }
-    return false;
-}
-
 void Playbook_Default::switchPlayersIDs() {
     if(playersState[_attackerID]->isStuck()) {
         if(!_switchedPlayers) {

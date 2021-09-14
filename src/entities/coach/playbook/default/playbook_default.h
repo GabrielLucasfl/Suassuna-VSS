@@ -24,18 +24,7 @@
 
 #include <src/entities/coach/playbook/playbook.h>
 #include <src/entities/coach/role/roles.h>
-
-class PlayerState {
-public:
-    PlayerState(quint8 id) {
-        this->id = id;
-        stuckState = false;
-    }
-    quint8 id;
-    Timer timer;
-    bool stuckState;
-    bool isStuck();
-};
+#include <src/utils/types/playerstate/playerstate.h>
 
 class Playbook_Default : public Playbook
 {
