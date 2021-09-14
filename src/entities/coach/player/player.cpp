@@ -94,7 +94,7 @@ std::pair<float, float> Player::getWheelsSpeed(float angleToObject, float baseSp
         error = getSmallestAngleDiff(angleRobot, angleToObject);
     }
 
-    // PID
+    // Motor reference
     float motorSpeed = ((Kp*error) + (Kd * (error - _lastError)));// + 0.2 * sumErr;
     _lastError = error;
 
@@ -127,6 +127,14 @@ std::pair<float, float> Player::getWheelsSpeed(float angleToObject, float baseSp
             rightMotorSpeed = -baseSpeed - motorSpeed;
         }
     }
+
+    // PID
+    PID pid(30.0f, 12.0f, 1.0f);
+    pid.setOutputLimits(30.f);
+    float pidOutput = pid.getOutput(0.0f, getPlayerDistanceTo(_desiredPosition));
+    //leftMotorSpeed *= pidOutput;
+    //rightMotorSpeed *= pidOutput;
+
     return std::make_pair(leftMotorSpeed, rightMotorSpeed);
 }
 
