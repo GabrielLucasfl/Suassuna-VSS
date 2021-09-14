@@ -67,9 +67,7 @@ void Role_Attacker::run() {
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    //float factor = std::min(ATKFACTOR * ballVel.abs(), 0.5f);
-    //Position ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
-    Position ballPred = getWorldMap()->getBall().getPredPosition(15);
+    Position ballPred = getWorldMap()->getBall().getPredPosition(20);
 
     // Bhv goToBall parameters
     float bhvGoToBallOffset;
@@ -80,12 +78,6 @@ void Role_Attacker::run() {
         bhvGoToBallOffset = 0.2f;
     }
     Position theirGoal = getWorldMap()->getLocations()->theirGoal();
-    Position bhvGoToBallRef;
-    if(theirGoal.x() < 0) {
-        bhvGoToBallRef.setPosition(true, theirGoal.x() - 0.12f, theirGoal.y());
-    } else {
-        bhvGoToBallRef.setPosition(true, theirGoal.x() + 0.12f, theirGoal.y());
-    }
 
     // to check if player is in range to push
     Colors::Color ourColor = getConstants()->teamColor();
@@ -116,16 +108,10 @@ void Role_Attacker::run() {
     if(fabs(ballPos.y()) >= 0.450f){
         pos = ballPred;
     }
-    //std::cout << "Angle: " << angle << std::endl;
-    //if(_push){
-    //    std::cout << "PUSH\n";
-    //}
-    //else{
-    //    std::cout << "N PUSH\n";
-    //}
 
-    if(ballPlayerDist <= 0.2f && fabs(angle) <= 0.3f){
+    if(ballPlayerDist <= 0.2f && fabs(angle) <= 0.3f && _prior){
         _push = true;
+        //std::cout << "PUSH\n";
     }
 
     switch (_state) {
@@ -141,7 +127,7 @@ void Role_Attacker::run() {
             setBehavior(BHV_MOVETO);
             //std::cout << "GOTOBALL\n";
             // if player is in range or: if it is near the ball and the angle between them is small
-            if(((fabs(angle) < static_cast<float>(M_PI)/8) && Utils::distance(ballPos, player()->position()) < 0.2f)) {
+            if(((fabs(angle) < static_cast<float>(M_PI)/8) && Utils::distance(ballPos, player()->position()) < 0.2f) && _prior) {
                 _state = MOVETO;
             }
             break;
@@ -153,7 +139,7 @@ void Role_Attacker::run() {
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             if(!_push) {
-                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed()+5.0f);
+                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
                 player()->setPlayerDesiredPosition(ballPred);
             } else {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
@@ -165,11 +151,17 @@ void Role_Attacker::run() {
             //std::cout << "MOVETO\n";
             //transitions
             _interuption.stop();
-
-            if((ballPlayerDist >= 0.4f) && !inRangeToPush(ballPred) && _interuption.getSeconds() > 1) {
+            float velX = getWorldMap()->getPlayer(ourColor, player()->playerId()).getMavgVelocity().vx();
+            bool goingAgainst = false;
+            if((getConstants()->teamSide().isRight() && velX > 0) || (getConstants()->teamSide().isLeft() && velX < 0)) {
+                goingAgainst = true;
+            }
+            if(((Utils::distance(ballPos, player()->position()) >= 0.3f) || (goingAgainst && Utils::distance(ballPos, player()->position()) <= 0.1f))
+                    && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
                 _lastSpeed = getConstants()->playerBaseSpeed();
+                std::cout << "NO PUSH " << goingAgainst << " " << ballPlayerDist << std::endl;
             }
             break;
         }
@@ -183,18 +175,23 @@ Position Role_Attacker::defineReferencePosition() {
     Position theirGoal = getWorldMap()->getLocations()->theirGoal();
     Position ballPos = getWorldMap()->getBall().getPosition();
     Position referencePos;
+    float extraMargin = 0.2f;
     if(!_prior) {
         if(getWorldMap()->getLocations()->theirSide().isRight()) {
             if(ballPos.y() > 0){
                 referencePos = getWorldMap()->getLocations()->theirFieldTopCorner();
+                referencePos = Position(true, referencePos.x(), referencePos.y() + extraMargin);
             }else {
                 referencePos = getWorldMap()->getLocations()->theirFieldBottomCorner();
+                referencePos = Position(true, referencePos.x(), referencePos.y() - extraMargin);
             }
         }else {
             if(ballPos.y() > 0) {
                 referencePos = getWorldMap()->getLocations()->theirFieldTopCorner();
+                referencePos = Position(true, referencePos.x(), referencePos.y() + extraMargin);
             }else {
                 referencePos = getWorldMap()->getLocations()->theirFieldBottomCorner();
+                referencePos = Position(true, referencePos.x(), referencePos.y() - extraMargin);
             }
         }
     }else {
@@ -241,10 +238,10 @@ float Role_Attacker::getDist(float angle){
     }
 
     float maxDist = 0.40f, delta = 0.25f;
-    if(!_prior) {
-        maxDist += 0.2f;
-    }
     float dist = maxDist - delta*((maxAngle - fabs(angle))/(maxAngle));
+    if(!_prior) {
+        dist += 0.3f;
+    }
     //std::cout << "dist: " << dist << std::endl;
 
     return dist;
@@ -253,10 +250,10 @@ float Role_Attacker::getDist(float angle){
 float Role_Attacker::pushSpeed(float ballPlayerDist){
     if(ballPlayerDist < 0.11f){
         //std::cout << "Vel max\n";
-        return 40;
+        return 35;
     }
     float factor = std::cbrt((ballPlayerDist-0.11f)/0.15f);
-    float speed = 40, delta = speed - getConstants()->playerBaseSpeed();
+    float speed = 35, delta = speed - getConstants()->playerBaseSpeed();
     _lastSpeed = std::max(speed-delta*factor, _lastSpeed);
     //std::cout << "Vel variavel: " << std::max(_lastSpeed, speed-delta*factor)<< std::endl;
     return _lastSpeed;
