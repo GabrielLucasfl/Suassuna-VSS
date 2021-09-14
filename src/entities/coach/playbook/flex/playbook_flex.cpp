@@ -68,10 +68,10 @@ void Playbook_Flex::run(int numPlayers) {
         setPlayerRole(_lastID, _roles_sup.at(0));
     }
     float deriv;
-    if(punctuations.size() > 179 || true) {
+    if(punctuations.size() > 179) {
         deriv = (punctuations.last() - punctuations.first())/punctuations.size();
         //std::cout << deriv << std::endl;
-        if(deriv >= 0.0f || true) {
+        if(deriv >= 0.0f) {
             _roles_att.at(1)->setPriority(false);
             setPlayerRole(_lastID, _roles_att.at(1));
             _replacedSecRole = true;
