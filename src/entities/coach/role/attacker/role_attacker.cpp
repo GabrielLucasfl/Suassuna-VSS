@@ -69,7 +69,7 @@ void Role_Attacker::run() {
     }
     //float factor = std::min(ATKFACTOR * ballVel.abs(), 0.5f);
     //Position ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
-    Position ballPred = getWorldMap()->getBall().getPredPosition(40);
+    Position ballPred = getWorldMap()->getBall().getPredPosition(15);
 
     // Bhv goToBall parameters
     float bhvGoToBallOffset;
@@ -117,12 +117,15 @@ void Role_Attacker::run() {
         pos = ballPred;
     }
     //std::cout << "Angle: " << angle << std::endl;
-    if(ballPlayerDist <= 0.2f && fabs(angle) <= 0.2f){
-        _push = true;
-        //std::cout << "PUSH\n";
+    if(_push){
+        std::cout << "PUSH\n";
     }
     else{
-        //std::cout << "N PUSH\n";
+        std::cout << "N PUSH\n";
+    }
+
+    if(ballPlayerDist <= 0.2f && fabs(angle) <= 0.3f){
+        _push = true;
     }
 
     switch (_state) {
@@ -151,7 +154,7 @@ void Role_Attacker::run() {
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             if(!_push) {
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed()+5.0f);
-                player()->setPlayerDesiredPosition(getPushPosition(ballPred));
+                player()->setPlayerDesiredPosition(ballPred);
             } else {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
                 player()->setPlayerDesiredPosition(getPushPosition(ballPred));
@@ -159,11 +162,11 @@ void Role_Attacker::run() {
 
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
-            //std::cout << "MOVETO\n";
+            std::cout << "MOVETO\n";
             //transitions
             _interuption.stop();
-            if((ballPlayerDist >= 0.3f) && !inRangeToPush(ballPred)
-                    && _interuption.getSeconds() > 1) {
+
+            if((ballPlayerDist >= 0.4f) && !inRangeToPush(ballPred) && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
                 _lastSpeed = getConstants()->playerBaseSpeed();
