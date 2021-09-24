@@ -144,7 +144,7 @@ void Playbook_Default::updatePlayerStuck(quint8 id) {
     //float ballVel = getWorldMap()->getBall().getVelocity().abs();
     float playerVel = getWorldMap()->getPlayer(ourColor, id).getVelocity().abs();
     // If has stopped (possibly stuck)
-    if(playerVel <= 0.02f && minDistPlayerObstacle(id) < 0.1f) {
+    if(playerVel <= 0.02f && minDistPlayerObstacle(id) < 0.1f && getReferee()->isGameOn()) {
         if(!playersState[id]->stuckState) {
             playersState[id]->stuckState = true;
             playersState[id]->timer.start();
