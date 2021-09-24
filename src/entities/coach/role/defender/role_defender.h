@@ -35,6 +35,8 @@ public:
     void setElipseParameters(float ellipseA, float ellipseB) { _ellipseA = ellipseA; _ellipseB = ellipseB; };
     void setEllipseCenter(Position ellipseCenter){ _ellipseCenter = ellipseCenter; };
 
+    void setSwitch(bool sw) {_switch = sw; };
+
 private:
     // Role inherited methods
     void configure();
@@ -48,6 +50,9 @@ private:
     float _ellipseA;
     float _ellipseB;
     Position _ellipseCenter;
+
+    //Attributes
+    bool _switch;
 
     // Behaviors enum
     enum {

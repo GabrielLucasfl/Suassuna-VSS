@@ -50,7 +50,15 @@ void Role_Defender::run() {
     Position ourGoal = getWorldMap()->getLocations()->ourGoal();
     Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
 
-    if (ballPosition.x() != ourGoal.x()) {
+    std::cout << _switch << std::endl;
+
+    if(_switch){
+        desiredPosition = Position(true, 0.0f, -ballPosition.y());
+        if(fabs(player()->position().x()) <= 0.15f && (fabs(player()->position().y())-fabs(ballPosition.y()) <= 0.15f) ){
+            _switch = false;
+        }
+    }
+    else if (ballPosition.x() != ourGoal.x()) {
         float alpha;
         if (getWorldMap()->getLocations()->ourSide().isRight()) {
             alpha = normAngle(static_cast<float>(M_PI) - Utils::getAngle(ourGoal, ballPred));

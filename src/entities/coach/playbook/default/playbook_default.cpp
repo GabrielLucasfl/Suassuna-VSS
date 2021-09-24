@@ -194,6 +194,7 @@ void Playbook_Default::switchPlayersIDs() {
             _lastID = attId;
             _switchedPlayers = true;
             _switchPlayersTimer.start();
+            _rl_df->setSwitch(true);
         }
     }
 }
