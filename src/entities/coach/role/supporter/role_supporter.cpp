@@ -72,8 +72,7 @@ void Role_Supporter::run() {
     //float largestMid = getLargestFreeAngle();
 
     // Advanced Support
-    //float posx_advanced = calc_x_advanced();
-    float posx_advanced = getWorldMap()->getBall().getPredPosition(20).x();
+    float posx_advanced = calc_x_advanced();
     //float moduloVet = abs((posx_advanced - ballPred.x())/cos(largestMid));
     float posy_advanced;
     if(_nofreeAngles){
@@ -178,7 +177,7 @@ float Role_Supporter::calcBarrier_Xcomponent(){
 float Role_Supporter::calc_x_advanced(){
     float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
     float distance_advanced = 0.4f;
-    Position position_ball = getWorldMap()->getBall().getPosition();
+    Position position_ball = getWorldMap()->getBall().getPredPosition(20);
     return position_ball.x() + (distance_advanced*posx_control);
 }
 
