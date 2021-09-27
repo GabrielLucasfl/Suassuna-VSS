@@ -22,8 +22,7 @@
 #include "playbook_default.h"
 
 Playbook_Default::Playbook_Default() {
-    _rl_default.clear();
-    //_rl_default = nullptr;
+    _rl_default = nullptr;
     _rl_gk = nullptr;
     _rl_df = nullptr;
     //_rl_tmp = nullptr;
@@ -40,20 +39,20 @@ QString Playbook_Default::name() {
 }
 
 void Playbook_Default::configure(int numPlayers) {
-    for (int i = 0; i < numPlayers; i++) {
-        Role_Default *_rl_dft;
-        _rl_default.push_back(_rl_dft = new Role_Default());
-        usesRole(_rl_default[i]);
-    }
+//    for (int i = 0; i < numPlayers; i++) {
+//        Role_Default *_rl_dft;
+//        _rl_default.push_back(_rl_dft = new Role_Default());
+//        usesRole(_rl_default[i]);
+//    }
 
     // For each player, register an role and call usesRole() to register it in the table
-    //_rl_default = new Role_Default();
+    _rl_default = new Role_Default();
     _rl_gk = new Role_Goalkeeper();
     _rl_df = new Role_Defender();
     _rl_sup = new Role_Supporter();
     _rl_atk = new Role_Attacker();
 
-    //usesRole(_rl_default);
+    usesRole(_rl_default);
     usesRole(_rl_gk);
     usesRole(_rl_df);
     usesRole(_rl_sup);
@@ -61,51 +60,46 @@ void Playbook_Default::configure(int numPlayers) {
 }
 
 void Playbook_Default::run(int numPlayers) {
-    QList<quint8> players = getPlayers();
-    for (int i = 0; i < numPlayers; i++) {
-        setPlayerRole(players[i], _rl_default[i]);
+    // Defining robot IDs
+        if(_first){
+            _switchPlayersTimer.start();
+            _replaceSecRoleTimer.start();
+            selectInitialIDs();
+            _first = false;//this if is done only one time
+        }
+        _switchPlayersTimer.stop();
+        if(_switchedPlayers && _switchPlayersTimer.getSeconds() > 2) {
+            _switchedPlayers = false;
+        }
+
+        _replaceSecRoleTimer.stop();
+        if(_replacedSecRole && _replaceSecRoleTimer.getSeconds() > 2) {
+            _replacedSecRole = false;
+        }
+
+        switchPlayersIDs();
+        thirdPlayerState();
+
+    // Setting roles
+    setPlayerRole(_goalkeeperID, _rl_gk);
+    setPlayerRole(_attackerID, _rl_atk);
+    if (_defenderState) {
+        if(getWorldMap()->getLocations()->ourGoal().x() > 0){
+            setDefenderEllipse(Position(true, 0.72f, 0.0f), 0.1f, 0.25f);
+        }
+        else{
+            setDefenderEllipse(Position(true, -0.72f, 0.0f), 0.1f, 0.25f);
+        }
+
+        /*if (isBallInsideDefenderEllipse(0.07f, 0.43f)) {
+            _rl_df->setElipseParameters(0.1f, 0.25f);
+        } else {
+            _rl_df->setElipseParameters(0.07f, 0.43f);
+        }*/
+        setPlayerRole(_lastID, _rl_df);
+    } else {
+        setPlayerRole(_lastID, _rl_sup);
     }
-
-//    // Defining robot IDs
-//        if(_first){
-//            _switchPlayersTimer.start();
-//            _replaceSecRoleTimer.start();
-//            selectInitialIDs();
-//            _first = false;//this if is done only one time
-//        }
-//        _switchPlayersTimer.stop();
-//        if(_switchedPlayers && _switchPlayersTimer.getSeconds() > 2) {
-//            _switchedPlayers = false;
-//        }
-
-//        _replaceSecRoleTimer.stop();
-//        if(_replacedSecRole && _replaceSecRoleTimer.getSeconds() > 2) {
-//            _replacedSecRole = false;
-//        }
-
-//        switchPlayersIDs();
-//        thirdPlayerState();
-
-//    // Setting roles
-//    setPlayerRole(_goalkeeperID, _rl_gk);
-//    setPlayerRole(_attackerID, _rl_atk);
-//    if (_defenderState) {
-//        if(getWorldMap()->getLocations()->ourGoal().x() > 0){
-//            setDefenderEllipse(Position(true, 0.72f, 0.0f), 0.1f, 0.25f);
-//        }
-//        else{
-//            setDefenderEllipse(Position(true, -0.72f, 0.0f), 0.1f, 0.25f);
-//        }
-
-//        /*if (isBallInsideDefenderEllipse(0.07f, 0.43f)) {
-//            _rl_df->setElipseParameters(0.1f, 0.25f);
-//        } else {
-//            _rl_df->setElipseParameters(0.07f, 0.43f);
-//        }*/
-//        setPlayerRole(_lastID, _rl_df);
-//    } else {
-//        setPlayerRole(_lastID, _rl_sup);
-//    }
 }
 
 void Playbook_Default::setDefenderEllipse(Position center, float ellipseA, float ellipseB){

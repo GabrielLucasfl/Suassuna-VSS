@@ -38,7 +38,7 @@ private:
     void run(int numPlayers);
 
     // Role pointer vector
-    QList<Role_Default*> _rl_default;
+    Role_Default *_rl_default;
     Role_Goalkeeper *_rl_gk;
     Role_Defender *_rl_df;
     //Role_TMP_DEF *_rl_tmp;
