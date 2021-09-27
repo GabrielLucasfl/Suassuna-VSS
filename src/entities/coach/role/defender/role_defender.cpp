@@ -53,9 +53,21 @@ void Role_Defender::run() {
     std::cout << _switch << std::endl;
 
     if(_switch){
-        desiredPosition = Position(true, 0.0f, -ballPosition.y());
-        if(fabs(player()->position().x()) <= 0.15f && (fabs(player()->position().y())-fabs(ballPosition.y()) <= 0.15f) ){
+        if(fabs(player()->position().x()) <= 0.15f){
             _switch = false;
+        }
+
+        if(ballPred.y() >= 0.325f){
+            desiredPosition = Position(true, 0.0f, 0.0f);
+        }
+        else if(ballPred.y() >= 0.0f){
+            desiredPosition = Position(true, 0.0f, -0.325f);
+        }
+        else if(ballPred.y() >= -0.325f){
+            desiredPosition = Position(true, 0.0f, 0.325f);
+        }
+        else{
+            desiredPosition = Position(true, 0.0f, 0.0f);
         }
     }
     else if (ballPosition.x() != ourGoal.x()) {
