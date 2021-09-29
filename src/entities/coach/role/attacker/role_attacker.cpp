@@ -117,12 +117,12 @@ void Role_Attacker::run() {
         pos = ballPred;
     }
     //std::cout << "Angle: " << angle << std::endl;
-    if(_push){
-        std::cout << "PUSH\n";
-    }
-    else{
-        std::cout << "N PUSH\n";
-    }
+    //if(_push){
+    //    std::cout << "PUSH\n";
+    //}
+    //else{
+    //    std::cout << "N PUSH\n";
+    //}
 
     if(ballPlayerDist <= 0.2f && fabs(angle) <= 0.3f){
         _push = true;
@@ -162,7 +162,7 @@ void Role_Attacker::run() {
 
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
-            std::cout << "MOVETO\n";
+            //std::cout << "MOVETO\n";
             //transitions
             _interuption.stop();
 
