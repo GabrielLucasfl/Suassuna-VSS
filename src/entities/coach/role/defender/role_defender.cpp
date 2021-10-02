@@ -70,7 +70,7 @@ void Role_Defender::run() {
             desiredPosition = Position(true, 0.0f, 0.0f);
         }
     }
-    else if (ballPosition.x() != ourGoal.x()) {
+    else if (!(fabs(ballPosition.x()) >= fabs(ourGoal.x()) && getWorldMap()->getLocations()->isInsideOurField(ballPosition))) {
         float alpha;
         if (getWorldMap()->getLocations()->ourSide().isRight()) {
             alpha = normAngle(static_cast<float>(M_PI) - Utils::getAngle(ourGoal, ballPred));
