@@ -56,13 +56,15 @@ void Playbook_Flex::run(int numPlayers) {
     definePunctuation();
 
     if (_defenderState) {
+        float ellipseCenterX = getWorldMap()->getLocations()->ourGoal().x();
         if(getWorldMap()->getLocations()->ourGoal().x() > 0){
-            _roles_def.at(0)->setEllipseCenter(Position(true, 0.72f, 0.0f));
+            _roles_def.at(0)->setEllipseCenter(Position(true, ellipseCenterX - getConstants()->ellipseCenterOffset(), 0.0f));
         }
         else{
-            _roles_def.at(0)->setEllipseCenter(Position(true, -0.72f, 0.0f));
+            _roles_def.at(0)->setEllipseCenter(Position(true, ellipseCenterX + getConstants()->ellipseCenterOffset(), 0.0f));
         }
-        _roles_def.at(0)->setElipseParameters(0.1f, 0.25f);
+
+        _roles_def.at(0)->setEllipseParameters(getConstants()->ellipseParameters());
         setPlayerRole(_lastID, _roles_def.at(0));
     } else {
         setPlayerRole(_lastID, _roles_sup.at(0));
@@ -267,7 +269,7 @@ bool Playbook_Flex::isBehindBallXcoord(Position pos) {
     return isBehindObjX;
 }
 
-bool Playbook_Flex::isBallInsideDefenderEllipse(float ellipseA, float ellipseB) {
+bool Playbook_Flex::isBallInsideDefenderEllipse(std::pair<float, float> ellipseParameters) {
     Position ballPosition = getWorldMap()->getBall().getPosition();
     float alpha;
     if (getConstants()->teamSide().isRight()) {
@@ -276,7 +278,8 @@ bool Playbook_Flex::isBallInsideDefenderEllipse(float ellipseA, float ellipseB) 
         alpha = -Utils::getAngle(getWorldMap()->getLocations()->ourGoal(), ballPosition);
     }
 
-    float ellipseDist = sqrt((ellipseA * ellipseB) / (ellipseB * powf(cosf(alpha), 2) + ellipseA * powf(sinf(alpha), 2)));
+    float ellipseDist = sqrt((ellipseParameters.first * ellipseParameters.second) / (ellipseParameters.second
+                             * powf(cosf(alpha), 2) + ellipseParameters.first * powf(sinf(alpha), 2)));
     float ballDist = Utils::distance(ballPosition, getWorldMap()->getLocations()->ourGoal());
 
     if (ballDist < ellipseDist) {

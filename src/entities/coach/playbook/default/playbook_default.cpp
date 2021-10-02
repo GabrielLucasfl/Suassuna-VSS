@@ -81,12 +81,14 @@ void Playbook_Default::run(int numPlayers) {
     setPlayerRole(_goalkeeperID, _rl_gk);
     setPlayerRole(_attackerID, _rl_atk);
     if (_defenderState) {
+        Position ellipseCenter = getWorldMap()->getLocations()->ourGoal();
         if(getWorldMap()->getLocations()->ourGoal().x() > 0){
-            setDefenderEllipse(Position(true, 0.72f, 0.0f), 0.1f, 0.25f);
+            ellipseCenter.setPosition(true, ellipseCenter.x() - getConstants()->ellipseCenterOffset(), ellipseCenter.y());
         }
         else{
-            setDefenderEllipse(Position(true, -0.72f, 0.0f), 0.1f, 0.25f);
+            ellipseCenter.setPosition(true, ellipseCenter.x() + getConstants()->ellipseCenterOffset(), ellipseCenter.y());
         }
+        setDefenderEllipse(ellipseCenter, getConstants()->ellipseParameters());
 
         /*if (isBallInsideDefenderEllipse(0.07f, 0.43f)) {
             _rl_df->setElipseParameters(0.1f, 0.25f);
@@ -99,12 +101,12 @@ void Playbook_Default::run(int numPlayers) {
     }
 }
 
-void Playbook_Default::setDefenderEllipse(Position center, float ellipseA, float ellipseB){
+void Playbook_Default::setDefenderEllipse(Position center, std::pair<float, float> ellipseParameters){
     _rl_df->setEllipseCenter(center);
-    _rl_df->setElipseParameters(ellipseA, ellipseB);
+    _rl_df->setEllipseParameters(ellipseParameters);
 
     _rl_gk->setDefenderEllipseCenter(center);
-    _rl_gk->setDenfenderElipseParameters(ellipseA, ellipseB);
+    _rl_gk->setDenfenderEllipseParameters(ellipseParameters);
 }
 
 float Playbook_Default::minDistPlayerObstacle(quint8 id) {
@@ -264,7 +266,7 @@ bool Playbook_Default::isBehindBallXcoord(Position pos) {
     return isBehindObjX;
 }
 
-bool Playbook_Default::isBallInsideDefenderEllipse(float ellipseA, float ellipseB) {
+bool Playbook_Default::isBallInsideDefenderEllipse(std::pair<float, float> ellipseParameters) {
     Position ballPosition = getWorldMap()->getBall().getPosition();
     float alpha;
     if (getConstants()->teamSide().isRight()) {
@@ -273,7 +275,8 @@ bool Playbook_Default::isBallInsideDefenderEllipse(float ellipseA, float ellipse
         alpha = -Utils::getAngle(getWorldMap()->getLocations()->ourGoal(), ballPosition);
     }
 
-    float ellipseDist = sqrt((ellipseA * ellipseB) / (ellipseB * powf(cosf(alpha), 2) + ellipseA * powf(sinf(alpha), 2)));
+    float ellipseDist = sqrt((ellipseParameters.first * ellipseParameters.second) / (ellipseParameters.second
+                             * powf(cosf(alpha), 2) + ellipseParameters.first * powf(sinf(alpha), 2)));
     float ballDist = Utils::distance(ballPosition, getWorldMap()->getLocations()->ourGoal());
 
     if (ballDist < ellipseDist) {

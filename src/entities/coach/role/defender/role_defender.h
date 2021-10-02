@@ -32,8 +32,8 @@ public:
     QString name();
 
     // Setters
-    void setElipseParameters(float ellipseA, float ellipseB) { _ellipseA = ellipseA; _ellipseB = ellipseB; };
-    void setEllipseCenter(Position ellipseCenter){ _ellipseCenter = ellipseCenter; };
+    void setEllipseCenter(Position ellipseCenter){ _ellipseCenter = ellipseCenter; }
+    void setEllipseParameters(std::pair<float, float> ellipseParameters) { _ellipseParameters = ellipseParameters; }
 
     void setSwitch(bool sw) {_switch = sw; };
 
@@ -47,9 +47,8 @@ private:
     float getDist(float alpha);
 
     // Role Parameters
-    float _ellipseA;
-    float _ellipseB;
     Position _ellipseCenter;
+    std::pair<float, float> _ellipseParameters;
 
     //Attributes
     bool _switch;

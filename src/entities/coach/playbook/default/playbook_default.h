@@ -50,8 +50,8 @@ private:
     void selectInitialIDs();
     void thirdPlayerState();
     bool isBehindBallXcoord(Position pos);
-    bool isBallInsideDefenderEllipse(float ellipseA, float ellipseB);
-    void setDefenderEllipse(Position center, float ellipseA, float ellipseB);
+    bool isBallInsideDefenderEllipse(std::pair<float, float> ellipseParameters);
+    void setDefenderEllipse(Position center, std::pair<float, float> ellipseParameters);
     void updatePlayerStuck(quint8 id);
     float minDistPlayerObstacle(quint8 id);
 

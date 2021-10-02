@@ -26,6 +26,10 @@
 Role_Goalkeeper::Role_Goalkeeper() {
     _gkOverlap = false;
     _isOverlapTimerInit = false;
+
+    _ellipseParameters.first = 0.0f;
+    _ellipseParameters.second = 0.0f;
+    _ellipseCenter = Position(false, 0.0f, 0.0f);
 }
 
 QString Role_Goalkeeper::name() {
@@ -168,8 +172,9 @@ void Role_Goalkeeper::run() {
 }
 
 bool Role_Goalkeeper::isBallInsideEllipse(){
-    Position ballPred = getWorldMap()->getBall().getPredPosition(15);
-    float aux = pow((ballPred.x()-_defenderEllipseCenter.x()), 2)/_defenderEllipseA + pow(ballPred.y(), 2)/_defenderEllipseB;
+    Position ballPred = getWorldMap()->getBall().getPredPosition(3 * getConstants()->predictionBaseCycles() / 4);
+    float aux = pow((ballPred.x() - _ellipseCenter.x()), 2) / _ellipseParameters.first + pow(ballPred.y(), 2)
+            / _ellipseParameters.second;
     if(aux >= 1){
         //std::cout << "Fora\n";
         return false;

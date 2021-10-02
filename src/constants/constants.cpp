@@ -130,6 +130,9 @@ void Constants::readTeamConstants() {
 
     // No need to print the info below
     _predictionBaseCycles = teamMap["predictionBaseCycles"].toUInt();
+    _ellipseCenterOffset = teamMap["ellipseCenterOffset"].toFloat();
+    QList<QVariant> ellipseParameters = teamMap["ellipseParameters"].toList();
+    _ellipseParameters = std::pair<float, float>(ellipseParameters[0].toFloat(), ellipseParameters[1].toFloat());
 
     // Taking player mapping in json
     QVariantMap playerMap = teamMap["Player"].toMap();
@@ -263,6 +266,14 @@ QString Constants::playbookFormation() {
 
 int Constants::predictionBaseCycles() {
     return _predictionBaseCycles;
+}
+
+float Constants::ellipseCenterOffset() {
+    return _ellipseCenterOffset;
+}
+
+std::pair<float, float> Constants::ellipseParameters() {
+    return _ellipseParameters;
 }
 
 std::tuple<float, float, float> Constants::playerPID() {

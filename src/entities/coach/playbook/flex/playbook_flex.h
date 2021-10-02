@@ -31,7 +31,7 @@ private:
     void selectInitialIDs();
     void thirdPlayerState();
     bool isBehindBallXcoord(Position pos);
-    bool isBallInsideDefenderEllipse(float ellipseA, float ellipseB);
+    bool isBallInsideDefenderEllipse(std::pair<float, float> ellipseParameters);
     void updatePlayerStuck(quint8 id);
     float minDistPlayerObstacle(quint8 id);
 

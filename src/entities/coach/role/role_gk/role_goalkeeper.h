@@ -32,8 +32,8 @@ public:
     QString name();
 
     // Setters
-    void setDenfenderElipseParameters(float ellipseA, float ellipseB) { _defenderEllipseA = ellipseA; _defenderEllipseB = ellipseB; };
-    void setDefenderEllipseCenter(Position ellipseCenter){ _defenderEllipseCenter = ellipseCenter; };
+    void setDefenderEllipseCenter(Position ellipseCenter){ _ellipseCenter = ellipseCenter; }
+    void setDenfenderEllipseParameters(std::pair<float, float> ellipseParameters) { _ellipseParameters = ellipseParameters; }
 
 private:
     // Role inherited methods
@@ -57,9 +57,8 @@ private:
     Behavior_Intercept *_bhv_intercept;
 
     // Role Parameters
-    float _defenderEllipseA;
-    float _defenderEllipseB;
-    Position _defenderEllipseCenter;
+    Position _ellipseCenter;
+    std::pair<float, float> _ellipseParameters;
 
     // Methods
     bool spinOrientarion();
