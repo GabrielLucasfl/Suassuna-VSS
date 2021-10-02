@@ -182,7 +182,8 @@ void Playbook_Flex::switchPlayersIDs() {
     // If the third player is closer to ball: switch them!!!
     if((!isBehindBallXcoord(attackerPos) && (isBehindBallXcoord(thirdPlayerPos)))
         || (Utils::distance(attackerPos, ballPos) > Utils::distance(thirdPlayerPos, ballPos))) {
-        if(!_switchedPlayers && (!playersState[_lastID]->isStuck() || (playersState[_attackerID]->isStuck() && playersState[_lastID]->isStuck()))) {
+        if(!_switchedPlayers && (!playersState[_lastID]->isStuck() || (playersState[_attackerID]->isStuck()
+                                                                       && playersState[_lastID]->isStuck()))) {
             quint8 attId = _attackerID;
             _attackerID = _lastID;
             _lastID = attId;

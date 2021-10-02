@@ -34,7 +34,7 @@ public:
     // Auxiliar
     bool inRangeToPush(Position ballPos, float postIncrement = 0.0f);
     float normAngle(float angleRadians);
-    void setPriority(bool prior) {_prior = prior;}
+    void setPriority(bool prior) { _prior = prior; }
 private:
     // Role inherited methods
     void configure();

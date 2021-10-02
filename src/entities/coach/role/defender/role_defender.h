@@ -35,7 +35,7 @@ public:
     void setEllipseCenter(Position ellipseCenter){ _ellipseCenter = ellipseCenter; }
     void setEllipseParameters(std::pair<float, float> ellipseParameters) { _ellipseParameters = ellipseParameters; }
 
-    void setSwitch(bool sw) {_switch = sw; };
+    void setSwitch(bool sw) { _switch = sw; }
 
 private:
     // Role inherited methods
