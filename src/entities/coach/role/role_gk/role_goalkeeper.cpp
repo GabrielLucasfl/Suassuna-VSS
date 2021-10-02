@@ -45,8 +45,8 @@ void Role_Goalkeeper::configure() {
 void Role_Goalkeeper::run() {    
     // Fixed variables
     Velocity ballVelocity = getWorldMap()->getBall().getVelocity();
-    Position ballPos = getWorldMap()->getBall().getPosition();
-    Position ballPred = getWorldMap()->getBall().getPredPosition(15);
+    //Position ballPos = getWorldMap()->getBall().getPosition();
+    Position ballPred = getWorldMap()->getBall().getPredPosition(3 * getConstants()->predictionBaseCycles() / 4);
 
     Position ballDirection;
     if(ballVelocity.abs() > 0) {

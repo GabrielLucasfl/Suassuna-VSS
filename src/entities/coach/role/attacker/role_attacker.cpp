@@ -67,7 +67,7 @@ void Role_Attacker::run() {
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    Position ballPred = getWorldMap()->getBall().getPredPosition(20);
+    Position ballPred = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles());
     float ballPlayerDist = Utils::distance(ballPred, player()->position());
     // to check if player is in range to push
     Colors::Color ourColor = getConstants()->teamColor();

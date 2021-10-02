@@ -46,7 +46,7 @@ void Role_Defender::configure() {
 void Role_Defender::run() {
     Position desiredPosition;
     Position ballPosition = getWorldMap()->getBall().getPosition();
-    Position ballPred = getWorldMap()->getBall().getPredPosition(20);
+    Position ballPred = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles());
     Position ourGoal = getWorldMap()->getLocations()->ourGoal();
     Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
 

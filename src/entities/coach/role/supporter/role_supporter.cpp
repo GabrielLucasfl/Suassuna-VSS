@@ -68,7 +68,7 @@ void Role_Supporter::run() {
     }
 
     //Position ballPosition = getWorldMap()->getBall().getPosition();
-    Position ballPred = getWorldMap()->getBall().getPredPosition(10);
+    Position ballPred = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles() / 2);
     //float largestMid = getLargestFreeAngle();
 
     // Advanced Support
@@ -78,7 +78,7 @@ void Role_Supporter::run() {
     if(_nofreeAngles){
         posy_advanced = ballPred.y();
     } else {
-        posy_advanced = getWorldMap()->getBall().getPredPosition(20).y();
+        posy_advanced = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles()).y();
     }
     Position desiredPosition(true, posx_advanced, posy_advanced);
     player()->setPlayerDesiredPosition(player()->limitPosInsideField(desiredPosition));
@@ -91,7 +91,7 @@ void Role_Supporter::run() {
 }
 
 float Role_Supporter::getLargestFreeAngle() {
-    Position ballPred = getWorldMap()->getBall().getPredPosition(10);
+    Position ballPred = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles() / 2);
     QList<quint8> playersId1 = getWorldMap()->getAvailablePlayers(Colors::Color::BLUE);
     QList<quint8> playersId2 = getWorldMap()->getAvailablePlayers(Colors::Color::YELLOW);
 
@@ -177,7 +177,7 @@ float Role_Supporter::calcBarrier_Xcomponent(){
 float Role_Supporter::calc_x_advanced(){
     float posx_control = getConstants()->teamSide().isRight() == 1 ? 1.0f : -1.0f;
     float distance_advanced = 0.4f;
-    Position position_ball = getWorldMap()->getBall().getPredPosition(20);
+    Position position_ball = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles());
     return position_ball.x() + (distance_advanced*posx_control);
 }
 

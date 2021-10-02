@@ -125,6 +125,9 @@ void Constants::readTeamConstants() {
     _qtPlayers = teamMap["qtPlayers"].toUInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded qtPlayers: " + std::to_string(qtPlayers())) + '\n';
 
+    // No need to print the info below
+    _predictionBaseCycles = teamMap["predictionBaseCycles"].toUInt();
+
     // Taking player mapping in json
     QVariantMap playerMap = teamMap["Player"].toMap();
 
@@ -249,6 +252,10 @@ FieldSide Constants::teamSide() {
 
 int Constants::qtPlayers() {
     return _qtPlayers;
+}
+
+int Constants::predictionBaseCycles() {
+    return _predictionBaseCycles;
 }
 
 std::tuple<float, float, float> Constants::playerPID() {

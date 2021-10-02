@@ -227,7 +227,7 @@ void GUI::updateField() {
 
     if(ui->ballPredBox->isChecked()){
         ui->fieldView->enableBallPredShow(true);
-        Position BallPredPos = getWorldMap()->getBall().getPredPosition(20);
+        Position BallPredPos = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles());
         ui->fieldView->setBallPredParameters(BallPredPos);
     }
     else{
