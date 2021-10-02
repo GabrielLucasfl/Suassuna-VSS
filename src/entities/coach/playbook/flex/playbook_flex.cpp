@@ -7,7 +7,7 @@ Playbook_Flex::Playbook_Flex() {
 }
 
 QString Playbook_Flex::name() {
-    return "Playbook_Flex";
+    return "Flex";
 }
 
 void Playbook_Flex::configure(int numPlayers) {

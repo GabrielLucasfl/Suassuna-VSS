@@ -125,6 +125,9 @@ void Constants::readTeamConstants() {
     _qtPlayers = teamMap["qtPlayers"].toUInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded qtPlayers: " + std::to_string(qtPlayers())) + '\n';
 
+    _playbookFormation = teamMap["playbookFormation"].toString().toLower();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded playbook: " + _playbookFormation.toStdString()) + '\n';
+
     // No need to print the info below
     _predictionBaseCycles = teamMap["predictionBaseCycles"].toUInt();
 
@@ -252,6 +255,10 @@ FieldSide Constants::teamSide() {
 
 int Constants::qtPlayers() {
     return _qtPlayers;
+}
+
+QString Constants::playbookFormation() {
+    return _playbookFormation;
 }
 
 int Constants::predictionBaseCycles() {

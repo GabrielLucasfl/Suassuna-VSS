@@ -64,6 +64,7 @@ public:
     Colors::Color teamColor();
     FieldSide teamSide();
     int qtPlayers();
+    QString playbookFormation();
     int predictionBaseCycles();
     std::tuple<float, float, float> playerPID();
     float playerBaseSpeed();
@@ -117,6 +118,7 @@ private:
     QString _teamColorName;
     int _qtPlayers;
     FieldSide _teamSide;
+    QString _playbookFormation;
     int _predictionBaseCycles;
     std::tuple<float, float, float> _playerPID;
     float _playerBaseSpeed;

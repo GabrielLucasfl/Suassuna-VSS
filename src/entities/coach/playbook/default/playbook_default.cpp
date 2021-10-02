@@ -35,7 +35,7 @@ Playbook_Default::Playbook_Default() {
 }
 
 QString Playbook_Default::name() {
-    return "Playbook_Default";
+    return "Default";
 }
 
 void Playbook_Default::configure(int numPlayers) {

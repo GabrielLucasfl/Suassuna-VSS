@@ -15,6 +15,7 @@
 		"teamColor": "yellow",
 		"teamSide": "right",
 		"qtPlayers": 6,
+		"playbookFormation": "Default",
 		"predictionBaseCycles": 20,
 		"Player":{
 			"playerPID": [20.0, 0.0, 2.5],
