@@ -67,7 +67,8 @@ void Role_Attacker::run() {
     } else {
         ballDirection = Position(true, 0, 0);
     }
-    Position ballPred = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles());
+    //Position ballPred = getWorldMap()->getBall().getMatch(getWorldMap()->getBall());
+    Position ballPred = getWorldMap()->getBall().getPredPosition(20);
     float ballPlayerDist = Utils::distance(ballPred, player()->position());
     // to check if player is in range to push
     Colors::Color ourColor = getConstants()->teamColor();
@@ -88,9 +89,8 @@ void Role_Attacker::run() {
         pos = ballPred;
     }
 
-    if(ballPlayerDist <= 0.2f && fabs(angle) <= 0.3f && _prior){
+    if(fabs(angle) < static_cast<float>(M_PI)/11.25f && _prior){
         _push = true;
-        //std::cout << "PUSH\n";
     }
 
     switch (_state) {
@@ -119,8 +119,8 @@ void Role_Attacker::run() {
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             if(!_push) {
-                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
-                player()->setPlayerDesiredPosition(ballPred);
+                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed()+5.0f);
+                player()->setPlayerDesiredPosition(getPushPosition(ballPred));
             } else {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
                 player()->setPlayerDesiredPosition(getPushPosition(ballPred));
@@ -241,10 +241,10 @@ float Role_Attacker::getDist(float angle){
 float Role_Attacker::pushSpeed(float ballPlayerDist){
     if(ballPlayerDist < 0.07f){
         //std::cout << "Vel max\n";
-        return 40;
+        return 45;
     }
     float factor = std::cbrt((ballPlayerDist-0.11f)/0.15f);
-    float speed = 35, delta = speed - getConstants()->playerBaseSpeed();
+    float speed = 45, delta = speed - getConstants()->playerBaseSpeed() - 5.0f;
     _lastSpeed = std::max(speed-delta*factor, _lastSpeed);
     //std::cout << "Vel variavel: " << std::max(_lastSpeed, speed-delta*factor)<< std::endl;
     return _lastSpeed;
