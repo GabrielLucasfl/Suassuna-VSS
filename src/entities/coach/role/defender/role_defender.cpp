@@ -50,7 +50,7 @@ void Role_Defender::run() {
     Position ourGoal = getWorldMap()->getLocations()->ourGoal();
     Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
 
-    std::cout << _switch << std::endl;
+    //std::cout << _switch << std::endl;
 
     if(_switch){
         if(fabs(player()->position().x()) <= 0.15f){
