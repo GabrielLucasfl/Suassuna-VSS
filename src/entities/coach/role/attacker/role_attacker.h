@@ -88,19 +88,19 @@ private:
         OURTEAM
     };
     //Penalty function
-    void penaltyKick(quint8 _teamPriority, QPair<Position, Angle> *_penaltyPlacement);
+    void penaltyKick(quint8 _teamPriority, QPair<Position, Angle> *_placement);
 
     //GoalKick function
-    void goalKick(quint8 _teamPriority, QPair<Position, Angle> *_penaltyPlacement);
+    void goalKick(quint8 _teamPriority, QPair<Position, Angle> *_placement);
 
     //Control placement variable
-    QPair<Position, Angle> _penaltyPlacement;
+    QPair<Position, Angle> _placement;
 
     //KickOff function
-    void kickOff(quint8 _teamPriority, QPair<Position, Angle> *_penaltyPlacement);
+    void kickOff(quint8 _teamPriority, QPair<Position, Angle> *_placement);
 
     //FreeBall Function
-    void freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::Quadrant quadrant);
+    void freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadrant quadrant);
 
     //set push speed
     float pushSpeed(float playerBallDist);

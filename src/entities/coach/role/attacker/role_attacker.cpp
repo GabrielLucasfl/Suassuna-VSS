@@ -346,42 +346,43 @@ QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VS
     switch (foul) {
     case VSSRef::Foul::PENALTY_KICK: {
         if (VSSRef::Color(getConstants()->teamColor()) == forTeam) {
-            penaltyKick(OURTEAM, &_penaltyPlacement);
-            foulPosition = _penaltyPlacement.first;
-            foulAngle = _penaltyPlacement.second;
+            penaltyKick(OURTEAM, &_placement);
+            foulPosition = _placement.first;
+            foulAngle = _placement.second;
             _gameInterrupted = true;
         } else {
-            penaltyKick(THEIRTEAM, &_penaltyPlacement);
-            foulPosition = _penaltyPlacement.first;
-            foulAngle = _penaltyPlacement.second;
+            penaltyKick(THEIRTEAM, &_placement);
+            foulPosition = _placement.first;
+            foulAngle = _placement.second;
         }
     } break;
     case VSSRef::Foul::KICKOFF: {
         if (VSSRef::Color(getConstants()->teamColor()) == forTeam) {
-            kickOff(OURTEAM,&_penaltyPlacement);
-            foulPosition = _penaltyPlacement.first;
-            foulAngle = _penaltyPlacement.second;
+            kickOff(OURTEAM,&_placement);
+            foulPosition = _placement.first;
+            foulAngle = _placement.second;
             _gameInterrupted = true;
         } else {
-            kickOff(THEIRTEAM,&_penaltyPlacement);
-            foulPosition = _penaltyPlacement.first;
-            foulAngle = _penaltyPlacement.second;
+            kickOff(THEIRTEAM,&_placement);
+            foulPosition = _placement.first;
+            foulAngle = _placement.second;
         }
     } break;
     case VSSRef::Foul::FREE_BALL: {
-        freeBall(&_penaltyPlacement, atQuadrant);
-        foulPosition = _penaltyPlacement.first;
-        foulAngle = _penaltyPlacement.second;
+        freeBall(&_placement, atQuadrant);
+        foulPosition = _placement.first;
+        foulAngle = _placement.second;
         _gameInterrupted = true;
     } break;
     case VSSRef::Foul::GOAL_KICK: {
         if (static_cast<VSSRef::Color>(getConstants()->teamColor()) == forTeam) {
-            goalKick(OURTEAM, &_penaltyPlacement);
-            foulPosition = _penaltyPlacement.first;
-            foulAngle = _penaltyPlacement.second;
+            goalKick(OURTEAM, &_placement);
+            foulPosition = _placement.first;
+            foulAngle = _placement.second;
         } else {
-            foulPosition = standardPosition;
-            foulAngle = Angle(true, 90);
+            goalKick(THEIRTEAM, &_placement);
+            foulPosition = _placement.first;
+            foulAngle = _placement.second;
         }
     } break;
     default: {
@@ -393,7 +394,7 @@ QPair<Position, Angle> Role_Attacker::getPlacementPosition(VSSRef::Foul foul, VS
     return QPair<Position, Angle>(foulPosition, foulAngle);
 }
 
-void Role_Attacker:: penaltyKick(quint8 _teamPriority,QPair<Position, Angle> *_penaltyPlacement){
+void Role_Attacker:: penaltyKick(quint8 _teamPriority,QPair<Position, Angle> *_placement){
 
     Colors::Color enemyColor;
     if (getConstants()->teamColor() == Colors::BLUE) {
@@ -415,137 +416,279 @@ void Role_Attacker:: penaltyKick(quint8 _teamPriority,QPair<Position, Angle> *_p
 
     if(_teamPriority == 1){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
-            Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),
-                                    getWorldMap()->getLocations()->theirGoalLeftPost().y() - 0.05f);
-            Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),
-                                     getWorldMap()->getLocations()->theirGoalRightPost().y() + 0.05f);
-            if(gkPos.y() > 0 ){
-                _penaltyPlacement->first  = Utils::threePoints(Position(true,-0.375, 0), _amPenaltyLeft, 0.1f, Angle::pi);
-            } else {
-                _penaltyPlacement->first = Utils::threePoints(Position(true,-0.375, 0), _amPenaltyRight, 0.1f, Angle::pi);
+            if(_prior) {
+                Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),
+                                        getWorldMap()->getLocations()->theirGoalLeftPost().y() - 0.05f);
+                Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),
+                                         getWorldMap()->getLocations()->theirGoalRightPost().y() + 0.05f);
+                if(gkPos.y() > 0 ){
+                    _placement->first  = Utils::threePoints(Position(true,-0.375, 0), _amPenaltyLeft, 0.1f, Angle::pi);
+                } else {
+                    _placement->first = Utils::threePoints(Position(true,-0.375, 0), _amPenaltyRight, 0.1f, Angle::pi);
+                }
+                _placement->second = Angle(true,Utils::getAngle(_placement->first, Position(true,-0.375, 0)));
+            }else {
+                _placement->first = Position(true, 0.08f, 0);
+                _placement->second = Angle(true, Angle::pi/2);
             }
-            _penaltyPlacement->second = Angle(true,Utils::getAngle(_penaltyPlacement->first, Position(true,-0.375, 0)));
         } else {
-            Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),
-                                    getWorldMap()->getLocations()->theirGoalLeftPost().y() + 0.05f);
-            Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),
-                                     getWorldMap()->getLocations()->theirGoalRightPost().y() - 0.05f);
-            if(gkPos.y() >= 0 ){
-                _penaltyPlacement->first = Utils::threePoints(Position(true,0.375, 0), _amPenaltyRight, 0.1f, Angle::pi);
-            } else {
-                _penaltyPlacement->first = Utils::threePoints(Position(true,0.375, 0), _amPenaltyLeft, 0.1f, Angle::pi);
+            if(_prior) {
+                Position _amPenaltyLeft(true, getWorldMap()->getLocations()->theirGoal().x(),
+                                        getWorldMap()->getLocations()->theirGoalLeftPost().y() + 0.05f);
+                Position _amPenaltyRight(true, getWorldMap()->getLocations()->theirGoal().x(),
+                                         getWorldMap()->getLocations()->theirGoalRightPost().y() - 0.05f);
+                if(gkPos.y() >= 0 ){
+                    _placement->first = Utils::threePoints(Position(true,0.375, 0), _amPenaltyRight, 0.1f, Angle::pi);
+                } else {
+                    _placement->first = Utils::threePoints(Position(true,0.375, 0), _amPenaltyLeft, 0.1f, Angle::pi);
+                }
+                _placement->second = Angle(true,Utils::getAngle(_placement->first, Position(true,0.375, 0)));
+            }else {
+                _placement->first = Position(true, -1*0.08f, 0);
+                _placement->second = Angle(true, Angle::pi/2);
             }
-            _penaltyPlacement->second = Angle(true,Utils::getAngle(_penaltyPlacement->first, Position(true,0.375, 0)));
         }
 
     } else {
         if(getWorldMap()->getLocations()->ourSide().isRight()){
-            _penaltyPlacement->first = Position(true, -0.2f,-0.165f);
-            _penaltyPlacement->second = Angle(true, 0);
+            if(_prior) {
+                _placement->first = Position(true, -0.2f,-0.165f);
+                _placement->second = Angle(true, Angle::pi/2);
+            }else {
+                _placement->first = Position(true, -0.2f,0.165f);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         } else {
-            _penaltyPlacement->first = Position(true, 0.2f,0.165f);
-            _penaltyPlacement->second = Angle(true, 0);
+            if(_prior) {
+                _placement->first = Position(true, 0.2f,0.165f);
+                _placement->second = Angle(true, Angle::pi/2);
+            }else {
+                _placement->first = Position(true, 0.2f,-1*0.165f);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         }
     }
 }
 
-void Role_Attacker:: kickOff(quint8 _teamPriority, QPair<Position, Angle> *_penaltyPlacement){
+void Role_Attacker:: kickOff(quint8 _teamPriority, QPair<Position, Angle> *_placement){
+    float secondAttXabs = 0.3f;
     if(_teamPriority == OURTEAM){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
-            //assistant near the middle of the field
-            _penaltyPlacement->first = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
-                                                          Position(true, -0.75, -0.35f),
-                                                          0.1f, Angle::pi);
-            _penaltyPlacement->second = Angle(true, Utils::getAngle(_penaltyPlacement->first,
-                                                                    getWorldMap()->getLocations()->fieldCenter()));
+            //near the middle of the field
+            if(_prior) {
+                _placement->first = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
+                                                              Position(true, -0.75, -0.35f),
+                                                              0.1f, Angle::pi);
+                _placement->second = Angle(true, Utils::getAngle(_placement->first,
+                                                                        getWorldMap()->getLocations()->fieldCenter()));
+            }else {
+                _placement->first = Position(true, secondAttXabs, 0);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         } else {
-            //assistant near the middle of the field
-            _penaltyPlacement->first = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
-                                                          Position(true, 0.75, 0.35f),
-                                                          0.1f, Angle::pi);
-            _penaltyPlacement->second = Angle(true, Utils::getAngle(_penaltyPlacement->first,
-                                                                    getWorldMap()->getLocations()->fieldCenter()));
+            //near the middle of the field
+            if(_prior) {
+                _placement->first = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
+                                                              Position(true, 0.75, 0.35f),
+                                                              0.1f, Angle::pi);
+                _placement->second = Angle(true, Utils::getAngle(_placement->first,
+                                                                        getWorldMap()->getLocations()->fieldCenter()));
+            }else {
+                _placement->first = Position(true, -1*secondAttXabs, 0);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         }
     } else {
         if(getWorldMap()->getLocations()->ourSide().isRight()){
-            _penaltyPlacement->first = Position(true, 0.25,0.0);
-            _penaltyPlacement->second = Angle(true, 0.0);
+            if(_prior) {
+                _placement->first = Position(true, 0.25f,0.0);
+                _placement->second = Angle(true, 0.0);
+            }else {
+                _placement->first = Position(true, 0.45f,0.0);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         } else {
-            _penaltyPlacement->first = Position(true, -0.25,0.0);
-            _penaltyPlacement->second = Angle(true, 0.0);
+            if(_prior) {
+                _placement->first = Position(true, -0.25f,0.0);
+                _placement->second = Angle(true, 0.0);
+            }else {
+                _placement->first = Position(true, -0.45f,0.0);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         }
     }
 }
 
-void Role_Attacker::freeBall(QPair<Position, Angle> *_penaltyPlacement, VSSRef::Quadrant quadrant){
+void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadrant quadrant){
     float freeBallXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.375f);
     float freeBallYabs = (getWorldMap()->getLocations()->fieldMaxY() - 0.25f);
     float freeBallOffset = 0.2f;
+    float quadrantDistOffset = 0.08f;
 
     if(quadrant == VSSRef::QUADRANT_1){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
             //player in quadrant 1 near our goal (right)
-            _penaltyPlacement->first = Position(true, (freeBallXabs + freeBallOffset), freeBallYabs);
-            _penaltyPlacement->second = Angle(true, Angle::pi);
+            if(_prior) {
+                _placement->first = Position(true, (freeBallXabs + freeBallOffset), freeBallYabs);
+                _placement->second = Angle(true, Angle::pi);
+            }else {
+                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
+                Position playerPos = player()->position();
+                if(playerPos.y() >= 0 && playerPos.x() >= 0) {
+                    playerPos.setPosition(true, playerPos.x(), -quadrantDistOffset);
+                }
+                _placement->first = playerPos;
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         } else {
-            //player in quadrant 1 near our goal (left)
-            _penaltyPlacement->first = Position(true, (freeBallXabs - freeBallOffset), freeBallYabs);
-            _penaltyPlacement->second = Angle(true, 0);
+            //player in quadrant 1 near their goal (right)
+            if(_prior) {
+                _placement->first = Position(true, (freeBallXabs - freeBallOffset), freeBallYabs);
+                _placement->second = Angle(true, 0);
+            }else {
+                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
+                Position playerPos = player()->position();
+                if(playerPos.y() >= 0 && playerPos.x() >= 0) {
+                    playerPos.setPosition(true, -quadrantDistOffset, playerPos.y());
+                }
+                _placement->first = playerPos;
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         }
     } else if(quadrant == VSSRef::QUADRANT_2){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
-            //player in quadrant 2 near our goal (right)
-            _penaltyPlacement->first = Position(true, (-1*freeBallXabs + freeBallOffset), freeBallYabs);
-            _penaltyPlacement->second = Angle(true, Angle::pi);
+            //player in quadrant 2 near their goal (left)
+            if(_prior) {
+                _placement->first = Position(true, (-1*freeBallXabs + freeBallOffset), freeBallYabs);
+                _placement->second = Angle(true, Angle::pi);
+            }else {
+                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
+                Position playerPos = player()->position();
+                if(playerPos.y() >= 0 && playerPos.x() <= 0) {
+                    playerPos.setPosition(true, quadrantDistOffset, playerPos.y());
+                }
+                _placement->first = playerPos;
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         } else {
             //player in quadrant 2 near our goal (left)
-            _penaltyPlacement->first = Position(true, (-1*freeBallXabs - freeBallOffset), freeBallYabs);
-            _penaltyPlacement->second = Angle(true, 0);
+            if(_prior) {
+                _placement->first = Position(true, (-1*freeBallXabs - freeBallOffset), freeBallYabs);
+                _placement->second = Angle(true, 0);
+            }else {
+                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
+                Position playerPos = player()->position();
+                if(playerPos.y() >= 0 && playerPos.x() <= 0) {
+                    playerPos.setPosition(true, playerPos.x(), -quadrantDistOffset);
+                }
+                _placement->first = playerPos;
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         }
     } else if(quadrant == VSSRef::QUADRANT_3){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
-            //player in quadrant 3 near our goal (right)
-            _penaltyPlacement->first = Position(true, (-1*freeBallXabs + freeBallOffset), -1*freeBallYabs);
-            _penaltyPlacement->second = Angle(true, Angle::pi);
+            //player in quadrant 3 near their goal (left)
+            if(_prior) {
+                _placement->first = Position(true, (-1*freeBallXabs + freeBallOffset), -1*freeBallYabs);
+                _placement->second = Angle(true, Angle::pi);
+            }else {
+                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
+                Position playerPos = player()->position();
+                if(playerPos.y() <= 0 && playerPos.x() <= 0) {
+                    playerPos.setPosition(true, quadrantDistOffset, playerPos.y());
+                }
+                _placement->first = playerPos;
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         } else {
             //player in quadrant 3 near our goal (left)
-            _penaltyPlacement->first = Position(true, (-1*freeBallXabs - freeBallOffset), -1*freeBallYabs);
-            _penaltyPlacement->second = Angle(true, 0);
+            if(_prior) {
+                _placement->first = Position(true, (-1*freeBallXabs - freeBallOffset), -1*freeBallYabs);
+                _placement->second = Angle(true, 0);
+            }else {
+                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
+                Position playerPos = player()->position();
+                if(playerPos.y() <= 0 && playerPos.x() <= 0) {
+                    playerPos.setPosition(true, playerPos.x(), quadrantDistOffset);
+                }
+                _placement->first = playerPos;
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         }
     } else if(quadrant == VSSRef::QUADRANT_4){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
             //player in quadrant 4 near our goal (right)
-            _penaltyPlacement->first = Position(true, (freeBallXabs + freeBallOffset), -1*freeBallYabs);
-            _penaltyPlacement->second = Angle(true, Angle::pi);
+            if(_prior) {
+                _placement->first = Position(true, (freeBallXabs + freeBallOffset), -1*freeBallYabs);
+                _placement->second = Angle(true, Angle::pi);
+            }else {
+                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
+                Position playerPos = player()->position();
+                if(playerPos.y() <= 0 && playerPos.x() >= 0) {
+                    playerPos.setPosition(true, playerPos.x(), quadrantDistOffset);
+                }
+                _placement->first = playerPos;
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         } else {
-            //player in quadrant 4 near our goal (left)
-            _penaltyPlacement->first = Position(true, (freeBallXabs - freeBallOffset), -1*freeBallYabs);
-            _penaltyPlacement->second = Angle(true, 0);
+            //player in quadrant 4 near their goal (right)
+            if(_prior) {
+                _placement->first = Position(true, (freeBallXabs - freeBallOffset), -1*freeBallYabs);
+                _placement->second = Angle(true, 0);
+            }else {
+                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
+                Position playerPos = player()->position();
+                if(playerPos.y() <= 0 && playerPos.x() >= 0) {
+                    playerPos.setPosition(true, -quadrantDistOffset, playerPos.y());
+                }
+                _placement->first = playerPos;
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         }
     }
 }
 
-void Role_Attacker:: goalKick(quint8 _teamPriority ,QPair<Position, Angle> *_penaltyPlacement){
+void Role_Attacker:: goalKick(quint8 _teamPriority ,QPair<Position, Angle> *_placement){
     float defenseXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.55f);
     float defenseYabs = 0.0f;
     float nearTheMiddleXabs = (getWorldMap()->getLocations()->fieldMaxX()/2 - 0.15f);
 
     if(_teamPriority == 1){
         if(getWorldMap()->getLocations()->ourSide().isRight()){
-            _penaltyPlacement->first = Position(true, defenseXabs, -1*defenseYabs);
-            _penaltyPlacement->second = Angle(true, 0);
+            if(_prior) {
+                _placement->first = Position(true, defenseXabs, -1*defenseYabs);
+                _placement->second = Angle(true, Angle::pi/2);
+            }else {
+                _placement->first = Position(true, defenseXabs + 0.25f, -1*defenseYabs);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         } else {
-            _penaltyPlacement->first = Position(true, -1*defenseXabs, defenseYabs);
-            _penaltyPlacement->second = Angle(true, Angle::pi);
+            if(_prior) {
+                _placement->first = Position(true, -1*defenseXabs, defenseYabs);
+                _placement->second = Angle(true, Angle::pi/2);
+            }else {
+                _placement->first = Position(true, -1*defenseXabs - 0.25f, defenseYabs);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         }
     } else {
-        //assistant always in front of our goal and near the middle of the field
+        //always in front of our goal and near the middle of the field
         if(getWorldMap()->getLocations()->ourSide().isRight()){
-            _penaltyPlacement->first = Position(true, nearTheMiddleXabs, 0);
-            _penaltyPlacement->second = Angle(true, Angle::pi);
+            if(_prior) {
+                _placement->first = Position(true, nearTheMiddleXabs - 0.25f, 0);
+                _placement->second = Angle(true, Angle::pi/2);
+            }else {
+                _placement->first = Position(true, nearTheMiddleXabs, 0);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         } else {
-            _penaltyPlacement->first = Position(true, -1*nearTheMiddleXabs, 0);
-            _penaltyPlacement->second = Angle(true, 0);
+            if(_prior) {
+                _placement->first = Position(true, -1*nearTheMiddleXabs + 0.25f, 0);
+                _placement->second = Angle(true, Angle::pi/2);
+            }else {
+                _placement->first = Position(true, -1*nearTheMiddleXabs, 0);
+                _placement->second = Angle(true, Angle::pi/2);
+            }
         }
 
     }
