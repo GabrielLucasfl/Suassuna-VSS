@@ -35,6 +35,8 @@ Role_Attacker::Role_Attacker() {
     _gameInterrupted = false;
     _positiveAngle = true;
     _prior = true;
+    _lastPos = Position(false, 0.0f, 0.0f);
+    _pos = Position(false, 0.0f, 0.0f);
 }
 
 QString Role_Attacker::name() {
@@ -80,18 +82,30 @@ void Role_Attacker::run() {
         _gameInterrupted = false;
         _state = MOVETO;
     }
+
+    if(!_pos.isInvalid()){
+        _lastPos = _pos;
+    }
+
     Position referencePos = defineReferencePosition();
     float angle = normAngle(Utils::getAngle(ballPred, referencePos) - Utils::getAngle(player()->position(), ballPred));
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
-    Position pos = Utils::threePoints(ballPred, referencePos, dist, targetAngle);
+    _pos = Utils::threePoints(ballPred, referencePos, dist, targetAngle);
     if(fabs(ballPos.y()) >= 0.450f){
-        pos = ballPred;
+        _pos = ballPred;
     }
 
     if(fabs(angle) < static_cast<float>(M_PI)/11.25f && _prior){
         _push = true;
     }
+
+    float posAngle = 0.0f;
+    if(!_lastPos.isInvalid()){
+        posAngle = fabs(normAngle(Utils::getAngle(_pos, referencePos) - Utils::getAngle(_lastPos, ballPred)));
+    }
+
+    std::cout << "posAngle: " << posAngle*180/static_cast<float>(M_PI) << std::endl;
 
     switch (_state) {
         case GOTOBALL: {
@@ -100,8 +114,9 @@ void Role_Attacker::run() {
             _avoidOpponents = false;
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
-            _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed() + 5.0f);
-            player()->setPlayerDesiredPosition(pos);
+            //_bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed() + 5.0f);
+            _bhv_moveTo->setBaseSpeed(0.0f);
+            player()->setPlayerDesiredPosition(_pos);
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
             //std::cout << "GOTOBALL\n";
@@ -125,7 +140,7 @@ void Role_Attacker::run() {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
                 player()->setPlayerDesiredPosition(getPushPosition(ballPred));
             }
-
+            _bhv_moveTo->setBaseSpeed(0.0f);
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
             //std::cout << "MOVETO\n";

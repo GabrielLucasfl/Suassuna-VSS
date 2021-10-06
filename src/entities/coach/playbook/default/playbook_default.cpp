@@ -74,8 +74,8 @@ void Playbook_Default::run(int numPlayers) {
     updatePlayerStuck(_attackerID);
     updatePlayerStuck(_lastID);
     updatePlayerStuck(_goalkeeperID);
-    switchPlayersIDs();
-    thirdPlayerState();
+    //switchPlayersIDs();
+    //thirdPlayerState();
 
     // Setting roles
     setPlayerRole(_goalkeeperID, _rl_gk);

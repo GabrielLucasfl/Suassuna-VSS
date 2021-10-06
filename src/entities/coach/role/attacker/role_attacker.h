@@ -75,6 +75,8 @@ private:
     float _lastSpeed;
     bool _positiveAngle;
     bool _prior;
+    Position _lastPos;
+    Position _pos;
 
     // Timer
     Timer _interuption;
