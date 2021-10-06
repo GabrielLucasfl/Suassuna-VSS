@@ -125,7 +125,7 @@ void Constants::readTeamConstants() {
     _qtPlayers = teamMap["qtPlayers"].toUInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded qtPlayers: " + std::to_string(qtPlayers())) + '\n';
 
-    _playbookFormation = teamMap["playbookFormation"].toString().toLower();
+    _playbookFormation = teamMap["playbookFormation"].toString();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded playbook: " + _playbookFormation.toStdString()) + '\n';
 
     // No need to print the info below
