@@ -83,29 +83,43 @@ void Role_Attacker::run() {
         _state = MOVETO;
     }
 
-    if(!_pos.isInvalid()){
-        _lastPos = _pos;
-    }
-
     Position referencePos = defineReferencePosition();
     float angle = normAngle(Utils::getAngle(ballPred, referencePos) - Utils::getAngle(player()->position(), ballPred));
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
     _pos = Utils::threePoints(ballPred, referencePos, dist, targetAngle);
+
+    if(_lastPos.isInvalid()){
+        _lastPos = _pos;
+    }
+
     if(fabs(ballPos.y()) >= 0.450f){
         _pos = ballPred;
+    }
+    else{
+        float posAngle = 0.0f;
+        //std::cout << "lastPos: " << _lastPos.x() << " " << _lastPos.y() << std::endl;
+        //std::cout << "pos: " << _pos.x() << " " << _pos.y() << std::endl;
+        if(!_lastPos.isInvalid()){
+            //std::cout << "posAngle1: " << Utils::getAngle(_pos, referencePos)*180/static_cast<float>(M_PI) << std::endl;
+            //std::cout << "posAngle2: " << Utils::getAngle(_lastPos, referencePos)*180/static_cast<float>(M_PI) << std::endl;
+            posAngle = fabs(normAngle(Utils::getAngle(_pos, referencePos) - Utils::getAngle(_lastPos, referencePos)));
+        }
+
+        if(posAngle >= static_cast<float>(M_PI)/8){
+            _lastPos = _pos;
+            std::cout << "lastPos atualizado\n";
+        }
+
+        std::cout << "posAngle: " << posAngle*180/static_cast<float>(M_PI) << std::endl;
     }
 
     if(fabs(angle) < static_cast<float>(M_PI)/11.25f && _prior){
         _push = true;
     }
 
-    float posAngle = 0.0f;
-    if(!_lastPos.isInvalid()){
-        posAngle = fabs(normAngle(Utils::getAngle(_pos, referencePos) - Utils::getAngle(_lastPos, ballPred)));
-    }
 
-    std::cout << "posAngle: " << posAngle*180/static_cast<float>(M_PI) << std::endl;
+
 
     switch (_state) {
         case GOTOBALL: {
@@ -114,8 +128,8 @@ void Role_Attacker::run() {
             _avoidOpponents = false;
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
-            //_bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed() + 5.0f);
-            _bhv_moveTo->setBaseSpeed(0.0f);
+            _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed() + 5.0f);
+            //_bhv_moveTo->setBaseSpeed(0.0f);
             player()->setPlayerDesiredPosition(_pos);
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
@@ -140,7 +154,7 @@ void Role_Attacker::run() {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
                 player()->setPlayerDesiredPosition(getPushPosition(ballPred));
             }
-            _bhv_moveTo->setBaseSpeed(0.0f);
+            //_bhv_moveTo->setBaseSpeed(0.0f);
             _bhv_moveTo->setLinearError(0.02f);
             setBehavior(BHV_MOVETO);
             //std::cout << "MOVETO\n";
