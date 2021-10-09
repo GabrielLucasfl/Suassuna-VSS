@@ -129,11 +129,11 @@ std::pair<float, float> Player::getWheelsSpeed(float angleToObject, float baseSp
     }
 
     // PID
-    PID pid(30.0f, 12.0f, 1.0f);
+    PID pid(6.0f, 0.0f, 1.0f);
     pid.setOutputLimits(30.f);
     float pidOutput = pid.getOutput(0.0f, getPlayerDistanceTo(_desiredPosition));
-    //leftMotorSpeed *= pidOutput;
-    //rightMotorSpeed *= pidOutput;
+    leftMotorSpeed *= pidOutput;
+    rightMotorSpeed *= pidOutput;
 
     return std::make_pair(leftMotorSpeed, rightMotorSpeed);
 }
