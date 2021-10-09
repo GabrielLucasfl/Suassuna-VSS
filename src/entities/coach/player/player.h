@@ -27,6 +27,7 @@
 #include <src/entities/coach/basecoach.h>
 #include <src/entities/world/worldmap.h>
 #include <include/vssref_common.pb.h>
+#include <src/entities/coach/player/pid/pid.h>
 
 class NavigationAlgorithm;
 class Navigation;
