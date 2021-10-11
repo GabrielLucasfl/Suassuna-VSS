@@ -47,15 +47,17 @@ public:
     // CheckBox enablers
     void enableSupporterShow(bool enabled) { _supporterShowEnabled = enabled; }
     void enableDefenderShow(bool enabled) { _defenderShowEnabled = enabled; }
-    void enableGlkShow(bool enabled){ _glkEllipseEnabled = enabled; };
-    void enableBallPredShow(bool enabled){ _ballPredEnabled = enabled; };
+    void enableGlkShow(bool enabled){ _glkEllipseEnabled = enabled; }
+    void enableBallPredShow(bool enabled){ _ballPredEnabled = enabled; }
+    void enableReferencePosShow(bool enable){ _referencePosEnabled = enable; }
 
     // CheckBox setters
     void setSupporterDesiredPosition(Position supporterPosition) { _supporterDesiredPosition = supporterPosition; }
     void setDefenderDesiredPosition(Position defenderPosition) { _defenderDesiredPosition = defenderPosition; }
-    void setGlkEllipseCenter(Position center) { _glkEllipseCenter = center; };
-    void setGlkEllipseParameters(float a, float b) { _glkEllipseA = a; _glkEllipseB = b; };
-    void setBallPredParameters(Position ballPredPos) { _ballPredPos = ballPredPos; };
+    void setGlkEllipseCenter(Position center) { _glkEllipseCenter = center; }
+    void setGlkEllipseParameters(float a, float b) { _glkEllipseA = a; _glkEllipseB = b; }
+    void setBallPredParameters(Position ballPredPos) { _ballPredPos = ballPredPos; }
+    void setReferencePosition(Position pos){ _referencePosition = pos; }
 
 protected:
     void paintGL();
@@ -93,12 +95,14 @@ private:
     bool _defenderShowEnabled;
     bool _glkEllipseEnabled;
     bool _ballPredEnabled;
+    bool _referencePosEnabled;
 
     // CheckBox Parameters
     Position _supporterDesiredPosition;
     Position _defenderDesiredPosition;
     Position _glkEllipseCenter;
     Position _ballPredPos;
+    Position _referencePosition;
     float _glkEllipseA;
     float _glkEllipseB;
 
@@ -133,6 +137,7 @@ private:
     void showDefenderPosition(Position supporterPosition);
     void showGlkEllipse(Position center, float a, float b);
     void showBallPred(Position ballPred);
+    void showReferencePosition(Position referencePosition);
 
     // Mutex to control graphics
     QMutex _graphicsMutex;

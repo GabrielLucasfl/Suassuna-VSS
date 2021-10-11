@@ -85,8 +85,9 @@ void Role_Attacker::run() {
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
     Position pos = Utils::threePoints(ballPred, referencePos, dist, targetAngle);
-    if(fabs(ballPos.y()) >= 0.450f){
-        pos = ballPred;
+
+    if(!getWorldMap()->getLocations()->isInsideField(pos) && _prior){
+        pos = Utils::threePoints(ballPred, getReferencePosition(), dist, targetAngle);
     }
 
     if(fabs(angle) < static_cast<float>(M_PI)/11.25f && _prior){
@@ -149,6 +150,14 @@ void Role_Attacker::run() {
         }
     }
 }
+
+Position Role_Attacker::getReferencePosition(){
+    Position ballPos = getWorldMap()->getBall().getPosition();
+    Position theirGoal = getWorldMap()->getLocations()->theirGoal();
+    ballPos.setPosition(true, theirGoal.x(), ballPos.y());
+    return ballPos;
+}
+
 
 Position Role_Attacker::defineReferencePosition() {
     Position theirGoal = getWorldMap()->getLocations()->theirGoal();

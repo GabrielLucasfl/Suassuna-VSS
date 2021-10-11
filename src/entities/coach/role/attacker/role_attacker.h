@@ -114,6 +114,9 @@ private:
     //get the right position to push the ball to their goal
     Position getPushPosition(Position ballPos);
 
+    //get the right y value to position the attacker
+    Position getReferencePosition();
+
 };
 
 #endif // ROLE_ATTACKER_H
