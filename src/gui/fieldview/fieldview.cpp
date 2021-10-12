@@ -486,7 +486,7 @@ void FieldView::showBallPred(Position ballPred){
 void FieldView::showReferencePosition(Position referencePosition){
     if(!referencePosition.isInvalid()){
         glColor3d(0, 255, 255);
-        drawArc(QVector2D(referencePosition.x() * 1000.0f, referencePosition.y() * 1000.0f), -15.0f, 15.0f,
+        drawArc(QVector2D(referencePosition.x() * 1000.0f, referencePosition.y() * 1000.0f), 0.0f, 25.0f,
                 static_cast<float>(-M_PI), static_cast<float>(M_PI), 4.0f);
     }
 }

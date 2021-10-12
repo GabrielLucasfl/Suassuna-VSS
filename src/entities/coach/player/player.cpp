@@ -58,6 +58,10 @@ Position Player::getPlayerDesiredPosition() {
     return _desiredPosition;
 }
 
+Position Player::getAttackerReference() {
+    return _attackerReference;
+}
+
 float Player::getPlayerDistanceTo(Position &targetPosition) {
     return sqrt(powf(position().x() - targetPosition.x(), 2) + powf(position().y() - targetPosition.y(), 2));
 }

@@ -44,6 +44,7 @@ public:
     Position position();
     Angle orientation();
     Position getPlayerDesiredPosition();
+    Position getAttackerReference();
     float getPlayerDistanceTo(Position &targetPosition);
     float getPlayerRotateAngleTo(Position &targetPosition);
 
@@ -61,6 +62,7 @@ public:
 
     // Player setters
     void setPlayerDesiredPosition(Position desiredPosition) { _desiredPosition = desiredPosition; }
+    void setAttackerReference(Position desiredPosition) { _attackerReference = desiredPosition; }
 
     // Role management
     QString roleName();
@@ -89,6 +91,7 @@ private:
 
     // GUI Parameters
     Position _desiredPosition;
+    Position _attackerReference;
 
     // Constants
     Constants* getConstants();

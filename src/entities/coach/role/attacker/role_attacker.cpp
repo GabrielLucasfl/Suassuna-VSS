@@ -154,8 +154,9 @@ void Role_Attacker::run() {
 Position Role_Attacker::getReferencePosition(){
     Position ballPos = getWorldMap()->getBall().getPosition();
     Position theirGoal = getWorldMap()->getLocations()->theirGoal();
-    ballPos.setPosition(true, theirGoal.x(), ballPos.y());
-    return ballPos;
+    theirGoal.setPosition(true, theirGoal.x(), ballPos.y());
+    player()->setAttackerReference(theirGoal);
+    return theirGoal;
 }
 
 

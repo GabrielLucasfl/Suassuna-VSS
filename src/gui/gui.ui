@@ -219,7 +219,7 @@
         <x>50</x>
         <y>50</y>
         <width>201</width>
-        <height>112</height>
+        <height>141</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -241,6 +241,13 @@
         <widget class="QCheckBox" name="goalkeeperBox">
          <property name="text">
           <string>Show Goalkeeper Ellipse</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="attackerBox">
+         <property name="text">
+          <string>show Attacker Reference</string>
          </property>
         </widget>
        </item>

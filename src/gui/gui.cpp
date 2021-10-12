@@ -225,35 +225,44 @@ void GUI::updateField() {
         ui->fieldView->enableDefenderShow(false);
     }
 
-    if(ui->ballPredBox->isChecked()){
+    if (ui->ballPredBox->isChecked()){
         ui->fieldView->enableBallPredShow(true);
-        Position BallPredPos = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles());
-        ui->fieldView->setBallPredParameters(BallPredPos);
-    }
-    else{
+        Position ballPredPos = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles());
+        ui->fieldView->setBallPredParameters(ballPredPos);
+    } else {
         ui->fieldView->enableBallPredShow(false);
     }
 
-    if(ui->goalkeeperBox->isChecked()){
+    if (ui->goalkeeperBox->isChecked()){
         ui->fieldView->enableGlkShow(true);
         if(getWorldMap()->getLocations()->ourGoal().x() > 0){
             //setDefenderEllipse(Position(true, 0.72f, 0.0f), 0.1f, 0.25f);
             Position ellipseCenter = Position(true, 0.72f, 0.0f);
             ui->fieldView->setGlkEllipseCenter(ellipseCenter);
             ui->fieldView->setGlkEllipseParameters(0.1f, 0.25f);
-        }
-        else{
+        } else {
             //setDefenderEllipse(Position(true, -0.72f, 0.0f), 0.1f, 0.25f);
             Position ellipseCenter = Position(true, -0.72f, 0.0f);
             ui->fieldView->setGlkEllipseCenter(ellipseCenter);
             ui->fieldView->setGlkEllipseParameters(0.1f, 0.25f);
         }
-    }
-    else{
+    } else {
         ui->fieldView->enableGlkShow(false);
     }
 
-
+    if (ui->attackerBox->isChecked()){
+        ui->fieldView->enableReferencePosShow(true);
+        Position desiredPosition(false, 0.0, 0.0);
+        for (quint8 i = 0; i < _players.keys().size(); i++) {
+            Player *playerPointer = getWorldMap()->getPlayerPointer(i);
+            if (playerPointer->roleName() == "Role_Attacker") {
+                desiredPosition = playerPointer->getAttackerReference();
+                ui->fieldView->setReferencePosition(desiredPosition);
+            }
+        }
+    } else {
+        ui->fieldView->enableReferencePosShow(false);
+    }
 
     ui->fieldView->redraw();
 }
