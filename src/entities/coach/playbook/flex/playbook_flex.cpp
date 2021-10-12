@@ -37,12 +37,12 @@ void Playbook_Flex::run(int numPlayers) {
         _first = false;//this if is done only one time
     }
     _switchPlayersTimer.stop();
-    if(_switchedPlayers && _switchPlayersTimer.getSeconds() > 3) {
+    if(_switchedPlayers && _switchPlayersTimer.getSeconds() > getConstants()->switchPlaybookTimer()) {
         _switchedPlayers = false;
     }
 
     _replaceSecRoleTimer.stop();
-    if(_replacedSecRole && _replaceSecRoleTimer.getSeconds() > 3) {
+    if(_replacedSecRole && _replaceSecRoleTimer.getSeconds() > getConstants()->switchPlaybookTimer()) {
         _replacedSecRole = false;
     }
 

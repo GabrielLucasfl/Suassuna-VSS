@@ -17,6 +17,7 @@
 		"qtPlayers": 6,
 		"playbookFormation": "Default",
 		"predictionBaseCycles": 20,
+		"switchPlaybookTimer": 3,
 		"ellipseCenterOffset": 0.03,
 		"ellipseParameters": [0.1, 0.25],
 		"Player":{

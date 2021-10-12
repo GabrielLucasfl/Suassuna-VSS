@@ -66,6 +66,7 @@ public:
     int qtPlayers();
     QString playbookFormation();
     int predictionBaseCycles();
+    int switchPlaybookTimer();
     float ellipseCenterOffset();
     std::pair<float, float> ellipseParameters();
     std::tuple<float, float, float> playerPID();
@@ -122,6 +123,7 @@ private:
     FieldSide _teamSide;
     QString _playbookFormation;
     int _predictionBaseCycles;
+    int _switchPlaybookTimer;
     float _ellipseCenterOffset;
     std::pair<float, float> _ellipseParameters;
     std::tuple<float, float, float> _playerPID;
