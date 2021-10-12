@@ -119,7 +119,7 @@ void Role_Attacker::run() {
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             if(!_push) {
-                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed()+5.0f);
+                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
                 player()->setPlayerDesiredPosition(getPushPosition(ballPred));
             } else {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
