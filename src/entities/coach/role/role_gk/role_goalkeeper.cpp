@@ -123,7 +123,7 @@ void Role_Goalkeeper::run() {
                 setBehavior(BHV_MOVETO);
             }
         }
-        else if(isBallInsideEllipse() && ballVelocity.abs() < 0.25f && !(ballVelocity.vy() > 0.2f && abs(ballPos.x()) < 0.6f)) {
+        else if(isBallInsideEllipse() && ballVelocity.abs() < 0.25f && ballVelocity.vy() < 0.2f) {
             player()->setPlayerDesiredPosition(ballPred);
             setBehavior(BHV_MOVETO);
         }
