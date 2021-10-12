@@ -112,10 +112,6 @@ void Role_Goalkeeper::run() {
             _bhv_moveTo->enableSpin(true);
             setBehavior(BHV_MOVETO);
         }
-        else if(isBallInsideEllipse() && ballVelocity.abs() < 0.25f && ballVelocity.vy() < 0.2f) {
-            player()->setPlayerDesiredPosition(ballPred);
-            setBehavior(BHV_MOVETO);
-        }
         else if (getWorldMap()->getLocations()->isInsideOurArea(ballPos) && ballVelocity.abs()<0.2f){
             //the ball is inside the goalkeeper's area and is moving very slow, so the gk needs to get the ball out to avoid danger of goal
             if(getWorldMap()->getLocations()->ourSide().isRight() && (player()->position().x() >= ballPos.x())){//check if the gk is behind the ball
@@ -126,6 +122,10 @@ void Role_Goalkeeper::run() {
                 player()->setPlayerDesiredPosition(ballPos);
                 setBehavior(BHV_MOVETO);
             }
+        }
+        else if(isBallInsideEllipse() && ballVelocity.abs() < 0.25f && ballVelocity.vy() < 0.2f) {
+            player()->setPlayerDesiredPosition(ballPred);
+            setBehavior(BHV_MOVETO);
         }
         else if (!getWorldMap()->getLocations()->isInsideOurArea(player()->position())
                 || getWorldMap()->getLocations()->isInsideTheirField(ballPred)) {
