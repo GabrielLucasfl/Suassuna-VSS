@@ -138,8 +138,8 @@ void Role_Attacker::run() {
                 player()->setPlayerDesiredPosition(ballPred);
             } else {
                 _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
-                player()->setPlayerDesiredPosition(getPushPosition(ballPred));
-                //player()->setPlayerDesiredPosition(ballPred);
+                //player()->setPlayerDesiredPosition(getPushPosition(ballPred));
+                player()->setPlayerDesiredPosition(ballPred);
             }
 
             _bhv_moveTo->setLinearError(0.02f);
@@ -560,6 +560,11 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                     _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
                     _placement->second = Angle(true, 0.0);
                 }
+                else {
+                    _placement->first = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                           getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+                    _placement->second = Angle(true, Angle::pi/2);
+                }
             }
         } else {
             //player in quadrant 1 near their goal (right)
@@ -576,6 +581,11 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                         && !getConstants()->teamSide().isLeft()) {
                     _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
                     _placement->second = Angle(true, 0.0);
+                }
+                else {
+                    _placement->first = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                           getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+                    _placement->second = Angle(true, Angle::pi/2);
                 }
             }
         }
@@ -596,6 +606,11 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                     _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
                     _placement->second = Angle(true, 0.0);
                 }
+                else {
+                    _placement->first = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                           getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+                    _placement->second = Angle(true, Angle::pi/2);
+                }
             }
         } else {
             //player in quadrant 2 near our goal (left)
@@ -612,6 +627,11 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                         && !getConstants()->teamSide().isLeft()) {
                     _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
                     _placement->second = Angle(true, 0.0);
+                }
+                else {
+                    _placement->first = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                           getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+                    _placement->second = Angle(true, Angle::pi/2);
                 }
             }
         }
@@ -632,6 +652,11 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                     _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
                     _placement->second = Angle(true, 0.0);
                 }
+                else {
+                    _placement->first = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                           getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+                    _placement->second = Angle(true, Angle::pi/2);
+                }
             }
         } else {
             //player in quadrant 3 near our goal (left)
@@ -648,6 +673,11 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                         && !getConstants()->teamSide().isLeft()) {
                     _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
                     _placement->second = Angle(true, 0.0);
+                }
+                else {
+                    _placement->first = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                           getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+                    _placement->second = Angle(true, Angle::pi/2);
                 }
             }
         }
@@ -668,6 +698,11 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                     _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
                     _placement->second = Angle(true, 0.0);
                 }
+                else {
+                    _placement->first = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                           getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+                    _placement->second = Angle(true, Angle::pi/2);
+                }
             }
         } else {
             //player in quadrant 4 near their goal (right)
@@ -684,6 +719,11 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                         && !getConstants()->teamSide().isLeft()) {
                     _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
                     _placement->second = Angle(true, 0.0);
+                }
+                else {
+                    _placement->first = Utils::threePoints(getWorldMap()->getLocations()->ourGoal(),
+                                                           getWorldMap()->getLocations()->ourPenaltyMark(), 0.2f, 0.0);
+                    _placement->second = Angle(true, Angle::pi/2);
                 }
             }
         }
