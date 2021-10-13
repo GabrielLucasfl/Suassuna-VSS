@@ -58,20 +58,25 @@ void Role_Attacker::configure() {
 
 void Role_Attacker::run() {
 
-    // Ball projection
+
     Position ballPos = getWorldMap()->getBall().getPosition();
     Velocity ballVel = getWorldMap()->getBall().getVelocity();
-    Position ballDirection;
+    Position ballDirection, ballProj;
     if(ballVel.abs() > 0.03f) {
         ballDirection = Position(true, ballVel.vx()/ballVel.abs(), ballVel.vy()/ballVel.abs());
     } else {
         ballDirection = Position(true, 0, 0);
     }
+    float factor = std::min(ATKFACTOR * ballVel.abs(), 0.5f);
+    ballProj = Position(true, ballPos.x() + factor*ballDirection.x(), ballPos.y() + factor*ballDirection.y());
+
     //Position ballPred = getWorldMap()->getBall().getMatch(getWorldMap()->getBall());
     Position ballPred = getWorldMap()->getBall().getPredPosition(20);
     float ballPlayerDist = Utils::distance(ballPred, player()->position());
     // to check if player is in range to push
     Colors::Color ourColor = getConstants()->teamColor();
+
+    ballPred = ballProj;
 
     _avoidTheirGoalArea = hasAllyInTheirArea();
 
@@ -81,18 +86,18 @@ void Role_Attacker::run() {
         _state = MOVETO;
     }
     Position referencePos = defineReferencePosition();
-    float angle = normAngle(Utils::getAngle(ballPred, referencePos) - Utils::getAngle(player()->position(), ballPred));
+    float angle = normAngle(Utils::getAngle(ballPos, referencePos) - Utils::getAngle(player()->position(), ballPos));
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
-    Position pos = Utils::threePoints(ballPred, referencePos, dist, targetAngle);
+    Position pos = Utils::threePoints(ballPos, referencePos, dist, targetAngle);
     if(fabs(ballPos.y()) >= 0.450f){
-        pos = ballPred;
+        //pos = ballPred;
     }
 
-    if(fabs(angle) < static_cast<float>(M_PI)/11.25f && _prior){
+    if(fabs(angle) < static_cast<float>(M_PI)/11.25f && _prior && ballPlayerDist < 0.1f){
         _push = true;
     }
-
+    std::cout << ballVel.vy() << std::endl;
     switch (_state) {
         case GOTOBALL: {
             _avoidBall = false;
@@ -107,7 +112,10 @@ void Role_Attacker::run() {
             //std::cout << "GOTOBALL\n";
             // if player is in range or: if it is near the ball and the angle between them is small
             //if(((fabs(angle) < static_cast<float>(M_PI)/11.25) && Utils::distance(ballPos, player()->position()) < 0.2f) && _prior && inRangeToPush(ballPred)) {
-            if(((fabs(angle) < static_cast<float>(M_PI)/11.25f) && _prior && inRangeToPush(ballPred)) ) {
+            if(((fabs(angle) < static_cast<float>(M_PI)/8.0f) && inRangeToPush(ballPred)) ) {
+                _state = MOVETO;
+            }
+            else if(fabs(ballVel.vy()) > 0.15f && player()->isBehindBallXCoord(player()->position())){
                 _state = MOVETO;
             }
             break;
@@ -119,11 +127,12 @@ void Role_Attacker::run() {
             _avoidOurGoalArea = true;
             _bhv_moveTo->setAvoidFlags(_avoidBall, _avoidTeammates, _avoidOpponents, _avoidOurGoalArea, _avoidTheirGoalArea);
             if(!_push) {
-                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
-                player()->setPlayerDesiredPosition(getPushPosition(ballPred));
+                _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed() + 5.0f);
+                player()->setPlayerDesiredPosition(ballPred);
             } else {
-                _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
-                player()->setPlayerDesiredPosition(getPushPosition(ballPred));
+                _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist) + 5.0f);
+                //player()->setPlayerDesiredPosition(getPushPosition(ballPred));
+                player()->setPlayerDesiredPosition(ballPred);
             }
 
             _bhv_moveTo->setLinearError(0.02f);
@@ -216,7 +225,7 @@ float Role_Attacker::getDist(float angle){
         angle = fmax(angle, -maxAngle);
     }
 
-    float maxDist = 0.45f, delta = 0.3f;
+    float maxDist = 0.4f, delta = 0.25f;
     float dist = maxDist - delta*((maxAngle - fabs(angle))/(maxAngle));
     if(!_prior) {
         dist += 0.3f;
