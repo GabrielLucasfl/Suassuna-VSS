@@ -658,23 +658,35 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
 }
 
 void Role_Attacker:: goalKick(quint8 _teamPriority ,QPair<Position, Angle> *_placement){
-    float defenseXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.55f);
+    float defenseXabs = (getWorldMap()->getLocations()->fieldMaxX() - 0.06f);
     float defenseYabs = 0.0f;
+    float defenseYabsPrior = 0.53f;
     float nearTheMiddleXabs = (getWorldMap()->getLocations()->fieldMaxX()/2 - 0.15f);
 
     if(_teamPriority == 1){
+        Position ballPosition = getWorldMap()->getBall().getPosition();
         if(getWorldMap()->getLocations()->ourSide().isRight()){
             if(_prior) {
-                _placement->first = Position(true, defenseXabs, -1*defenseYabs);
-                _placement->second = Angle(true, Angle::pi/2);
+                if(ballPosition.y() > 0) {
+                    _placement->first = Position(true, defenseXabs, defenseYabsPrior);
+                    _placement->second = Angle(true, Angle::pi);
+                }else {
+                    _placement->first = Position(true, defenseXabs, -1*defenseYabsPrior);
+                    _placement->second = Angle(true, Angle::pi);
+                }
             }else {
                 _placement->first = Position(true, defenseXabs + 0.25f, -1*defenseYabs);
                 _placement->second = Angle(true, Angle::pi/2);
             }
         } else {
             if(_prior) {
-                _placement->first = Position(true, -1*defenseXabs, defenseYabs);
-                _placement->second = Angle(true, Angle::pi/2);
+                if(ballPosition.y() > 0) {
+                    _placement->first = Position(true, -1*defenseXabs, defenseYabsPrior);
+                    _placement->second = Angle(true, 0);
+                }else {
+                    _placement->first = Position(true, -1*defenseXabs, -1*defenseYabsPrior);
+                    _placement->second = Angle(true, 0);
+                }
             }else {
                 _placement->first = Position(true, -1*defenseXabs - 0.25f, defenseYabs);
                 _placement->second = Angle(true, Angle::pi/2);
