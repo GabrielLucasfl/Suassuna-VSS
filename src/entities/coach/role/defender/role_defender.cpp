@@ -44,58 +44,59 @@ void Role_Defender::configure() {
 }
 
 void Role_Defender::run() {
-    Position desiredPosition;
-    Position ballPosition = getWorldMap()->getBall().getPosition();
-    Position ballPred = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles());
-    Position ourGoal = getWorldMap()->getLocations()->ourGoal();
-    Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
+    setBehavior(BHV_BARRIER);
+//    Position desiredPosition;
+//    Position ballPosition = getWorldMap()->getBall().getPosition();
+//    Position ballPred = getWorldMap()->getBall().getPredPosition(getConstants()->predictionBaseCycles());
+//    Position ourGoal = getWorldMap()->getLocations()->ourGoal();
+//    Position fieldCenter = getWorldMap()->getLocations()->fieldCenter();
 
-    //std::cout << _switch << std::endl;
+//    //std::cout << _switch << std::endl;
 
-    if(_switch){
-        if(fabs(player()->position().x()) <= 0.15f){
-            _switch = false;
-        }
+//    if(_switch){
+//        if(fabs(player()->position().x()) <= 0.15f){
+//            _switch = false;
+//        }
 
-        if(ballPred.y() >= 0.325f){
-            desiredPosition = Position(true, 0.0f, 0.0f);
-        }
-        else if(ballPred.y() >= 0.0f){
-            desiredPosition = Position(true, 0.0f, -0.325f);
-        }
-        else if(ballPred.y() >= -0.325f){
-            desiredPosition = Position(true, 0.0f, 0.325f);
-        }
-        else{
-            desiredPosition = Position(true, 0.0f, 0.0f);
-        }
-    }
-    else if (!(fabs(ballPosition.x()) >= fabs(ourGoal.x()) && getWorldMap()->getLocations()->isInsideOurField(ballPosition))) {
-        float alpha;
-        if (getWorldMap()->getLocations()->ourSide().isRight()) {
-            alpha = normAngle(static_cast<float>(M_PI) - Utils::getAngle(ourGoal, ballPred));
-        } else {
-            alpha = normAngle(-Utils::getAngle(ourGoal, ballPred));
-        }
-        float dist = getDist(alpha);
+//        if(ballPred.y() >= 0.325f){
+//            desiredPosition = Position(true, 0.0f, 0.0f);
+//        }
+//        else if(ballPred.y() >= 0.0f){
+//            desiredPosition = Position(true, 0.0f, -0.325f);
+//        }
+//        else if(ballPred.y() >= -0.325f){
+//            desiredPosition = Position(true, 0.0f, 0.325f);
+//        }
+//        else{
+//            desiredPosition = Position(true, 0.0f, 0.0f);
+//        }
+//    }
+//    else if (!(fabs(ballPosition.x()) >= fabs(ourGoal.x()) && getWorldMap()->getLocations()->isInsideOurField(ballPosition))) {
+//        float alpha;
+//        if (getWorldMap()->getLocations()->ourSide().isRight()) {
+//            alpha = normAngle(static_cast<float>(M_PI) - Utils::getAngle(ourGoal, ballPred));
+//        } else {
+//            alpha = normAngle(-Utils::getAngle(ourGoal, ballPred));
+//        }
+//        float dist = getDist(alpha);
 
-        if (_ellipseCenter.isInvalid()) {
-            desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
-        } else {
-            desiredPosition = Utils::threePoints(_ellipseCenter, fieldCenter, dist, -alpha);
-        }
-    } else {
-        desiredPosition = player()->position();
-    }
+//        if (_ellipseCenter.isInvalid()) {
+//            desiredPosition = Utils::threePoints(ourGoal, fieldCenter, dist, -alpha);
+//        } else {
+//            desiredPosition = Utils::threePoints(_ellipseCenter, fieldCenter, dist, -alpha);
+//        }
+//    } else {
+//        desiredPosition = player()->position();
+//    }
 
-    player()->setPlayerDesiredPosition(desiredPosition);
-    setBehavior(BHV_MOVETO);
-}
+//    player()->setPlayerDesiredPosition(desiredPosition);
+//    setBehavior(BHV_MOVETO);
+//}
 
-float Role_Defender::getDist(float alpha){
-    float dist = sqrt((_ellipseParameters.first * _ellipseParameters.second) / (_ellipseParameters.second
-                      * powf(cosf(alpha), 2) + _ellipseParameters.first * powf(sinf(alpha), 2)));
-    return dist;
+//float Role_Defender::getDist(float alpha){
+//    float dist = sqrt((_ellipseParameters.first * _ellipseParameters.second) / (_ellipseParameters.second
+//                      * powf(cosf(alpha), 2) + _ellipseParameters.first * powf(sinf(alpha), 2)));
+//    return dist;
 }
 
 float Role_Defender::normAngle(float angleRadians) {

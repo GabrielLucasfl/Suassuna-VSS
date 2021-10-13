@@ -97,7 +97,7 @@ void Playbook_Default::run(int numPlayers) {
         }*/
         setPlayerRole(_lastID, _rl_df);
     } else {
-        setPlayerRole(_lastID, _rl_sup);
+        setPlayerRole(_lastID, _rl_df);
     }
 }
 
