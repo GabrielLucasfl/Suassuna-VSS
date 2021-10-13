@@ -90,8 +90,15 @@ void Role_Attacker::run() {
     float dist = getDist(angle);
     float targetAngle = getAngle(angle);
     Position pos = Utils::threePoints(ballPos, referencePos, dist, targetAngle);
-    if(fabs(ballPos.y()) >= 0.450f){
-        //pos = ballPred;
+    if(fabs(ballPos.y()) >= 0.45f && player()->isBehindBallXCoord(player()->position())){
+//        //pos = ballPred;
+//        Position theirGoal = getWorldMap()->getLocations()->theirGoal();
+//        float Yabs = 0.6f;
+//        if(ballPos.y() < 0) {
+//            pos = Utils::threePoints(ballPred, Position(true, theirGoal.x(), -1*Yabs), 0.04f, Angle::pi);
+//        }else {
+//            pos = Utils::threePoints(ballPred, Position(true, theirGoal.x(), Yabs), 0.04f, Angle::pi);
+//        }
     }
 
     if(fabs(angle) < static_cast<float>(M_PI)/11.25f && _prior && ballPlayerDist < 0.1f){
@@ -130,9 +137,9 @@ void Role_Attacker::run() {
                 _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed() + 5.0f);
                 player()->setPlayerDesiredPosition(ballPred);
             } else {
-                _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist) + 5.0f);
-                //player()->setPlayerDesiredPosition(getPushPosition(ballPred));
-                player()->setPlayerDesiredPosition(ballPred);
+                _bhv_moveTo->setBaseSpeed(pushSpeed(ballPlayerDist));
+                player()->setPlayerDesiredPosition(getPushPosition(ballPred));
+                //player()->setPlayerDesiredPosition(ballPred);
             }
 
             _bhv_moveTo->setLinearError(0.02f);
@@ -142,8 +149,10 @@ void Role_Attacker::run() {
             _interuption.stop();
             float velX = getWorldMap()->getPlayer(ourColor, player()->playerId()).getMavgVelocity().vx();
             bool goingAgainst = false;
+            //std::cout << "not" << std::endl;
             if((getConstants()->teamSide().isRight() && velX > 0) || (getConstants()->teamSide().isLeft() && velX < 0)) {
                 goingAgainst = true;
+                //std::cout << "going against" << std::endl;
             }
             if(((Utils::distance(ballPos, player()->position()) >= 0.3f) || (goingAgainst && Utils::distance(ballPos, player()->position()) <= 0.1f && !player()->isBehindBallXCoord(player()->position())))
                     && _interuption.getSeconds() > 1) {
@@ -541,13 +550,16 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                 _placement->first = Position(true, (freeBallXabs + freeBallOffset), freeBallYabs);
                 _placement->second = Angle(true, Angle::pi);
             }else {
-                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
-                Position playerPos = player()->position();
-                if(playerPos.y() >= 0 && playerPos.x() >= 0) {
-                    playerPos.setPosition(true, playerPos.x(), -quadrantDistOffset);
+                if((quadrant == VSSRef::Quadrant::QUADRANT_1 || quadrant == VSSRef::Quadrant::QUADRANT_4)
+                        && getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
                 }
-                _placement->first = playerPos;
-                _placement->second = Angle(true, Angle::pi/2);
+                else if(((quadrant == VSSRef::Quadrant::QUADRANT_2) || (quadrant == VSSRef::Quadrant::QUADRANT_3))
+                        && !getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
+                }
             }
         } else {
             //player in quadrant 1 near their goal (right)
@@ -555,13 +567,16 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                 _placement->first = Position(true, (freeBallXabs - freeBallOffset), freeBallYabs);
                 _placement->second = Angle(true, 0);
             }else {
-                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
-                Position playerPos = player()->position();
-                if(playerPos.y() >= 0 && playerPos.x() >= 0) {
-                    playerPos.setPosition(true, -quadrantDistOffset, playerPos.y());
+                if((quadrant == VSSRef::Quadrant::QUADRANT_1 || quadrant == VSSRef::Quadrant::QUADRANT_4)
+                        && getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
                 }
-                _placement->first = playerPos;
-                _placement->second = Angle(true, Angle::pi/2);
+                else if(((quadrant == VSSRef::Quadrant::QUADRANT_2) || (quadrant == VSSRef::Quadrant::QUADRANT_3))
+                        && !getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
+                }
             }
         }
     } else if(quadrant == VSSRef::QUADRANT_2){
@@ -571,13 +586,16 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                 _placement->first = Position(true, (-1*freeBallXabs + freeBallOffset), freeBallYabs);
                 _placement->second = Angle(true, Angle::pi);
             }else {
-                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
-                Position playerPos = player()->position();
-                if(playerPos.y() >= 0 && playerPos.x() <= 0) {
-                    playerPos.setPosition(true, quadrantDistOffset, playerPos.y());
+                if((quadrant == VSSRef::Quadrant::QUADRANT_1 || quadrant == VSSRef::Quadrant::QUADRANT_4)
+                        && getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
                 }
-                _placement->first = playerPos;
-                _placement->second = Angle(true, Angle::pi/2);
+                else if(((quadrant == VSSRef::Quadrant::QUADRANT_2) || (quadrant == VSSRef::Quadrant::QUADRANT_3))
+                        && !getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
+                }
             }
         } else {
             //player in quadrant 2 near our goal (left)
@@ -585,13 +603,16 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                 _placement->first = Position(true, (-1*freeBallXabs - freeBallOffset), freeBallYabs);
                 _placement->second = Angle(true, 0);
             }else {
-                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
-                Position playerPos = player()->position();
-                if(playerPos.y() >= 0 && playerPos.x() <= 0) {
-                    playerPos.setPosition(true, playerPos.x(), -quadrantDistOffset);
+                if((quadrant == VSSRef::Quadrant::QUADRANT_1 || quadrant == VSSRef::Quadrant::QUADRANT_4)
+                        && getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
                 }
-                _placement->first = playerPos;
-                _placement->second = Angle(true, Angle::pi/2);
+                else if(((quadrant == VSSRef::Quadrant::QUADRANT_2) || (quadrant == VSSRef::Quadrant::QUADRANT_3))
+                        && !getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
+                }
             }
         }
     } else if(quadrant == VSSRef::QUADRANT_3){
@@ -601,13 +622,16 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                 _placement->first = Position(true, (-1*freeBallXabs + freeBallOffset), -1*freeBallYabs);
                 _placement->second = Angle(true, Angle::pi);
             }else {
-                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
-                Position playerPos = player()->position();
-                if(playerPos.y() <= 0 && playerPos.x() <= 0) {
-                    playerPos.setPosition(true, quadrantDistOffset, playerPos.y());
+                if((quadrant == VSSRef::Quadrant::QUADRANT_1 || quadrant == VSSRef::Quadrant::QUADRANT_4)
+                        && getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
                 }
-                _placement->first = playerPos;
-                _placement->second = Angle(true, Angle::pi/2);
+                else if(((quadrant == VSSRef::Quadrant::QUADRANT_2) || (quadrant == VSSRef::Quadrant::QUADRANT_3))
+                        && !getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
+                }
             }
         } else {
             //player in quadrant 3 near our goal (left)
@@ -615,13 +639,16 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                 _placement->first = Position(true, (-1*freeBallXabs - freeBallOffset), -1*freeBallYabs);
                 _placement->second = Angle(true, 0);
             }else {
-                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
-                Position playerPos = player()->position();
-                if(playerPos.y() <= 0 && playerPos.x() <= 0) {
-                    playerPos.setPosition(true, playerPos.x(), quadrantDistOffset);
+                if((quadrant == VSSRef::Quadrant::QUADRANT_1 || quadrant == VSSRef::Quadrant::QUADRANT_4)
+                        && getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
                 }
-                _placement->first = playerPos;
-                _placement->second = Angle(true, Angle::pi/2);
+                else if(((quadrant == VSSRef::Quadrant::QUADRANT_2) || (quadrant == VSSRef::Quadrant::QUADRANT_3))
+                        && !getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
+                }
             }
         }
     } else if(quadrant == VSSRef::QUADRANT_4){
@@ -631,13 +658,16 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                 _placement->first = Position(true, (freeBallXabs + freeBallOffset), -1*freeBallYabs);
                 _placement->second = Angle(true, Angle::pi);
             }else {
-                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
-                Position playerPos = player()->position();
-                if(playerPos.y() <= 0 && playerPos.x() >= 0) {
-                    playerPos.setPosition(true, playerPos.x(), quadrantDistOffset);
+                if((quadrant == VSSRef::Quadrant::QUADRANT_1 || quadrant == VSSRef::Quadrant::QUADRANT_4)
+                        && getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
                 }
-                _placement->first = playerPos;
-                _placement->second = Angle(true, Angle::pi/2);
+                else if(((quadrant == VSSRef::Quadrant::QUADRANT_2) || (quadrant == VSSRef::Quadrant::QUADRANT_3))
+                        && !getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
+                }
             }
         } else {
             //player in quadrant 4 near their goal (right)
@@ -645,13 +675,16 @@ void Role_Attacker::freeBall(QPair<Position, Angle> *_placement, VSSRef::Quadran
                 _placement->first = Position(true, (freeBallXabs - freeBallOffset), -1*freeBallYabs);
                 _placement->second = Angle(true, 0);
             }else {
-                // Remain at the same position (only changes its coordinates if it is inside the quadrant)
-                Position playerPos = player()->position();
-                if(playerPos.y() <= 0 && playerPos.x() >= 0) {
-                    playerPos.setPosition(true, -quadrantDistOffset, playerPos.y());
+                if((quadrant == VSSRef::Quadrant::QUADRANT_1 || quadrant == VSSRef::Quadrant::QUADRANT_4)
+                        && getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
                 }
-                _placement->first = playerPos;
-                _placement->second = Angle(true, Angle::pi/2);
+                else if(((quadrant == VSSRef::Quadrant::QUADRANT_2) || (quadrant == VSSRef::Quadrant::QUADRANT_3))
+                        && !getConstants()->teamSide().isLeft()) {
+                    _placement->first = getWorldMap()->getLocations()->theirPenaltyMark();
+                    _placement->second = Angle(true, 0.0);
+                }
             }
         }
     }

@@ -67,7 +67,7 @@ void Playbook_Flex::run(int numPlayers) {
         _roles_def.at(0)->setEllipseParameters(getConstants()->ellipseParameters());
         setPlayerRole(_lastID, _roles_def.at(0));
     } else {
-        setPlayerRole(_lastID, _roles_sup.at(0));
+        setPlayerRole(_lastID, _roles_def.at(0));
     }
     float deriv;
     if(punctuations.size() > 179) {
