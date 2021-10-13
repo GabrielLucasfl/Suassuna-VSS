@@ -145,7 +145,7 @@ void Role_Attacker::run() {
             if((getConstants()->teamSide().isRight() && velX > 0) || (getConstants()->teamSide().isLeft() && velX < 0)) {
                 goingAgainst = true;
             }
-            if(((Utils::distance(ballPos, player()->position()) >= 0.3f) || (goingAgainst && Utils::distance(ballPos, player()->position()) <= 0.1f))
+            if(((Utils::distance(ballPos, player()->position()) >= 0.3f) || (goingAgainst && Utils::distance(ballPos, player()->position()) <= 0.1f && !player()->isBehindBallXCoord(player()->position())))
                     && _interuption.getSeconds() > 1) {
                 _push = false;
                 _state = GOTOBALL;
