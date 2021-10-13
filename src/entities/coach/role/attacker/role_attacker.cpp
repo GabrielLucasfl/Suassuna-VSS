@@ -97,7 +97,7 @@ void Role_Attacker::run() {
     if(fabs(angle) < static_cast<float>(M_PI)/11.25f && _prior && ballPlayerDist < 0.1f){
         _push = true;
     }
-    std::cout << ballVel.vy() << std::endl;
+
     switch (_state) {
         case GOTOBALL: {
             _avoidBall = false;
