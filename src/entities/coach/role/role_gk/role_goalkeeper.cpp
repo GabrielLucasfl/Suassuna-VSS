@@ -79,7 +79,6 @@ void Role_Goalkeeper::run() {
     // Reference position to look at
     Position lookingPosition(true, standardPosition.x(), 2.0f);
     _bhv_moveTo->enableRotation(false);
-    _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
     _bhv_moveTo->enableSpin(false);
 
     if (_gkOverlap) {
@@ -88,7 +87,7 @@ void Role_Goalkeeper::run() {
             _isOverlapTimerInit = true;
         }
         player()->setPlayerDesiredPosition(getWorldMap()->getBall().getPosition());
-        _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
+        _bhv_moveTo->setBaseSpeed(1.8f*getConstants()->playerBaseSpeed());
         setBehavior(BHV_MOVETO);
 
         _overlapTimer.stop();
@@ -107,6 +106,7 @@ void Role_Goalkeeper::run() {
             _gkOverlap = false;
         }
     } else {
+        _bhv_moveTo->setBaseSpeed(getConstants()->playerBaseSpeed());
         if(Utils::distance(player()->position(), ballPred) < 0.8f*distSpin) {
             _bhv_moveTo->setSpinOrientation(spinOrientarion());
             _bhv_moveTo->enableSpin(true);
