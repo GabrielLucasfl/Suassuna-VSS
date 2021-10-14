@@ -210,7 +210,7 @@ QPair<Position, Angle> Role_Supporter::getPlacementPosition(VSSRef::Foul foul, V
             else {
                 standardPosition = Utils::threePoints(getWorldMap()->getLocations()->fieldCenter(),
                                                       getWorldMap()->getLocations()->ourGoal(),
-                                                      0.2f, static_cast<float>(M_PI));
+                                                      0.3f, static_cast<float>(M_PI));
                 standardPosition = Position(true, standardPosition.x(),standardPosition.y() + 0.0f);
                 standardAngle = Angle(true, 0.0);
             }
