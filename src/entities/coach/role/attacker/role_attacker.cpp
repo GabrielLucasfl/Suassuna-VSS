@@ -91,14 +91,7 @@ void Role_Attacker::run() {
     float targetAngle = getAngle(angle);
     Position pos = Utils::threePoints(ballPos, referencePos, dist, targetAngle);
     if(fabs(ballPos.y()) >= 0.45f && player()->isBehindBallXCoord(player()->position())){
-//        //pos = ballPred;
-//        Position theirGoal = getWorldMap()->getLocations()->theirGoal();
-//        float Yabs = 0.6f;
-//        if(ballPos.y() < 0) {
-//            pos = Utils::threePoints(ballPred, Position(true, theirGoal.x(), -1*Yabs), 0.04f, Angle::pi);
-//        }else {
-//            pos = Utils::threePoints(ballPred, Position(true, theirGoal.x(), Yabs), 0.04f, Angle::pi);
-//        }
+        pos = ballPred;
     }
 
     if(fabs(angle) < static_cast<float>(M_PI)/11.25f && _prior && ballPlayerDist < 0.1f){
